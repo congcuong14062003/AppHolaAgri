@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    tools:context=".MainActivity">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="@color/secondarycolor"
+        app:cardCornerRadius="60dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.0739"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.16">
+        <ImageView
+            android:id="@+id/avatar_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/iconuser2" />
+    </androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/welcome_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Xin chào !"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardView" />
+    <!-- Phone Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/phone_input_layout"
+            style="@style/MyTextInputLayoutStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:endIconMode="clear_text"
+            app:endIconTint="@color/white"
+            app:counterEnabled="false"
+            app:hintTextColor="@color/white"
+            app:layout_constraintWidth_percent="0.7867"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/welcome_text">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phone_input"
+                style="@style/MyTextInputEditTextStyle"
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/iconphone"
+                android:hint="Số điện thoại"
+                android:drawablePadding="5dp"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+<!--        <EditText-->
+<!--            android:id="@+id/phone_input_layout"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="20dp"-->
+<!--            android:backgroundTint="#ffffff"-->
+<!--            android:drawableStart="@drawable/iconphone"-->
+<!--            android:hint="Số điện thoại"-->
+<!--            android:inputType="phone"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textColorHint="@color/white"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/welcome_text"-->
+<!--            app:layout_constraintWidth_percent="0.7867" />-->
+
+<!--    <com.google.android.material.textfield.TextInputLayout-->
+<!--        android:id="@+id/phone_input_layout"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="20dp"-->
+<!--        android:backgroundTint="#ffffff"-->
+<!--        android:hint="Số điện thoại"-->
+<!--        app:boxBackgroundColor="#ffffff"-->
+<!--        app:boxStrokeColor="#ffffff"-->
+<!--        app:endIconMode="clear_text"-->
+<!--        app:hintAnimationEnabled="true"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/welcome_text"-->
+<!--        app:layout_constraintWidth_percent="0.7867">-->
+
+<!--        <com.google.android.material.textfield.TextInputEditText-->
+<!--            android:id="@+id/phone_input"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:backgroundTint="@android:color/transparent"-->
+<!--            android:drawableStart="@drawable/iconphone"-->
+<!--            android:focusableInTouchMode="true"-->
+<!--            android:imeOptions="actionDone"-->
+<!--            android:inputType="phone"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:textColor="@android:color/white"-->
+<!--            android:textColorHint="@color/white" />-->
+<!--    </com.google.android.material.textfield.TextInputLayout>-->
+
+    <!-- Password Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/password_input_layout"
+            android:layout_margin="20dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:endIconMode="password_toggle"
+            app:endIconTint="@color/white"
+            app:counterEnabled="false"
+            app:hintTextColor="@color/white"
+            style="@style/MyTextInputLayoutStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="0.7867"
+            app:layout_constraintTop_toBottomOf="@id/phone_input_layout"
+            app:layout_constraintStart_toStartOf="parent">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password_input"
+                style="@style/MyTextInputEditTextStyle"
+                android:layout_width="match_parent"
+                android:inputType="number"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:drawableStart="@drawable/iconlock"
+                android:drawableEnd="@drawable/eye_on"
+                android:singleLine="true"
+                android:hint="Mật khẩu"
+                android:drawablePadding="5dp"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+<!--    <EditText-->
+<!--        android:id="@+id/password_input_layout"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="20dp"-->
+<!--        android:backgroundTint="#ffffff"-->
+<!--        android:drawableStart="@drawable/iconlock"-->
+<!--        android:drawableEnd="@drawable/eye_on"-->
+<!--        android:hint="Mật khẩu"-->
+<!--        android:imeOptions="actionDone"-->
+<!--        android:inputType="phone"-->
+<!--        android:paddingStart="16dp"-->
+<!--        android:paddingEnd="16dp"-->
+<!--        android:textColor="@android:color/white"-->
+<!--        android:textColorHint="@color/white"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/phone_input_layout"-->
+<!--        app:layout_constraintWidth_percent="0.7867" />-->
+
+    <!-- Login Button -->
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/login_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:background="@drawable/button_custom"
+        android:text="Đăng nhập"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/password_input_layout"
+        app:layout_constraintWidth_percent="0.7867" />
+    <!-- Forgot Password -->
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/forgot_password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:text="Quên mật khẩu?"
+        android:background="@drawable/button_custom"
+        android:backgroundTint="@android:color/transparent"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.7867" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

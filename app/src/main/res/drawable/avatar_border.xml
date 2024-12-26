@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" /> <!-- Nền màu trắng -->
+    <corners android:radius="500dp" /> <!-- Để avatar hình tròn -->
+    <stroke android:color="#000000" android:width="2dp" /> <!-- Border màu đen -->
+</shape>

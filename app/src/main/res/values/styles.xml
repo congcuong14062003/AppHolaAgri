@@ -1,0 +1,86 @@
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimary">@color/maincolor</item>
+
+    </style>
+    <!-- Style cho TextInputLayout -->
+    <style name="MyTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- Thiết lập màu sắc cho viền -->
+        <item name="boxStrokeColor">@color/text_input_layout_stroke_color</item>
+        <!-- Thiết lập màu sắc cho văn bản hint -->
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <!-- Style cho TextInputEditText -->
+    <style name="MyTextInputEditTextStyle" parent="@android:style/Widget.EditText">
+        <!-- Thiết lập màu sắc cho văn bản nhập -->
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+
+        <!-- Thiết lập kích thước cho văn bản nhập -->
+        <item name="android:textSize">@dimen/mainfontsize</item>
+
+    </style>
+    <style name="circular">
+        <item name="cornerSize">50%</item>
+    </style>
+
+
+
+    <!-- Style cho kích thước chữ 18sp, font weight 400 -->
+    <style name="TextStyle_18_400">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">normal</item> <!-- Font weight 400 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 18sp, font weight 500 -->
+    <style name="TextStyle_18_500">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">normal</item> <!-- Font weight 500 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 18sp, font weight 600 -->
+    <style name="TextStyle_18_600">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item> <!-- Font weight 600 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 16sp, font weight 400 -->
+    <style name="TextStyle_16_400">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item> <!-- Font weight 400 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 16sp, font weight 500 -->
+    <style name="TextStyle_16_500">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item> <!-- Font weight 500 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 16sp, font weight 600 -->
+    <style name="TextStyle_16_600">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item> <!-- Font weight 600 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 14sp, font weight 400 -->
+    <style name="TextStyle_14_400">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item> <!-- Font weight 400 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 14sp, font weight 500 -->
+    <style name="TextStyle_14_500">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item> <!-- Font weight 500 -->
+    </style>
+
+    <!-- Style cho kích thước chữ 14sp, font weight 600 -->
+    <style name="TextStyle_14_600">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item> <!-- Font weight 600 -->
+    </style>
+
+</resources>
