@@ -1,4 +1,4 @@
-package com.example.appholaagri.model.CheckPhoneModel;
+package com.example.appholaagri.model.ApiResponse;
 
 public class ApiResponse<T> {
     private int status;
@@ -37,5 +37,14 @@ public class ApiResponse<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+    @Override
+    public String toString() {
+        return "ApiResponse{" +
+                "status=" + status +
+                ", code=" + code +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

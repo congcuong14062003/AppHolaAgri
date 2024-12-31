@@ -1,4 +1,4 @@
-package com.example.appholaagri.model;
+package com.example.appholaagri.model.LoginModel;
 
 public class LoginRequest {
     private String deviceId;

@@ -5,6 +5,141 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewPassActivity">
+    android:background="@drawable/bg"
+    tools:context=".view.NewPassActivity">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="@color/secondarycolor"
+        app:cardCornerRadius="60dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.0739"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.16">
+        <ImageView
+            android:id="@+id/avatar_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/iconuser2" />
+    </androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/welcome_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Xin chào !"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardView" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/new_pass_input_layout"
+        style="@style/MyTextInputLayoutStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:endIconMode="password_toggle"
+        app:endIconTint="@color/white"
+        app:counterEnabled="false"
+        app:hintTextColor="@color/white"
+        app:layout_constraintWidth_percent="0.7867"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome_text">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/new_pass_input"
+            style="@style/MyTextInputEditTextStyle"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/eye_on"
+            android:drawableStart="@drawable/iconlock"
+            android:hint="Mật khẩu mới"
+            android:drawablePadding="5dp"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/confirm_pass_input_layout"
+        android:layout_margin="20dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:endIconMode="password_toggle"
+        app:endIconTint="@color/white"
+        app:counterEnabled="false"
+        app:hintTextColor="@color/white"
+        style="@style/MyTextInputLayoutStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.7867"
+        app:layout_constraintTop_toBottomOf="@id/new_pass_input_layout"
+        app:layout_constraintStart_toStartOf="parent">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/confirm_pass_input"
+            style="@style/MyTextInputEditTextStyle"
+            android:layout_width="match_parent"
+            android:inputType="number"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:drawableStart="@drawable/iconlock"
+            android:drawableEnd="@drawable/eye_on"
+            android:singleLine="true"
+            android:hint="Nhập lại mật khẩu mới"
+            android:drawablePadding="5dp"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/change_pass_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
+        android:background="@drawable/button_custom"
+        android:backgroundTint="@color/white"
+        android:text="Hoàn thành"
+        android:textColor="@color/secondarycolor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirm_pass_input_layout"
+        app:layout_constraintWidth_percent="0.7867" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintWidth_percent="0.7867"
+        app:layout_constraintEnd_toEndOf="@+id/confirm_pass_input_layout"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/confirm_pass_input_layout"
+        app:layout_constraintTop_toBottomOf="@+id/confirm_pass_input_layout">
+        <!-- Icon -->
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="32dp"
+            app:layout_constraintWidth_percent="0.0427"
+            app:layout_constraintHeight_percent="0.0197"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/warn"
+            android:scaleType="fitCenter" />
+
+        <!-- Text -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lưu ý: Mật khẩu từ 6 ký tự trở lên"
+            style="@style/TextStyle_14_400"
+            android:textColor="@color/white" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
