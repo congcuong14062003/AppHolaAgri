@@ -5,7 +5,9 @@ import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
+import com.example.appholaagri.model.UserData.UserData;
 
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.Call;
@@ -27,4 +29,11 @@ public interface ApiInterface {
     @POST("user/change-password") // Replace with your login endpoint
     Call<ApiResponse<Void>> changePassword(@Header("Authorization") String token, @Body ChangePassRequest changePassRequest);
 
+    // api đăng xuất
+    @POST("auth/logout") // Thay endpoint thành "user/detail" (hoặc endpoint thực tế của bạn)
+    Call<ApiResponse<String>> handleLogout(@Header("Authorization") String token);
+
+    // api xem thông tin cá nhân
+    @GET("user/detail") // Thay endpoint thành "user/detail" (hoặc endpoint thực tế của bạn)
+    Call<ApiResponse<UserData>> userData(@Header("Authorization") String token);
 }

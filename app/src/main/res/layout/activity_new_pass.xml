@@ -125,13 +125,13 @@
         app:layout_constraintTop_toBottomOf="@+id/confirm_pass_input_layout">
         <!-- Icon -->
         <ImageView
-            android:layout_width="16dp"
+            android:layout_width="wrap_content"
             android:layout_height="32dp"
-            app:layout_constraintWidth_percent="0.0427"
-            app:layout_constraintHeight_percent="0.0197"
             android:layout_marginEnd="8dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/warn"
-            android:scaleType="fitCenter" />
+            app:layout_constraintHeight_percent="0.0197"
+            app:layout_constraintWidth_percent="0.0427" />
 
         <!-- Text -->
         <TextView

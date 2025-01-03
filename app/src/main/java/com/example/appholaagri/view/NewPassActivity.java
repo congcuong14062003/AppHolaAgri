@@ -71,7 +71,7 @@ public class NewPassActivity extends AppCompatActivity {
         return true;
     }
     private void changePassword(String deviceId, String phoneNumber, String hashedPassword) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(getBaseContext()).create(ApiInterface.class);
         int isMobile = 1;  // Giả sử là điện thoại
         int rememberMe = 1;  // Không nhớ mật khẩu
         String requestId = "requestId123";  // Thay bằng giá trị thực tế hoặc tạo UUID

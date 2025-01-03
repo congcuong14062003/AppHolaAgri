@@ -1,14 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.SettingFragment">
+    android:background="@drawable/bg_home">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Trang cài đặt" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_horizontal">
 
-</FrameLayout>
+        <!-- Avatar -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/imgAvatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="50dp"
+            app:cardElevation="4dp">
+            <ImageView
+                android:id="@+id/avtUser"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/avatar"
+                android:scaleType="centerCrop" />
+        </androidx.cardview.widget.CardView>
+        <!-- Tên và vai trò -->
+        <TextView
+            android:id="@+id/txtStaffName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lữ Văn Quân"
+            style="@style/TextStyle_16_600"
+            android:textColor="@color/textcolor" />
+        <TextView
+            android:id="@+id/txtStaffCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KS01246 - Kỹ sư nông nghiệp"
+            style="@style/TextStyle_14_400"
+            android:textColor="@color/textcolor"
+            android:layout_marginBottom="24dp" />
+        <!-- CardView chứa các mục -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:background="@drawable/bg_rounded"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Quản lý thông tin -->
+                <LinearLayout
+                    android:id="@+id/btnManageInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/infor_icon"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="Quản lý thông tin"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/secon_textcolor"
+                        android:gravity="center_vertical" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/detail_infor"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <!-- Hướng dẫn sử dụng -->
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:id="@+id/btnGuide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/guide_icon"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="Hướng dẫn sử dụng"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/secon_textcolor"
+                        android:gravity="center_vertical" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/detail_infor"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <!-- Cài đặt bảo mật -->
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:id="@+id/btnSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/setting_icon"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="Cài đặt bảo mật"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/secon_textcolor"
+                        android:gravity="center_vertical" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/detail_infor"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+            </LinearLayout>
+        <!-- Đăng xuất -->
+            <LinearLayout
+                android:gravity="center_vertical"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_rounded"
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/logout_icon"
+                    android:layout_gravity="center_vertical" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:text="Đăng xuất"
+                    style="@style/TextStyle_14_500"
+                    android:textColor="@color/secon_textcolor"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

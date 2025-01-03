@@ -23,9 +23,32 @@
         <item name="android:textSize">@dimen/mainfontsize</item>
 
     </style>
+
+
+
+    <!-- Style cho TextInputLayout -->
+    <style name="MyTextInputLayoutStyleSetting" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- Thiết lập màu sắc cho viền -->
+        <item name="boxStrokeColor">#b7b7b7</item>
+        <!-- Thiết lập màu sắc cho văn bản hint -->
+        <item name="android:textColorHint">#b7b7b7</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="MyTextInputEditTextStyleSetting" parent="@android:style/Widget.EditText">
+        <!-- Thiết lập màu sắc cho văn bản nhập -->
+        <item name="android:textColor">#b7b7b7</item>
+        <item name="android:textColorHint">#b7b7b7</item>
+        <!-- Thiết lập kích thước cho văn bản nhập -->
+        <item name="android:textSize">@dimen/mainfontsize</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
     <style name="circular">
         <item name="cornerSize">50%</item>
     </style>
+
+
 
 
 

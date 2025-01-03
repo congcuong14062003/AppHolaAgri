@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.UserDetailActivity"
+    >
+    <!-- AppBarLayout chứa phần tiêu đề và nút back -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+        android:background="@drawable/bg_header"
+        android:elevation="4dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quản lý thông tin"
+                android:textAllCaps="true"
+                style="@style/TextStyle_16_600"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/backBtnReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintWidth_percent="0.1013"
+                app:srcCompat="@drawable/back_btn" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+    <ScrollView
+        android:background="@drawable/bg_home"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="70dp">
+        <LinearLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center_horizontal">
+
+            <!-- Avatar -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/imgAvatar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="4dp">
+                <ImageView
+                    android:id="@+id/avtUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/avatar"
+                    android:scaleType="centerCrop" />
+            </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/txtName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lữ Văn Quân"
+                style="@style/TextStyle_16_600"
+                android:textColor="@color/textcolor" />
+            <TextView
+                android:id="@+id/txtRole"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KS01246 - Kỹ sư nông nghiệp"
+                style="@style/TextStyle_14_400"
+                android:textColor="@color/textcolor"
+                android:layout_marginBottom="24dp" />
+            <LinearLayout
+                android:layout_marginBottom="20dp"
+                android:id="@+id/thong_tin_lien_he"
+                android:layout_width="match_parent"
+                android:background="@drawable/bg_rounded"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="-10dp"
+                    android:padding="20dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Thông tin liên hệ"
+                        style="@style/TextStyle_16_600"
+                        android:textColor="@color/secon_textcolor"
+                        android:gravity="center_vertical" />
+                </LinearLayout>
+
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Số điện thoại"
+                        />
+                    <TextView
+                        android:id="@+id/txtPhone"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        />
+                    <TextView
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/txtEmail"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="quanlv@imediatech.com.vn"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginBottom="20dp"
+                android:id="@+id/thong_tin_ca_nhan"
+                android:layout_width="match_parent"
+                android:background="@drawable/bg_rounded"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="-10dp"
+                    android:padding="20dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Thông tin cá nhân"
+                        style="@style/TextStyle_16_600"
+                        android:textColor="@color/secon_textcolor"
+                        android:gravity="center_vertical" />
+                </LinearLayout>
+
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ngày sinh"
+                        />
+                    <TextView
+                        android:id="@+id/txtBirthDay"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CCCD - Ngày cấp"
+                        />
+                    <TextView
+                        android:id="@+id/txtIdentityCode"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mã số thuế"
+                        />
+                    <TextView
+                        android:id="@+id/txtTaxCode"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Địa chỉ"
+                        />
+                    <TextView
+                        android:id="@+id/txtAddress"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="quanlv@imediatech.com.vn"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginBottom="20dp"
+
+                android:id="@+id/thong_tin_cong_viec"
+                android:layout_width="match_parent"
+                android:background="@drawable/bg_rounded"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="-10dp"
+                    android:padding="20dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Thông tin công việc"
+                        style="@style/TextStyle_16_600"
+                        android:textColor="@color/secon_textcolor"
+                        android:gravity="center_vertical" />
+                </LinearLayout>
+
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đơn vị công tác"
+                        />
+                    <TextView
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:id="@+id/tv_don_vi_cong_tac_value"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phòng ban"
+                        />
+                    <TextView
+                        android:id="@+id/tv_phong_ban"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tổ đôi"
+                        />
+                    <TextView
+                        android:id="@+id/tv_to_doi"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chức danh"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_chuc_danh_value"
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/input_infor"
+                        android:backgroundTint="#dee0df"
+                        android:gravity="center_vertical"
+                        android:padding="35px"
+                        android:text="0977177380"
+                        android:textColor="@color/textcolor" />
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vị trí công việc"
+                        />
+                    <TextView
+                        android:id="@+id/tv_vi_tri_cong_viec_value"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quản lý trực tiếp"
+                        />
+                    <TextView
+                        android:id="@+id/tv_quan_ly_truc_tiep_value"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="quanlv@imediatech.com.vn"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginBottom="20dp"
+
+                android:id="@+id/thong_tin_hop_dong"
+                android:layout_width="match_parent"
+                android:background="@drawable/bg_rounded"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="-10dp"
+                    android:padding="20dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Thông tin hợp đồng"
+                        style="@style/TextStyle_16_600"
+                        android:textColor="@color/secon_textcolor"
+                        android:gravity="center_vertical" />
+                </LinearLayout>
+
+                <!--Quản lý thông tin-->
+                <LinearLayout
+                    android:id="@+id/btnManageInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Loại hợp đồng"
+                        />
+                    <TextView
+                        android:id="@+id/tv_loai_hop_dong_value"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ngày bắt đầu làm"
+                        />
+                    <TextView
+                        android:id="@+id/tv_ngay_bat_dau_lam_value"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0977177380"
+                        android:layout_marginBottom="10dp"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+                    <TextView
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ngày làm việc chính thức"
+                        />
+                    <TextView
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tv_ngay_lam_viec_chinh_thuc_value"
+                        android:background="@drawable/input_infor"
+                        android:layout_width="match_parent"
+                        android:padding="35px"
+                        android:backgroundTint="#dee0df"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="quanlv@imediatech.com.vn"
+                        style="@style/TextStyle_14_500"
+                        android:textColor="@color/textcolor"
+                        android:gravity="center_vertical" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
