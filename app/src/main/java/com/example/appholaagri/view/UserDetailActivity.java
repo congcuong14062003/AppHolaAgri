@@ -83,7 +83,7 @@ public class UserDetailActivity extends AppCompatActivity {
 
     private void getUserData(String token) {
         try {
-            ApiInterface apiInterface = ApiClient.getClient(getBaseContext()).create(ApiInterface.class);
+            ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
             Call<ApiResponse<UserData>> call = apiInterface.userData(token);
             call.enqueue(new Callback<ApiResponse<UserData>>() {
                 @Override

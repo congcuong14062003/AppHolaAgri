@@ -1,5 +1,6 @@
 package com.example.appholaagri.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -13,10 +14,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.databinding.ActivityHomeBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class HomeActivity extends AppCompatActivity {
     ActivityHomeBinding binding;
-
+    FloatingActionButton checkin_daily;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,17 +26,24 @@ public class HomeActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
         binding.bottomNavigationView.setBackground(null);
-
+        checkin_daily = findViewById(R.id.checkin_daily);
+        checkin_daily.setOnClickListener(view -> {
+            Intent intent = new Intent(HomeActivity.this, CheckInDailyActivity.class);
+            startActivity(intent);
+            finish();
+        });
         // Set default fragment (HomeFragment)
         if (savedInstanceState == null) {
             replaceFragment(new HomeFragment());
         }
         // Kiểm tra nếu cần điều hướng đến SettingFragment
-        // Kiểm tra nếu cần điều hướng đến SettingFragment
         String navigateTo = getIntent().getStringExtra("navigate_to");
         if ("setting".equals(navigateTo)) {
             replaceFragment(new SettingFragment());
             binding.bottomNavigationView.setSelectedItemId(R.id.nav_setting);  // Đánh dấu mục Setting là active
+        } else if ("home".equals(navigateTo)) {
+            replaceFragment(new HomeFragment());
+            binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);  // Đánh dấu mục Setting là active
         }
         // Set the listener for bottom navigation item selection
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {

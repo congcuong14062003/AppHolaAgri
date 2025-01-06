@@ -79,7 +79,7 @@ public class SettingFragment extends Fragment {
     private void getUserData(String token) {
         try {
             // Create Retrofit and ApiInterface
-            ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
+            ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
             // Call the API
             Call<ApiResponse<UserData>> call = apiInterface.userData(token);
 
@@ -115,7 +115,6 @@ public class SettingFragment extends Fragment {
             if (userData == null) {
                 return;
             }
-
             // Check for ContractInfo before using it
             if (userData.getContractInfo() != null) {
                 Picasso.get()
@@ -126,7 +125,6 @@ public class SettingFragment extends Fragment {
             } else {
                 avtUser.setImageResource(R.drawable.avatar); // Set default image if contractInfo is null
             }
-
             // Check AccountDetail and WorkInfo for null before using them
             if (userData.getAccountDetail() != null) {
                 txtStaffName.setText(userData.getAccountDetail().getStaffName());
@@ -139,7 +137,6 @@ public class SettingFragment extends Fragment {
                 txtStaffName.setText("Tên không có sẵn");
                 txtStaffCode.setText("Mã nhân viên không có sẵn");
             }
-
             contentLayout.setVisibility(View.VISIBLE); // Show layout after data is updated
         } catch (Exception e) {
             Log.e("SettingFragment", "Error during UI update: " + e.getMessage());
@@ -153,7 +150,6 @@ public class SettingFragment extends Fragment {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.remove("auth_token");
             editor.apply(); // Save changes
-
             Toast.makeText(requireContext(), "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getActivity(), MainActivity.class); // Or LoginActivity
             startActivity(intent);

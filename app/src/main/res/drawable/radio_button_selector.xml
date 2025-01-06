@@ -1,0 +1,7 @@
+<!-- res/drawable/radio_button_selector.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Màu khi RadioButton được chọn -->
+    <item android:drawable="@android:color/white" android:state_checked="true" />
+    <!-- Màu khi RadioButton chưa được chọn -->
+    <item android:drawable="@android:color/darker_gray" />
+</selector>

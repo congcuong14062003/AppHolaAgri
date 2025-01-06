@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void login(String phone, String password, String deviceId) {
-        ApiInterface apiInterface = ApiClient.getClient(getBaseContext()).create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         // Cập nhật các giá trị cho LoginRequest
         int isMobile = 1;  // Giả sử là điện thoại
         int rememberMe = 1;  // Không nhớ mật khẩu
@@ -185,24 +185,21 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
     private void changePassword(String token, String oldPassword, String newPassword, String confirmPassword) {
-        ApiInterface apiInterface = ApiClient.getClient(getBaseContext()).create(ApiInterface.class);
-
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         // Tạo đối tượng ChangePasswordRequest
         ChangePassRequest request = new ChangePassRequest(oldPassword, newPassword, confirmPassword);
-
-        Call<ApiResponse<Void>> call = apiInterface.changePassword(token, request);
-        call.enqueue(new Callback<ApiResponse<Void>>() {
+        Call<ApiResponse<String>> call = apiInterface.changePassword(token, request);
+        call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
-            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+            public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(MainActivity.this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Đổi mật khẩu thất bại, thử lại.", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
-            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+            public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

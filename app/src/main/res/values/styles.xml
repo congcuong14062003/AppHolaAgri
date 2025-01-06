@@ -106,4 +106,9 @@
         <item name="android:textStyle">bold</item> <!-- Font weight 600 -->
     </style>
 
+
+    <style name="CustomRadioButton">
+        <item name="android:textColor">@color/radio_button_default</item>
+        <item name="android:buttonTint">@color/radio_button_default</item>
+    </style>
 </resources>

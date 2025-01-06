@@ -57,7 +57,11 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.0")
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("com.squareup.picasso:picasso:2.71828")
+    // ZXing for QR scanning
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
 
+    // RecyclerView for listing attendance
+    implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

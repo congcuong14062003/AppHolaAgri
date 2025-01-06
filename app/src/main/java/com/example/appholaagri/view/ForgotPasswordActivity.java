@@ -62,7 +62,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
 
     public void checkPhoneNumber(String deviceId, String phoneNumber) {
-        ApiInterface apiInterface = ApiClient.getClient(getBaseContext()).create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         CheckPhoneRequest checkPhoneRequest = new CheckPhoneRequest(deviceId,phoneNumber);
         Log.d("ForgotPasswordActivity", "Thông tin: " + checkPhoneRequest.getDeviceId() + checkPhoneRequest.getUserName());
 
