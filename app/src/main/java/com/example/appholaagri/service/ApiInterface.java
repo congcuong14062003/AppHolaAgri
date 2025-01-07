@@ -7,6 +7,8 @@ import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
+import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
+import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsRequest;
 import com.example.appholaagri.model.UserData.UserData;
 
 import java.util.List;
@@ -48,5 +50,7 @@ public interface ApiInterface {
     // check in qr code
     @POST("check-in/daily")
     Call<ApiResponse<String>> checkInQrCode(@Header("Authorization") String token, @Body CheckInQrCodeRequest checkInQrCodeRequest);
-
+    // thống kê chấm công
+    @POST("check-in/checkin-logs")
+    Call<ApiResponse<TimekeepingStatisticsData>> timekeepingStatistics(@Header("Authorization") String token, @Body TimekeepingStatisticsRequest timekeepingStatisticsRequest);
 }

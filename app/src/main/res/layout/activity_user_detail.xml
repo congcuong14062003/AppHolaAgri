@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.UserDetailActivity"
+    android:background="@drawable/bg_home"
     >
     <!-- AppBarLayout chứa phần tiêu đề và nút back -->
     <androidx.appcompat.widget.Toolbar
@@ -13,7 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-        android:background="@drawable/bg_header"
         android:elevation="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -49,7 +49,6 @@
 
     </androidx.appcompat.widget.Toolbar>
     <ScrollView
-        android:background="@drawable/bg_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="70dp">
@@ -58,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp"
+            android:padding="16dp"
             android:gravity="center_horizontal">
 
             <!-- Avatar -->

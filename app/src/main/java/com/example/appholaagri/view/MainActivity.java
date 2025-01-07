@@ -193,7 +193,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(MainActivity.this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                    ApiResponse<String> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        Toast.makeText(MainActivity.this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(MainActivity.this, "Đổi mật khẩu thất bại, thử lại.", Toast.LENGTH_SHORT).show();
                 }
