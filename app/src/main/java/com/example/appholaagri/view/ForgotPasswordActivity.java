@@ -21,6 +21,7 @@ import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +32,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     EditText phoneInput;
     ImageView errorIcon;
     TextView errorMessage;
+    TextInputLayout phone_input_layout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,18 +48,33 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         phoneInput = findViewById(R.id.phone_input_authen);
         errorIcon  = findViewById(R.id.error_icon); // ID của ImageView chứa icon lỗi
         errorMessage  = findViewById(R.id.error_message); // ID của TextView chứa thông báo lỗi
+        phone_input_layout = findViewById(R.id.phone_input_layout);
         btnBackLogin.setOnClickListener(view -> {
             onBackPressed();
         });
         nextBtn.setOnClickListener(view -> {
-            String phoneNumber = phoneInput.getText().toString();
+            String phoneNumber = phoneInput.getText().toString().trim();
+
+            // Clear previous error
+            phone_input_layout.setError(null);  // Remove any existing error message
+
+            // Validate phone number
             if (phoneNumber.isEmpty()) {
-                Toast.makeText(ForgotPasswordActivity.this, "Vui lòng nhập số điện thoại", Toast.LENGTH_SHORT).show();
+                // Set error if phone number is empty
+                errorMessage.setText("Vui lòng nhập số điện thoại");
+                errorIcon.setVisibility(View.VISIBLE);
+            } else if (phoneNumber.length() < 10 || phoneNumber.length() > 11) {
+                // Set error if phone number length is not between 10 and 11 characters
+                errorMessage.setText("Số điện thoại phải từ 10 đến 11 ký tự");
+                errorIcon.setVisibility(View.VISIBLE);
             } else {
+                // If phone number is valid, proceed with the next steps
                 String deviceId = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-                checkPhoneNumber(deviceId, phoneNumber);
+                checkPhoneNumber(deviceId, phoneNumber);  // Call the API to check the phone number
             }
         });
+
+
     }
 
 

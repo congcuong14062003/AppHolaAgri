@@ -6,7 +6,7 @@ public class UserData {
     private WorkInfor workInfo;
     private UserInfo userInfo;
     private ContractInfo contractInfo;
-
+    private String userAvatar;
     // Getters và setters
     public int getId() {
         return id;
@@ -14,6 +14,14 @@ public class UserData {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
     }
 
     public AccountDetail getAccountDetail() {
@@ -47,4 +55,5 @@ public class UserData {
     public void setContractInfo(ContractInfo contractInfo) {
         this.contractInfo = contractInfo;
     }
+
 }

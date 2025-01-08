@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -43,7 +44,7 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
     private Calendar selectedDate = Calendar.getInstance(); // Lưu giữ ngày tháng hiện tại
     private TextView tab2Title;
     private ImageView calendarIcon, backBtnReview;
-
+    private LinearLayout quanlychamcong_btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,11 +55,17 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
         backBtnReview = findViewById(R.id.backBtnReview);
+        quanlychamcong_btn = findViewById(R.id.quanlychamcong_btn);
         // Thiết lập Adapter cho ViewPager
         viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
         backBtnReview.setOnClickListener(view -> {
             onBackPressed();
+        });
+        quanlychamcong_btn.setOnClickListener(view -> {
+            Intent intent = new Intent(TimekeepingStatisticsActivity.this, TimekeepingManagementActivity.class);
+            startActivity(intent);
+            finish();
         });
         // Liên kết TabLayout với ViewPager
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {

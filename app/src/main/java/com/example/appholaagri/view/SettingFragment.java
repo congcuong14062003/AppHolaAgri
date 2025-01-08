@@ -118,7 +118,7 @@ public class SettingFragment extends Fragment {
             // Check for ContractInfo before using it
             if (userData.getContractInfo() != null) {
                 Picasso.get()
-                        .load(userData.getContractInfo().getUrlFile()) // URL of image
+                        .load(userData.getUserAvatar()) // URL of image
                         .placeholder(R.drawable.avatar) // Placeholder image while loading
                         .error(R.drawable.avatar) // Error image if loading fails
                         .into(avtUser); // Set the image to ImageView
@@ -139,7 +139,6 @@ public class SettingFragment extends Fragment {
             }
             contentLayout.setVisibility(View.VISIBLE); // Show layout after data is updated
         } catch (Exception e) {
-            Log.e("SettingFragment", "Error during UI update: " + e.getMessage());
             Toast.makeText(requireContext(), "Lỗi khi cập nhật giao diện.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -150,13 +149,11 @@ public class SettingFragment extends Fragment {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.remove("auth_token");
             editor.apply(); // Save changes
-            Toast.makeText(requireContext(), "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getActivity(), MainActivity.class); // Or LoginActivity
             startActivity(intent);
             requireActivity().finish(); // Close current activity
         } catch (Exception e) {
             Log.e("SettingFragment", "Error during logout: " + e.getMessage());
-            Toast.makeText(requireContext(), "Lỗi khi đăng xuất.", Toast.LENGTH_SHORT).show();
         }
     }
 }

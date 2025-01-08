@@ -1,8 +1,13 @@
 package com.example.appholaagri.view;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.UserData.UserData;
@@ -27,14 +34,18 @@ import retrofit2.Retrofit;
 public class UserDetailActivity extends AppCompatActivity {
     private LinearLayout contentLayout;
     private TextView txtName, txtRole, txtPhone, txtEmail, txtBirthDay, txtIdentityCode, txtTaxCode, txtAddress, tv_don_vi_cong_tac_value, tv_phong_ban,tv_to_doi,tv_chuc_danh_value, tv_vi_tri_cong_viec_value, tv_quan_ly_truc_tiep_value, tv_loai_hop_dong_value, tv_ngay_bat_dau_lam_value, tv_ngay_lam_viec_chinh_thuc_value;
-    private ImageView avatarUser, backBtnReview;
-
+    private ImageView avatarUser, backBtnReview, cameraIcon;
+    // Khai báo mã yêu cầu quyền
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int REQUEST_CAMERA = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_detail);
 
         // Initialize UI elements
+        cameraIcon = findViewById(R.id.cameraIcon);
         contentLayout = findViewById(R.id.contentLayout);
         contentLayout.setVisibility(View.GONE);
 
@@ -69,7 +80,7 @@ public class UserDetailActivity extends AppCompatActivity {
         backBtnReview.setOnClickListener(view -> {
             onBackPressed();
         });
-
+        cameraIcon.setOnClickListener(v -> checkCameraPermissionAndOpen());
     }
     @Override
     public void onBackPressed() {
@@ -128,7 +139,7 @@ public class UserDetailActivity extends AppCompatActivity {
 
             if (userData.getContractInfo() != null) {
                 Picasso.get()
-                        .load(userData.getContractInfo().getUrlFile())
+                        .load(userData.getUserAvatar())
                         .placeholder(R.drawable.avatar)
                         .error(R.drawable.avatar)
                         .into(avatarUser);
@@ -187,6 +198,62 @@ public class UserDetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage());
             Toast.makeText(this, "Có lỗi xảy ra khi cập nhật thông tin người dùng.", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void checkCameraPermissionAndOpen() {
+        // Kiểm tra nếu ứng dụng đã có quyền truy cập vào camera
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // Nếu có quyền, mở camera
+            openCamera();
+        } else {
+            // Nếu chưa có quyền, yêu cầu quyền
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            }
+        }
+    }
+    // Xử lý kết quả khi người dùng cấp quyền hoặc từ chối
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Nếu quyền được cấp, mở camera
+                    openCamera();
+                } else {
+                    // Nếu quyền bị từ chối, mở thư viện ảnh
+                    openGallery();
+                }
+                break;
+        }
+    }
+
+    // Mở camera
+    private void openCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, REQUEST_CAMERA);
+    }
+
+    // Mở thư viện ảnh
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    // Xử lý kết quả từ camera hoặc thư viện ảnh
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+            Picasso.get().load(imageUri).into(avatarUser); // Đặt ảnh người dùng chọn vào avatar
+        } else if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK && data != null) {
+            // Nhận kết quả từ camera và cập nhật avatar
+            Uri imageUri = data.getData();
+            Picasso.get().load(imageUri).into(avatarUser); // Đặt ảnh camera vào avatar
         }
     }
 }

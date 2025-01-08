@@ -19,8 +19,10 @@ import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.Utils;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,16 +62,28 @@ public class NewPassActivity extends AppCompatActivity {
         });
     }
     private boolean validatePasswords(String newPassword, String confirmPassword) {
-        if (TextUtils.isEmpty(newPassword) || newPassword.length() < 6) {
-            Toast.makeText(this, "Mật khẩu phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
+        TextInputLayout newPassLayout = findViewById(R.id.new_pass_input_layout);
+        TextInputLayout confirmPassLayout = findViewById(R.id.confirm_pass_input_layout);
+        // Xóa lỗi cũ
+        newPassLayout.setError(null);
+        confirmPassLayout.setError(null);
+        // Kiểm tra mật khẩu mới
+        if (TextUtils.isEmpty(newPassword)) {
+            newPassLayout.setError("Mật khẩu không được để trống");
+            return false;
+        }
+        if (newPassword.length() < 6) {
+            newPassLayout.setError("Mật khẩu phải có ít nhất 6 ký tự");
             return false;
         }
         if (!newPassword.equals(confirmPassword)) {
-            Toast.makeText(this, "Mật khẩu xác nhận không khớp", Toast.LENGTH_SHORT).show();
+            confirmPassLayout.setError("Mật khẩu xác nhận không khớp");
             return false;
         }
+        // Nếu không có lỗi
         return true;
     }
+
     private void changePassword(String deviceId, String phoneNumber, String hashedPassword) {
         ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         int isMobile = 1;  // Giả sử là điện thoại
@@ -86,20 +100,20 @@ public class NewPassActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
-                        Toast.makeText(NewPassActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                        CustomToast.showCustomToast(NewPassActivity.this, apiResponse.getMessage());
                         Intent intent = new Intent(NewPassActivity.this, MainActivity.class);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(NewPassActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                        CustomToast.showCustomToast(NewPassActivity.this, apiResponse.getMessage());
                     }
                 } else {
-                    Toast.makeText(NewPassActivity.this, "Lỗi kết nối, vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(NewPassActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                Toast.makeText(NewPassActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                CustomToast.showCustomToast(NewPassActivity.this, "Lỗi: " + t.getMessage());
             }
         });
     }

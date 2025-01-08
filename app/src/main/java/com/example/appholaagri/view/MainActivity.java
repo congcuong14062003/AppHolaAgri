@@ -1,16 +1,20 @@
 package com.example.appholaagri.view;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,9 +25,11 @@ import com.example.appholaagri.model.ChangePassModel.ChangePassRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.R;
+import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.Utils;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
+import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     private EditText txtPhoneNumber;
     private EditText txtPassWord;
+    // pop up
+    private EditText newPassInput, confirmPassInput;
+    Button change_pass_button;
+    TextInputLayout confirm_new_pass_layout, new_pass_input_layout;
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,19 +64,45 @@ public class MainActivity extends AppCompatActivity {
         });
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.d("LoginActivity", "Device Id: " + deviceId);
+        txtPhoneNumber = findViewById(R.id.phone_input);
+        txtPassWord = findViewById(R.id.password_input);
         btnLogin.setOnClickListener(view -> {
-            txtPhoneNumber = findViewById(R.id.phone_input);
-            String phone = txtPhoneNumber.getText().toString();
-            txtPassWord = findViewById(R.id.password_input);
-            String password = txtPassWord.getText().toString();
-            if (phone.isEmpty() || password.isEmpty()) {
-                Toast.makeText(MainActivity.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-                return;
+            // Lấy các TextInputLayout
+            TextInputLayout phoneInputLayout = findViewById(R.id.phone_input_layout);
+            TextInputLayout passwordInputLayout = findViewById(R.id.password_input_layout);
+
+            // Lấy giá trị từ các TextInputEditText
+            String phone = txtPhoneNumber.getText().toString().trim();
+            String password = txtPassWord.getText().toString().trim();
+
+            // Xóa lỗi cũ
+            phoneInputLayout.setError(null);
+            passwordInputLayout.setError(null);
+
+            boolean hasError = false;
+
+            // Kiểm tra số điện thoại
+            if (phone.isEmpty()) {
+                phoneInputLayout.setError("Vui lòng nhập số điện thoại.");
+                hasError = true;
+            } else if (phone.length() < 10 || phone.length() > 11) {
+                phoneInputLayout.setError("Số điện thoại phải từ 10 đến 11 ký tự.");
+                hasError = true;
             }
-            if (password.length() < 6) {
-                Toast.makeText(MainActivity.this, "Mật khẩu phải có ít nhất 6 số", Toast.LENGTH_SHORT).show();
-                return;
+
+            // Kiểm tra mật khẩu
+            if (password.isEmpty()) {
+                passwordInputLayout.setError("Vui lòng nhập mật khẩu.");
+                hasError = true;
+            } else if (password.length() < 6) {
+                passwordInputLayout.setError("Mật khẩu phải có ít nhất 6 ký tự.");
+                hasError = true;
             }
+
+            // Nếu có lỗi, dừng xử lý
+            if (hasError) return;
+
+            // Nếu không có lỗi, xử lý đăng nhập
             String hashedPassword = Utils.hashPassword(password);
             login(phone, hashedPassword, deviceId);
         });
@@ -104,107 +141,134 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<LoginData> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
-                        Toast.makeText(MainActivity.this, apiResponse.getMessage(), Toast.LENGTH_LONG).show();
                         // Lấy dữ liệu đăng nhập
                         LoginData loginData = apiResponse.getData();
                         String token = loginData.getToken();
                         // Lưu token vào SharedPreferences
                         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("old_password", password);
                         editor.putString("auth_token", token);
                         editor.apply();
                         // Kiểm tra trạng thái đăng nhập lần đầu
-                        if (loginData.isFirstLogin()) {
+                        if (loginData.isFirstLogin() == true) {
                             // Hiển thị popup đổi mật khẩu, gán mật khẩu cũ
                             ChangePassRequest changePassRequest = new ChangePassRequest();
                             changePassRequest.setOldPassword(password); // Gán mật khẩu cũ
                             showChangePasswordDialog(token);
+                            // Lưu mật khẩu (đã băm) vào SharedPreferences
                         } else {
                             Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                             startActivity(intent);
                             finish();
                         }
                     } else {
-                        Toast.makeText(MainActivity.this, apiResponse.getMessage(), Toast.LENGTH_LONG).show();
-                        Log.d("LoginActivity", "Error message: " + apiResponse.getMessage());
+                        CustomToast.showCustomToast(MainActivity.this, apiResponse.getMessage());
                     }
                 } else {
-                    Toast.makeText(MainActivity.this, "Login failed. Please try again.", Toast.LENGTH_LONG).show();
-                    Log.d("LoginActivity", "Error response code: " + response.code());
+                    CustomToast.showCustomToast(MainActivity.this, "Login failed. Please try again.");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<LoginData>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d("LoginActivity", "Network error: " + t.getMessage());
+                CustomToast.showCustomToast(MainActivity.this, "Error: " + t.getMessage());
             }
         });
     }
     private void showChangePasswordDialog(String token) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setTitle("Đổi mật khẩu");
-        builder.setMessage("Đây là lần đầu bạn đăng nhập, vui lòng đổi mật khẩu mới.");
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        String oldPassword = sharedPreferences.getString("old_password", "");
 
-        // Tạo layout chứa 3 trường nhập mật khẩu
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
+        // Use androidx.appcompat.app.AlertDialog.Builder
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        View popupView = getLayoutInflater().inflate(R.layout.change_password_popup, null);
+        builder.setView(popupView);
 
-        final EditText oldPasswordInput = new EditText(this);
-        oldPasswordInput.setHint("Nhập mật khẩu cũ");
-        oldPasswordInput.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(oldPasswordInput);
+        // Create the AlertDialog
+        androidx.appcompat.app.AlertDialog alertDialog = builder.create();
 
-        final EditText newPasswordInput = new EditText(this);
-        newPasswordInput.setHint("Nhập mật khẩu mới");
-        newPasswordInput.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(newPasswordInput);
+        // Initialize views
+        change_pass_button = popupView.findViewById(R.id.change_pass_button);
+        newPassInput = popupView.findViewById(R.id.new_pass_input);
+        confirmPassInput = popupView.findViewById(R.id.confirm_pass_input);
+        new_pass_input_layout = popupView.findViewById(R.id.new_pass_input_layout);
+        confirm_new_pass_layout = popupView.findViewById(R.id.confirm_new_pass_layout);
 
-        final EditText confirmPasswordInput = new EditText(this);
-        confirmPasswordInput.setHint("Xác nhận mật khẩu mới");
-        confirmPasswordInput.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(confirmPasswordInput);
-
-        builder.setView(layout);
-
-        builder.setPositiveButton("Đổi mật khẩu", (dialog, which) -> {
-            String oldPassword = oldPasswordInput.getText().toString();
-            String newPassword = newPasswordInput.getText().toString();
-            String confirmPassword = confirmPasswordInput.getText().toString();
-
-            if (newPassword.isEmpty() || newPassword.length() < 6) {
-                Toast.makeText(this, "Mật khẩu mới phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
-            } else if (!newPassword.equals(confirmPassword)) {
-                Toast.makeText(this, "Mật khẩu mới không khớp", Toast.LENGTH_SHORT).show();
-            } else {
-                // Gửi yêu cầu đổi mật khẩu
-                changePassword(token, oldPassword, newPassword, confirmPassword);
+        // Set up the button click listener
+        change_pass_button.setOnClickListener(view -> {
+            String newPassword = newPassInput.getText().toString().trim();
+            String confirmPassword = confirmPassInput.getText().toString().trim();
+            if (validatePasswords(newPassword, confirmPassword)) {
+                String hashedPassword = Utils.hashPassword(newPassword);
+                String hashedConfirmPass = Utils.hashPassword(confirmPassword);
+                // Call the API to change password
+                changePassword(token, hashedConfirmPass, oldPassword, hashedPassword, alertDialog);
             }
         });
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
-        builder.show();
+        alertDialog.show();
     }
-    private void changePassword(String token, String oldPassword, String newPassword, String confirmPassword) {
+
+
+
+
+    private boolean validatePasswords(String newPassword, String confirmPassword) {
+        boolean isValid = true;
+        if (TextUtils.isEmpty(newPassword)) {
+            new_pass_input_layout.setError("Mật khẩu mới không được để trống");
+            isValid = false;
+        } else if (newPassword.length() < 6) {
+            new_pass_input_layout.setError("Mật khẩu phải có ít nhất 6 ký tự");
+            isValid = false;
+        } else {
+            new_pass_input_layout.setError(null);
+        }
+        if (TextUtils.isEmpty(confirmPassword)) {
+            confirm_new_pass_layout.setError("Nhập lại mật khẩu không được để trống");
+            isValid = false;
+        } else if (!newPassword.equals(confirmPassword)) {
+            confirm_new_pass_layout.setError("Mật khẩu xác nhận không khớp");
+            isValid = false;
+        } else {
+            confirm_new_pass_layout.setError(null);
+        }
+
+        return isValid;
+    }
+
+    private void changePassword(String token, String confirmPass, String oldPass, String newPass, AlertDialog alertDialog) {
         ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
-        // Tạo đối tượng ChangePasswordRequest
-        ChangePassRequest request = new ChangePassRequest(oldPassword, newPassword, confirmPassword);
-        Call<ApiResponse<String>> call = apiInterface.changePassword(token, request);
+        ChangePassRequest changePassRequest = new ChangePassRequest(confirmPass, oldPass, newPass);
+        Call<ApiResponse<String>> call = apiInterface.changePassword(token, changePassRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
-                        Toast.makeText(MainActivity.this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                        CustomToast.showCustomToast(MainActivity.this, apiResponse.getMessage());
+                        // Đóng popup
+                        if (alertDialog.isShowing()) {
+                            alertDialog.dismiss();
+                        }
+                        // Quay lại MainActivity
+                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish(); // Kết thúc Activity hiện tại để không quay lại được
+                    } else {
+                        CustomToast.showCustomToast(MainActivity.this, apiResponse.getMessage());
                     }
                 } else {
-                    Toast.makeText(MainActivity.this, "Đổi mật khẩu thất bại, thử lại.", Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(MainActivity.this, "Lỗi không xác định: " + response.message());
                 }
             }
+
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ChangePassword", "Error: ", t);
+                CustomToast.showCustomToast(MainActivity.this, "Lỗi kết nối đến máy chủ");
             }
         });
     }
+
 }

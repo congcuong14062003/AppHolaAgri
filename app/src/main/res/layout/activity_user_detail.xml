@@ -60,21 +60,39 @@
             android:padding="16dp"
             android:gravity="center_horizontal">
 
-            <!-- Avatar -->
             <androidx.cardview.widget.CardView
+                app:cardBackgroundColor="@android:color/transparent"
                 android:id="@+id/imgAvatar"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="0dp"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="50dp"
-                app:cardElevation="4dp">
-                <ImageView
-                    android:id="@+id/avtUser"
+                app:cardElevation="0dp">
+                <!-- RelativeLayout chứa avatar và biểu tượng camera -->
+                <RelativeLayout
+                    android:background="@android:color/transparent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/avatar"
-                    android:scaleType="centerCrop" />
+                    >
+                    <!-- Avatar -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avtUser"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/avatar"
+                        app:shapeAppearanceOverlay="@style/CircularImage"
+                        android:scaleType="centerCrop" />
+
+                    <!-- Biểu tượng Camera -->
+                    <ImageView
+                        android:id="@+id/cameraIcon"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:contentDescription="Thay đổi Avatar"
+                        android:src="@drawable/camera" />
+                </RelativeLayout>
             </androidx.cardview.widget.CardView>
             <TextView
                 android:id="@+id/txtName"

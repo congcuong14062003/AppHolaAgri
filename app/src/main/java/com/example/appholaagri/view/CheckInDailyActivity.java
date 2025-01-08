@@ -20,6 +20,7 @@ import com.example.appholaagri.model.CheckInQrCodeModel.CheckInQrCodeRequest;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 import com.journeyapps.barcodescanner.BarcodeView;
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -61,14 +62,12 @@ public class CheckInDailyActivity extends AppCompatActivity {
         // Get token from SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
-        Log.d("CheckInDailyActivity", "Token: " + token);
         if (token != null) {
             // Fetch shift list from API
             getShiftList(token);
         } else {
-            Toast.makeText(this, "Token không tồn tại", Toast.LENGTH_SHORT).show();
+            CustomToast.showCustomToast(this, "Token không tồn tại");
         }
-
         // Initialize the barcode scanner
         captureManager = new CaptureManager(this, barcodeScannerView);
         captureManager.initializeFromIntent(getIntent(), savedInstanceState);
@@ -76,15 +75,13 @@ public class CheckInDailyActivity extends AppCompatActivity {
 
         barcodeScannerView.decodeSingle(result -> {
             if (selectedShiftId == -1) {  // Kiểm tra xem ca đã được chọn chưa
-                Toast.makeText(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR", Toast.LENGTH_SHORT).show();
+                CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
             } else {
                 if (result != null) {
-                    Toast.makeText(CheckInDailyActivity.this, "QR Code: " + result.getText(), Toast.LENGTH_SHORT).show();
-                    Log.d("CheckInDailyActivity", "QR Code: " + result.getText());
                     String qrCodeString = result.getText();
                     checkInQrCode(qrCodeString);
                 } else {
-                    Toast.makeText(CheckInDailyActivity.this, "Quét QR thất bại", Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
                 }
             }
         });
@@ -113,13 +110,13 @@ public class CheckInDailyActivity extends AppCompatActivity {
                         radioGroupShift.setVisibility(View.VISIBLE); // Hiển thị RadioGroup
                     }
                 } else {
-                    Toast.makeText(CheckInDailyActivity.this, "Lỗi: " + response.message(), Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(CheckInDailyActivity.this, response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<List<ShiftModel.Shift>>> call, Throwable t) {
-                Toast.makeText(CheckInDailyActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                CustomToast.showCustomToast(CheckInDailyActivity.this, "Lỗi kết nối: " + t.getMessage());
             }
         });
     }
@@ -151,12 +148,24 @@ public class CheckInDailyActivity extends AppCompatActivity {
                     radioButton.setButtonTintList(ColorStateList.valueOf(getResources().getColor(R.color.radio_button_default)));
                 }
             }
+
+            // Gọi lại decodeSingle() sau khi chọn ca
+            barcodeScannerView.decodeSingle(result -> {
+                if (selectedShiftId == -1) {
+                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
+                } else if (result != null) {
+                    String qrCodeString = result.getText();
+                    checkInQrCode(qrCodeString); // Gọi API check-in
+                } else {
+                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
+                }
+            });
         });
+
 
     }
 
     private void checkInQrCode(String qrCodeString) {
-        Log.d("CheckInDailyActivity", "QR CODE ĐỂ GỌI HÀM: "+ qrCodeString);
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         int isConfirmed = 0; // Đã xác nhận
         String qrContent = qrCodeString; // QR content ví dụ
@@ -173,7 +182,10 @@ public class CheckInDailyActivity extends AppCompatActivity {
         if (selectedShift != null) {
             int shiftType = selectedShift.getShiftType(); // Loại ca
             int workShiftId = selectedShift.getWorkShiftId(); // ID ca làm việc từ radio button đã chọn
-
+            Log.d("CheckInDailyActivity: ", "deviceId" + deviceId);
+            Log.d("CheckInDailyActivity: ", "qrContent" + qrContent);
+            Log.d("CheckInDailyActivity: ", "shiftType" + shiftType);
+            Log.d("CheckInDailyActivity: ", "workShiftId" + workShiftId);
             // Tạo đối tượng CheckInQrCodeRequest
             CheckInQrCodeRequest checkInQrCodeRequest = new CheckInQrCodeRequest(deviceId, isConfirmed, qrContent, shiftType, workShiftId);
 
@@ -190,46 +202,39 @@ public class CheckInDailyActivity extends AppCompatActivity {
                             ApiResponse<String> apiResponse = response.body();
                             if (apiResponse.getStatus() == 200) {
                                 // Đăng ký thành công
-                                Toast.makeText(CheckInDailyActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                    CustomToast.showCustomToast(CheckInDailyActivity.this,  apiResponse.getMessage());
                                     onBackPressed();
                             } else {
                                 // Xử lý nếu có lỗi từ API
-                                Toast.makeText(CheckInDailyActivity.this, "Lỗi check-in: " + apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                CustomToast.showCustomToast(CheckInDailyActivity.this, "Lỗi check-in: " + apiResponse.getMessage());
                             }
                         } else {
-                            Toast.makeText(CheckInDailyActivity.this, "Lỗi kết nối: " + response.message(), Toast.LENGTH_SHORT).show();
+                            CustomToast.showCustomToast(CheckInDailyActivity.this, "Lỗi kết nối: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                        Toast.makeText(CheckInDailyActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Lỗi kết nối: " + t.getMessage());
                     }
                 });
-            } else {
-                Toast.makeText(CheckInDailyActivity.this, "Token không tồn tại", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(CheckInDailyActivity.this, "Ca làm việc không hợp lệ", Toast.LENGTH_SHORT).show();
+            CustomToast.showCustomToast(CheckInDailyActivity.this, "Ca làm việc không hợp lệ");
         }
     }
-
-
-
-
     @Override
     protected void onResume() {
         super.onResume();
         barcodeScannerView.resume();
         barcodeScannerView.decodeSingle(result -> {
             if (selectedShiftId == -1) {
-                Toast.makeText(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR", Toast.LENGTH_SHORT).show();
+                CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
             } else if (result != null) {
                 String qrCodeString = result.getText();
-                Log.d("CheckInDailyActivity", "QR Code: " + qrCodeString);
                 checkInQrCode(qrCodeString); // Gọi API check-in
             } else {
-                Toast.makeText(CheckInDailyActivity.this, "Quét QR thất bại", Toast.LENGTH_SHORT).show();
+                CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
             }
         });
     }

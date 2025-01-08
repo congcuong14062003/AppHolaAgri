@@ -69,7 +69,10 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item> <!-- Font weight 600 -->
     </style>
-
+    <style name="TextStyle_24_600">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item> <!-- Font weight 600 -->
+    </style>
     <!-- Style cho kích thước chữ 16sp, font weight 400 -->
     <style name="TextStyle_16_400">
         <item name="android:textSize">16sp</item>
@@ -117,4 +120,10 @@
         <item name="android:textSize">16sp</item> <!-- Cỡ chữ tùy chỉnh -->
         <item name="android:textColor">@color/textcolor</item> <!-- Màu chữ -->
     </style>
+
+    <style name="CircularImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item> <!-- 50% để tạo ảnh bo tròn -->
+    </style>
+
 </resources>
