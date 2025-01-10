@@ -8,21 +8,19 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.appholaagri.view.ConfirmTimekeepingFragment;
-import com.example.appholaagri.view.DatePickerFragment;
 import com.example.appholaagri.view.RefuseTimeKeepingFragment;
-import com.example.appholaagri.view.TodayFragment;
-import com.example.appholaagri.view.WaitTimekeeipingFragment;
+import com.example.appholaagri.view.InitTimekeeipingFragment;
 
-public class TimekeepingManageAdapter extends FragmentStateAdapter {
-    public TimekeepingManageAdapter(@NonNull FragmentActivity fragmentActivity) {
+public class TimekeepingManageAdapterTabList extends FragmentStateAdapter {
+    public TimekeepingManageAdapterTabList(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 
-    public TimekeepingManageAdapter(@NonNull Fragment fragment) {
+    public TimekeepingManageAdapterTabList(@NonNull Fragment fragment) {
         super(fragment);
     }
 
-    public TimekeepingManageAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    public TimekeepingManageAdapterTabList(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 
@@ -31,7 +29,7 @@ public class TimekeepingManageAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new WaitTimekeeipingFragment();
+                return new InitTimekeeipingFragment();
             case 1:
                 return new ConfirmTimekeepingFragment();
             case 2:

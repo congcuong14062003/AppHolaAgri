@@ -24,6 +24,7 @@ import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
+import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
@@ -74,8 +75,6 @@ public class UserDetailActivity extends AppCompatActivity {
 
         if (token != null) {
             getUserData(token);
-        } else {
-            Toast.makeText(this, "Token không tồn tại", Toast.LENGTH_SHORT).show();
         }
         backBtnReview.setOnClickListener(view -> {
             onBackPressed();
@@ -100,43 +99,39 @@ public class UserDetailActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ApiResponse<UserData>> call, Response<ApiResponse<UserData>> response) {
                     try {
-                        Log.d("UserDetailActivity", "Response code: " + response.code());
-                        Log.d("UserDetailActivity", "Response message: " + response.message());
-
                         if (response.isSuccessful() && response.body() != null) {
                             ApiResponse<UserData> apiResponse = response.body();
-                            Log.d("UserDetailActivity", "API response body: " + apiResponse.toString());
-                            UserData userData = apiResponse.getData();
-                            updateUserUI(userData);
-                            contentLayout.setVisibility(View.VISIBLE);
+                            if(apiResponse.getStatus() == 200) {
+                                UserData userData = apiResponse.getData();
+                                updateUserUI(userData);
+                                contentLayout.setVisibility(View.VISIBLE);
+                            }
                         } else {
                             Log.e("UserDetailActivity", "API response is unsuccessful");
-                            Toast.makeText(UserDetailActivity.this, "Lỗi kết nối, vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                            CustomToast.showCustomToast(UserDetailActivity.this,  "Lỗi kết nối, vui lòng thử lại.");
                         }
                     } catch (Exception e) {
                         Log.e("UserDetailActivity", "Error during response handling: " + e.getMessage());
-                        Toast.makeText(UserDetailActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                        CustomToast.showCustomToast(UserDetailActivity.this,  "Có lỗi xảy ra. Vui lòng thử lại.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ApiResponse<UserData>> call, Throwable t) {
                     Log.e("UserDetailActivity", "Error: " + t.getMessage());
-                    Toast.makeText(UserDetailActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(UserDetailActivity.this,  "Lỗi: " + t.getMessage());
                 }
             });
         } catch (Exception e) {
             Log.e("UserDetailActivity", "Error during API call: " + e.getMessage());
-            Toast.makeText(this, "Có lỗi xảy ra. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+            CustomToast.showCustomToast(UserDetailActivity.this,  "Có lỗi xảy ra. Vui lòng thử lại.");
         }
     }
-
     private void updateUserUI(UserData userData) {
         try {
             if (userData == null) {
                 return;
             }
-
             if (userData.getContractInfo() != null) {
                 Picasso.get()
                         .load(userData.getUserAvatar())
@@ -197,7 +192,6 @@ public class UserDetailActivity extends AppCompatActivity {
             contentLayout.setVisibility(View.VISIBLE);
         } catch (Exception e) {
             Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage());
-            Toast.makeText(this, "Có lỗi xảy ra khi cập nhật thông tin người dùng.", Toast.LENGTH_SHORT).show();
         }
     }
     private void checkCameraPermissionAndOpen() {

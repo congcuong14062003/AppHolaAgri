@@ -22,6 +22,7 @@ import com.example.appholaagri.model.ChangePassModel.ChangePassRequest;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.ToastUtils;
 import com.example.appholaagri.utils.Utils;
 import com.google.android.material.textfield.TextInputLayout;
@@ -104,35 +105,42 @@ public class SettingSecurityActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
-                        Toast.makeText(SettingSecurityActivity.this, "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
-                        handleLogout();
+                        CustomToast.showCustomToast(SettingSecurityActivity.this,  "Đổi mật khẩu thành công");
+//                        handleLogout();
+                        onBackPressed();
                     } else {
-                        Toast.makeText(SettingSecurityActivity.this, "Lỗi: " + apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
                         password_input_layout.setError(apiResponse.getMessage());
                     }
                 } else {
-                    Toast.makeText(SettingSecurityActivity.this, "Lỗi không xác định: " + response.message(), Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(SettingSecurityActivity.this,  "Lỗi không xác định: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                Log.e("ChangePassword", "Error: ", t);
-                Toast.makeText(SettingSecurityActivity.this, "Lỗi kết nối đến máy chủ", Toast.LENGTH_SHORT).show();
+                CustomToast.showCustomToast(SettingSecurityActivity.this,  "Lỗi kết nối đến máy chủ");
             }
         });
     }
-    private void handleLogout() {
-        try {
-            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences",MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.remove("auth_token");
-            editor.apply(); // Save changes
-            Intent intent = new Intent(SettingSecurityActivity.this, MainActivity.class); // Or LoginActivity
-            startActivity(intent);
-            finish(); // Close current activity
-        } catch (Exception e) {
-            Log.e("SettingFragment", "Error during logout: " + e.getMessage());
-        }
+    public void onBackPressed() {
+        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
+        super.onBackPressed();
+        Intent intent = new Intent(SettingSecurityActivity.this, HomeActivity.class);
+        intent.putExtra("navigate_to", "setting"); // Thêm thông tin để xác định chuyển hướng đến SettingFragment
+        startActivity(intent);
+        finish();  // Kết thúc Activity này
     }
+//    private void handleLogout() {
+//        try {
+//            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences",MODE_PRIVATE);
+//            SharedPreferences.Editor editor = sharedPreferences.edit();
+//            editor.remove("auth_token");
+//            editor.apply(); // Save changes
+//            Intent intent = new Intent(SettingSecurityActivity.this, MainActivity.class); // Or LoginActivity
+//            startActivity(intent);
+//            finish(); // Close current activity
+//        } catch (Exception e) {
+//            Log.e("SettingFragment", "Error during logout: " + e.getMessage());
+//        }
+//    }
 }

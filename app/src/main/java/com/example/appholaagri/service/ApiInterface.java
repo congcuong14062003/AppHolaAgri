@@ -1,12 +1,15 @@
 package com.example.appholaagri.service;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.ChangePassModel.ChangePassRequest;
+import com.example.appholaagri.model.CheckInInitFormData.CheckInInitFormData;
 import com.example.appholaagri.model.CheckInQrCodeModel.CheckInQrCodeRequest;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
+import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageData;
+import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageRequest;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsRequest;
 import com.example.appholaagri.model.UserData.UserData;
@@ -53,4 +56,13 @@ public interface ApiInterface {
     // thống kê chấm công
     @POST("check-in/checkin-logs")
     Call<ApiResponse<TimekeepingStatisticsData>> timekeepingStatistics(@Header("Authorization") String token, @Body TimekeepingStatisticsRequest timekeepingStatisticsRequest);
+
+    // danh sách tab quản lý chấm công
+    @GET("check-in/init-form")
+    Call<ApiResponse<CheckInInitFormData>> checkInInitFormData(@Header("Authorization") String token);
+
+    // danh sách quản lý chấm công (chờ xác nhận, từ chối, xác nhận)
+    @POST("check-in/list-attend")
+    Call<ApiResponse<List<TimeKeepingManageData>>> timeKeeingManageData(@Header("Authorization") String token, @Body TimeKeepingManageRequest timeKeepingManageRequest);
+
 }

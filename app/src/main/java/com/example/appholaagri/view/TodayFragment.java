@@ -20,6 +20,7 @@ import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStati
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,7 +81,7 @@ public class TodayFragment extends Fragment {
                             Log.e("TodayFragment", "No data available or data is empty");
                         }
                     } else {
-                        Toast.makeText(getContext(), apiResponse.getMessage(), Toast.LENGTH_LONG).show();
+                        CustomToast.showCustomToast(getContext(),  apiResponse.getMessage());
                         Log.d("LoginActivity", "Error message: " + apiResponse.getMessage());
                     }
                 } else {

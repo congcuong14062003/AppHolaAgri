@@ -25,6 +25,11 @@ public class TimekeepingAdapter extends RecyclerView.Adapter<TimekeepingAdapter.
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.timekeeping_statistic_item, parent, false);
         return new ViewHolder(view);
     }
+    public void addData(List<TimekeepingStatisticsData.DayData> newData) {
+        int startPosition = dayDataList.size();
+        dayDataList.addAll(newData);
+        notifyItemRangeInserted(startPosition, newData.size());
+    }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {

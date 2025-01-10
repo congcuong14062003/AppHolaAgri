@@ -12,23 +12,22 @@ import android.view.ViewGroup;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.TimeKeepingManageConfirmAdapter;
-import com.example.appholaagri.adapter.TimeKeepingManageRefusedAdapter;
-import com.example.appholaagri.adapter.TimekeepingAdapter;
+import com.example.appholaagri.adapter.TimeKeepingManageInitAdapter;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageData;
 import com.example.appholaagri.utils.TimekeepingManageApiHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RefuseTimeKeepingFragment extends Fragment {
+public class InitTimekeeipingFragment extends Fragment {
     private RecyclerView recyclerView;
-    private TimeKeepingManageRefusedAdapter adapter;
+    private TimeKeepingManageInitAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_refuse_time_keeping, container, false);
-        recyclerView = view.findViewById(R.id.recyclerViewRefusedTimekeeing);
+        View view = inflater.inflate(R.layout.fragment_wait_timekeeiping, container, false);
+        recyclerView = view.findViewById(R.id.recyclerViewInitTimekeeing);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Call API
@@ -45,7 +44,7 @@ public class RefuseTimeKeepingFragment extends Fragment {
 
         TimekeepingManageApiHelper.fetchTimekeepingList(
                 getContext(),
-                3, // Status for "Waiting for confirmation"
+                1, // Status for "Waiting for confirmation"
                 "01/01/2024", // Start date
                 "10/01/2025", // End date
                 "", // Key search
@@ -54,7 +53,7 @@ public class RefuseTimeKeepingFragment extends Fragment {
                 new TimekeepingManageApiHelper.TimekeepingApiCallback() {
                     @Override
                     public void onSuccess(List<TimeKeepingManageData> data) {
-                        adapter = new TimeKeepingManageRefusedAdapter(data);
+                        adapter = new TimeKeepingManageInitAdapter(data);
                         recyclerView.setAdapter(adapter);
                     }
 

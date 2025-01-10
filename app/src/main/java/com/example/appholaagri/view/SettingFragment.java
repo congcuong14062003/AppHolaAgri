@@ -21,6 +21,7 @@ import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
@@ -57,8 +58,6 @@ public class SettingFragment extends Fragment {
 
         if (token != null) {
             getUserData(token);
-        } else {
-            Toast.makeText(requireContext(), "Token không tồn tại", Toast.LENGTH_SHORT).show();
         }
 
         // Handle Manage Info button click
@@ -94,19 +93,20 @@ public class SettingFragment extends Fragment {
                         contentLayout.setVisibility(View.VISIBLE); // Show layout after data is ready
                     } else {
                         Log.e("SettingFragment", "API response unsuccessful");
-                        Toast.makeText(requireContext(), "Lỗi kết nối, vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                        CustomToast.showCustomToast(requireContext(),  "Lỗi kết nối, vui lòng thử lại.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ApiResponse<UserData>> call, Throwable t) {
                     Log.e("SettingFragment", "Error: " + t.getMessage());
-                    Toast.makeText(requireContext(), "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(requireContext(),  "Lỗi: " + t.getMessage());
                 }
             });
         } catch (Exception e) {
             Log.e("SettingFragment", "Error during API call: " + e.getMessage());
-            Toast.makeText(requireContext(), "Lỗi khi lấy thông tin người dùng.", Toast.LENGTH_SHORT).show();
+            CustomToast.showCustomToast(requireContext(),  "Lỗi khi lấy thông tin người dùng.");
+
         }
     }
 
@@ -139,7 +139,7 @@ public class SettingFragment extends Fragment {
             }
             contentLayout.setVisibility(View.VISIBLE); // Show layout after data is updated
         } catch (Exception e) {
-            Toast.makeText(requireContext(), "Lỗi khi cập nhật giao diện.", Toast.LENGTH_SHORT).show();
+            CustomToast.showCustomToast(requireContext(),  "Lỗi khi cập nhật giao diện.");
         }
     }
 

@@ -21,6 +21,7 @@ import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
@@ -102,13 +103,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         errorMessage.setText(apiResponse.getMessage());
                     }
                 } else {
-                    Toast.makeText(ForgotPasswordActivity.this, "Lỗi kết nối, thử lại!", Toast.LENGTH_SHORT).show();
+                    CustomToast.showCustomToast(ForgotPasswordActivity.this,  "Lỗi kết nối, thử lại!");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                Toast.makeText(ForgotPasswordActivity.this, "Lỗi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                CustomToast.showCustomToast(ForgotPasswordActivity.this,  "Lỗi: " + t.getMessage());
             }
         });
     }

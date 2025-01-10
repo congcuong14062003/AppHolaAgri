@@ -20,6 +20,7 @@ import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStati
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +29,9 @@ import retrofit2.Response;
 public class DatePickerFragment extends Fragment {
     private RecyclerView recyclerView;
     private TimekeepingAdapter adapter;
-
+    private int currentPage = 1;
+    private boolean isLoading = false; // Trạng thái tải dữ liệu
+    private boolean isLastPage = false; // Đã tải hết dữ liệu hay chưa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -39,18 +42,34 @@ public class DatePickerFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Gọi API để lấy danh sách chấm công hôm nay
-        callTimekeepingApi("");
+        callTimekeepingApi("", currentPage);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && layoutManager.findLastVisibleItemPosition() == adapter.getItemCount() - 1) {
+                    // Đã cuộn đến cuối danh sách, tải thêm dữ liệu
+                    if (!isLoading && !isLastPage) {
+                        currentPage++;
+                        callTimekeepingApi("", currentPage);
+                    }
+                }
+            }
+        });
         return view;
     }
 
-    private void callTimekeepingApi(String date) {
+    private void callTimekeepingApi(String date, int currentPage) {
         ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
         // Tạo yêu cầu để gửi cho API
         TimekeepingStatisticsRequest request = new TimekeepingStatisticsRequest();
         request.setDate(date); // Truyền ngày đầu tiên của tháng, ví dụ "01/12/2024"
         request.setIsDaily(0); // Thống kê theo tháng
-        request.setPage(1);
+        request.setPage(currentPage);
         request.setSize(100);
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
@@ -65,19 +84,20 @@ public class DatePickerFragment extends Fragment {
                     ApiResponse<TimekeepingStatisticsData> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
                         TimekeepingStatisticsData data = apiResponse.getData();
-                        Log.d("TimekeepingFragment", "Data: " + (data != null ? data.getData() : "null"));
-
-                        // Kiểm tra dữ liệu trả về từ API
-                        if (data != null && data.getData() != null && !data.getData().isEmpty()) {
-                            // Cập nhật dữ liệu vào RecyclerView
-                            adapter = new TimekeepingAdapter(data.getData());
-                            recyclerView.setAdapter(adapter);
-                        } else {
-                            // Xử lý khi dữ liệu trống hoặc không hợp lệ
-                            Log.e("TimekeepingFragment", "No data available or data is empty");
+                        if (data != null && data.getData() != null) {
+                            if (data.getData().isEmpty()) {
+                                isLastPage = true; // Không còn dữ liệu để tải
+                            } else {
+                                if (adapter == null) {
+                                    adapter = new TimekeepingAdapter(data.getData());
+                                    recyclerView.setAdapter(adapter);
+                                } else {
+                                    adapter.addData(data.getData());
+                                }
+                            }
                         }
                     } else {
-                        Toast.makeText(getContext(), apiResponse.getMessage(), Toast.LENGTH_LONG).show();
+                        CustomToast.showCustomToast(getContext(), apiResponse.getMessage());
                         Log.d("LoginActivity", "Error message: " + apiResponse.getMessage());
                     }
                 } else {
@@ -95,6 +115,9 @@ public class DatePickerFragment extends Fragment {
 
     // Hàm cập nhật lại dữ liệu khi người dùng chọn tháng
     public void updateTimekeepingData(String date) {
-        callTimekeepingApi(date);  // Truyền ngày vào để gọi lại API với tháng mới
+        currentPage = 1;
+        isLastPage = false;
+        adapter = null;
+        callTimekeepingApi(date, currentPage);  // Truyền ngày vào để gọi lại API với tháng mới
     }
 }
