@@ -1,6 +1,5 @@
 package com.example.appholaagri.view;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.appholaagri.R;
-import com.example.appholaagri.adapter.ViewPagerAdapter;
+import com.example.appholaagri.adapter.TimekeepingStatisticsAdapterTabList;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsRequest;
@@ -40,7 +39,7 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-    private ViewPagerAdapter viewPagerAdapter;
+    private TimekeepingStatisticsAdapterTabList timekeepingStatisticsAdapterTabList;
     private Calendar selectedDate = Calendar.getInstance(); // Lưu giữ ngày tháng hiện tại
     private TextView tab2Title;
     private ImageView calendarIcon, backBtnReview;
@@ -57,8 +56,8 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
         backBtnReview = findViewById(R.id.backBtnReview);
         quanlychamcong_btn = findViewById(R.id.quanlychamcong_btn);
         // Thiết lập Adapter cho ViewPager
-        viewPagerAdapter = new ViewPagerAdapter(this);
-        viewPager.setAdapter(viewPagerAdapter);
+        timekeepingStatisticsAdapterTabList = new TimekeepingStatisticsAdapterTabList(this);
+        viewPager.setAdapter(timekeepingStatisticsAdapterTabList);
         backBtnReview.setOnClickListener(view -> {
             onBackPressed();
         });

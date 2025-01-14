@@ -1,0 +1,87 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="10dp"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:id="@+id/txt_shift_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ca CH"
+            android:textColor="@color/textcolor"
+            style="@style/TextStyle_14_400"
+            />
+        <TextView
+            android:id="@+id/txt_shift_time"
+            android:layout_marginStart="1dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(06:30 - 11:30)"
+            android:textColor="@color/textcolor"
+            style="@style/TextStyle_14_600" />
+        <TextView
+            android:layout_weight="1"
+            android:gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vào"
+            android:textColor="@color/textcolor"
+            style="@style/TextStyle_14_400"
+            />
+        <TextView
+            android:id="@+id/checkinTimeDetail"
+            android:layout_marginStart="5dp"
+            android:gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6:30"
+            android:textColor="@color/textcolor"
+            style="@style/TextStyle_14_600"
+            />
+        <TextView
+            android:gravity="end"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:textColor="@color/textcolor"
+            style="@style/TextStyle_14_400"
+            />
+        <TextView
+            android:gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ra"
+            android:layout_marginEnd="5dp"
+            android:textColor="@color/textcolor"
+            style="@style/TextStyle_14_400"
+            />
+        <TextView
+            android:id="@+id/checkoutTimeDetail"
+            android:gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="17:40"
+            android:textColor="@color/textcolor"
+            style="@style/TextStyle_14_600"
+            />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/txt_shift_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nghỉ lễ - Tết dương lịch"
+        android:textColor="#EB5A5A"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+</LinearLayout>

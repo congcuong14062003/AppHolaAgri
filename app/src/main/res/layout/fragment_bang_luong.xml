@@ -6,13 +6,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".view.RefuseTimeKeepingFragment"
+    tools:context=".view.BangLuongFragment"
     android:padding="16dp"
     >
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewRefusedTimekeeing"
+        android:id="@+id/recyclerViewBangLuong"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
     <!-- TextView và ImageView hiển thị khi không có dữ liệu -->
     <LinearLayout
         android:id="@+id/emptyStateLayout"
@@ -21,22 +23,21 @@
         android:orientation="vertical"
         android:layout_marginBottom="50dp"
         android:gravity="center"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/emptyIcon"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:src="@drawable/no_manage_timekeeping" />
+            android:src="@drawable/no_bang_cong" />
 
         <TextView
             android:id="@+id/emptyMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Không có danh sách từ chối"
-            android:textSize="16sp"
-            android:textColor="@color/black" />
+            android:text="Chưa có thông tin"
+            style="@style/TextStyle_16_400"
+            android:textColor="@color/secon_textcolor" />
     </LinearLayout>
 </LinearLayout>
 

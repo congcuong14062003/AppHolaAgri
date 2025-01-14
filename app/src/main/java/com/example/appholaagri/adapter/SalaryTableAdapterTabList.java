@@ -7,19 +7,22 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.appholaagri.view.DatePickerFragment;
-import com.example.appholaagri.view.TodayFragment;
+import com.example.appholaagri.view.BangCongFragment;
+import com.example.appholaagri.view.BangLuongFragment;
+import com.example.appholaagri.view.ConfirmTimekeepingFragment;
+import com.example.appholaagri.view.InitTimekeeipingFragment;
+import com.example.appholaagri.view.RefuseTimeKeepingFragment;
 
-public class ViewPagerAdapter extends FragmentStateAdapter {
-    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+public class SalaryTableAdapterTabList extends FragmentStateAdapter {
+    public SalaryTableAdapterTabList(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 
-    public ViewPagerAdapter(@NonNull Fragment fragment) {
+    public SalaryTableAdapterTabList(@NonNull Fragment fragment) {
         super(fragment);
     }
 
-    public ViewPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    public SalaryTableAdapterTabList(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 
@@ -28,9 +31,9 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new TodayFragment(); // Tab "Hôm nay"
+                return new BangCongFragment();
             case 1:
-                return new DatePickerFragment(); // Tab "Ngày tháng năm chọn"
+                return new BangLuongFragment();
             default:
                 throw new IllegalStateException("Invalid position");
         }

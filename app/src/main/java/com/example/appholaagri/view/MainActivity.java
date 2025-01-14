@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         int rememberMe = 1;  // Không nhớ mật khẩu
         String requestId = "requestId123";  // Thay bằng giá trị thực tế hoặc tạo UUID
         int serialVersionUID = 1;  // Giả sử giá trị mặc định
+        Log.d("LoginActivity", "deviceId: " + deviceId);
 
         // Tạo đối tượng LoginRequest
         LoginRequest loginRequest = new LoginRequest(deviceId, isMobile, password, rememberMe, requestId, serialVersionUID, phone);

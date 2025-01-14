@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/bg_home"
     tools:context=".view.ConfirmTimekeepingFragment"
     android:padding="16dp"
     >
@@ -14,6 +13,31 @@
         android:id="@+id/recyclerViewConfirmTimekeeing"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <!-- TextView và ImageView hiển thị khi không có dữ liệu -->
+    <LinearLayout
+        android:id="@+id/emptyStateLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/emptyIcon"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/no_manage_timekeeping" />
+
+        <TextView
+            android:id="@+id/emptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Không có danh sách xác nhận"
+            android:textSize="16sp"
+            android:textColor="@color/black" />
+    </LinearLayout>
 
 </LinearLayout>
 

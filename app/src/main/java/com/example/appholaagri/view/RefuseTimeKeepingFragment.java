@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.TimeKeepingManageConfirmAdapter;
+import com.example.appholaagri.adapter.TimeKeepingManageInitAdapter;
 import com.example.appholaagri.adapter.TimeKeepingManageRefusedAdapter;
 import com.example.appholaagri.adapter.TimekeepingAdapter;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageData;
@@ -23,14 +25,14 @@ import java.util.List;
 public class RefuseTimeKeepingFragment extends Fragment {
     private RecyclerView recyclerView;
     private TimeKeepingManageRefusedAdapter adapter;
-
+    private LinearLayout emptyStateLayout;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_refuse_time_keeping, container, false);
         recyclerView = view.findViewById(R.id.recyclerViewRefusedTimekeeing);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
         // Call API
         fetchTimekeepingList();
         return view;
@@ -47,20 +49,32 @@ public class RefuseTimeKeepingFragment extends Fragment {
                 getContext(),
                 3, // Status for "Waiting for confirmation"
                 "01/01/2024", // Start date
-                "10/01/2025", // End date
+                "13/01/2025", // End date
                 "", // Key search
                 departmentIds,
                 teamIds,
                 new TimekeepingManageApiHelper.TimekeepingApiCallback() {
                     @Override
                     public void onSuccess(List<TimeKeepingManageData> data) {
-                        adapter = new TimeKeepingManageRefusedAdapter(data);
-                        recyclerView.setAdapter(adapter);
+                        if (data == null || data.isEmpty()) {
+                            // Hiển thị empty state
+                            recyclerView.setVisibility(View.GONE);
+                            emptyStateLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            // Hiển thị RecyclerView
+                            recyclerView.setVisibility(View.VISIBLE);
+                            emptyStateLayout.setVisibility(View.GONE);
+
+                            adapter = new TimeKeepingManageRefusedAdapter(data);
+                            recyclerView.setAdapter(adapter);
+                        }
                     }
 
                     @Override
                     public void onFailure(String errorMessage) {
-                        // Handle error
+                        // Xử lý khi API thất bại
+                        recyclerView.setVisibility(View.GONE);
+                        emptyStateLayout.setVisibility(View.VISIBLE);
                     }
                 }
         );

@@ -1,0 +1,105 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:padding="16dp"
+    android:background="@drawable/bg_rounded_10">
+
+    <!-- Các phần tử hiện có của cong_layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txt_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Thứ 4, 01/01/2025"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/cong_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Công: "
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txt_so_cong"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textColor="#f15c44"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/dropdown_icon" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Khung thông tin công ngày thường và công làm thêm, ban đầu ẩn đi -->
+    <LinearLayout
+        android:id="@+id/details_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="right"
+        android:elevation="2dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:layout_marginEnd="2dp"
+        android:paddingTop="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="10dp"
+        android:backgroundTint="@color/white"
+        android:background="@drawable/bg_rounded_10">
+
+        <TextView
+            android:id="@+id/txt_cong_ngay_thuong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Công ngày thường: 0"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:src="@drawable/dashed_line"
+            android:layerType="software" />
+
+        <TextView
+            android:id="@+id/txt_cong_lam_them"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Công làm thêm: 0"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_shifts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:nestedScrollingEnabled="false"
+        tools:listitem="@layout/item_chi_tiet_cong_shift_detail" />
+</FrameLayout>

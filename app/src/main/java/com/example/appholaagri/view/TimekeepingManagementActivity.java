@@ -1,5 +1,6 @@
 package com.example.appholaagri.view;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -56,6 +57,7 @@ public class TimekeepingManagementActivity extends AppCompatActivity {
         String token = sharedPreferences.getString("auth_token", null);
         getInitFormData(token);
     }
+
     private void getInitFormData(String token) {
         ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
         Call<ApiResponse<CheckInInitFormData>> call = apiInterface.checkInInitFormData(token);
@@ -96,5 +98,12 @@ public class TimekeepingManagementActivity extends AppCompatActivity {
             // Cập nhật ViewPager Adapter nếu cần thiết
             timekeepingManageAdapter.notifyDataSetChanged();
         }
+    }
+    public void onBackPressed() {
+        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
+        super.onBackPressed();
+        Intent intent = new Intent(TimekeepingManagementActivity.this, TimekeepingStatisticsActivity.class);
+        startActivity(intent);
+        finish();  // Kết thúc Activity này
     }
 }

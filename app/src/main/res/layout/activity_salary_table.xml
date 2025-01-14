@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.TimekeepingStatisticsActivity"
+    tools:context=".view.SalaryTableActivity"
     android:background="@drawable/bg_home"
     >
 
@@ -16,7 +16,8 @@
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:paddingTop="30dp">
+        android:paddingTop="30dp"
+        >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -24,7 +25,7 @@
                 android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thống kê chấm công"
+                android:text="Bảng công - lương"
                 android:textAllCaps="true"
                 style="@style/TextStyle_16_600"
                 android:textColor="@color/black"
@@ -46,58 +47,33 @@
                 app:srcCompat="@drawable/back_btn" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.appcompat.widget.Toolbar>
-    <!-- Floating Action Button (Button có ảnh và text) -->
-    <LinearLayout
-        android:id="@+id/quanlychamcong_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="30dp"
-        android:padding="16dp"
-        android:elevation="4dp"
-        android:background="@drawable/button_custom"
-        android:backgroundTint="@color/white"
-        android:gravity="center"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/quanlychamcong_icon"
-        android:layout_marginEnd="8dp" />
-
-        <TextView
-            android:id="@+id/buttonText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextStyle_16_400"
-            android:textColor="@color/secon_textcolor"
-            android:text="Quản lý chấm công"
-            />
-    </LinearLayout>
     <!-- TabLayout and ViewPager -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="90dp">
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+            android:id="@+id/tabLayoutSalary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            app:tabTextAppearance="@style/CustomTabTextStyle"
+            app:layout_constraintBottom_toTopOf="@+id/viewPagerSalary"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5"
             app:tabIndicatorColor="@color/secondarycolor"
             app:tabSelectedTextColor="@color/secondarycolor"
+            app:tabTextAppearance="@style/CustomTabTextStyle"
             app:tabTextColor="@color/textcolor" />
 
         <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager"
+            android:id="@+id/viewPagerSalary"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/tabLayout"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tabLayoutSalary" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

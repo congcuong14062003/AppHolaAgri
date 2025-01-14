@@ -7,6 +7,10 @@ import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
+import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailData;
+import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailRequest;
+import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
+import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageData;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageRequest;
@@ -65,4 +69,11 @@ public interface ApiInterface {
     @POST("check-in/list-attend")
     Call<ApiResponse<List<TimeKeepingManageData>>> timeKeeingManageData(@Header("Authorization") String token, @Body TimeKeepingManageRequest timeKeepingManageRequest);
 
+    // danh sách tổng hợp côn
+    @POST("work-summary/get-list")
+    Call<ApiResponse<SalaryTableData>> salaryTableData(@Header("Authorization") String token, @Body SalaryTableRequest salaryTableRequest);
+
+    // danh sách tổng hợp côn
+    @POST("work-summary/get-detail")
+    Call<ApiResponse<SalaryTableDetailData>> salaryTableDetailData(@Header("Authorization") String token, @Body SalaryTableDetailRequest salaryTableDetailRequest);
 }

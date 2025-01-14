@@ -1,10 +1,12 @@
 package com.example.appholaagri.view;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +15,23 @@ import android.widget.LinearLayout;
 import com.example.appholaagri.R;
 
 public class HomeFragment extends Fragment {
-    LinearLayout thongkechamcong_container;
+    LinearLayout thongkechamcong_container, bangcongluong_container;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         thongkechamcong_container = view.findViewById(R.id.thongkechamcong_container);
+        bangcongluong_container = view.findViewById(R.id.bangcongluong_container);
         thongkechamcong_container.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), TimekeepingStatisticsActivity.class);
             startActivity(intent);
         });
+        bangcongluong_container.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), SalaryTableActivity.class);
+            startActivity(intent);
+        });
+
         return view;
     }
 }
