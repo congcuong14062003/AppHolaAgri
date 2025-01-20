@@ -7,6 +7,14 @@ import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
+import com.example.appholaagri.model.RequestModel.RequestListData;
+import com.example.appholaagri.model.RequestModel.RequestListRequest;
+import com.example.appholaagri.model.RequestStatusModel.RequestStatusData;
+import com.example.appholaagri.model.RequestStatusModel.RequestStatusRequest;
+import com.example.appholaagri.model.RequestStatusModel.RequestStatusResponse;
+import com.example.appholaagri.model.RequestTabListData.RequestTabListData;
+import com.example.appholaagri.model.RequestTabListData.RequestTabListDataResponse;
+import com.example.appholaagri.model.RequestTabListData.RequestTabListRequest;
 import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailData;
 import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailRequest;
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
@@ -25,6 +33,8 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Query;
+
 public interface ApiInterface {
     // api đăng nhập
     @POST("public/login") // Replace with your login endpoint
@@ -76,4 +86,16 @@ public interface ApiInterface {
     // danh sách tổng hợp côn
     @POST("work-summary/get-detail")
     Call<ApiResponse<SalaryTableDetailData>> salaryTableDetailData(@Header("Authorization") String token, @Body SalaryTableDetailRequest salaryTableDetailRequest);
+
+    // danh sách tab yêu cầu đề - xuất
+    @POST("request/request-type")
+    Call<ApiResponse<RequestTabListDataResponse>> requestTabListData(@Body RequestTabListRequest requestTabListRequest); // Sử dụng @Query để truyền page và size
+
+    // danh sách đề xuất
+    @POST("request/get-list")
+    Call<ApiResponse<RequestListData>> requestListData(@Header("Authorization") String token, @Body RequestListRequest requestListRequest);
+
+    // danh sách status-request
+    @POST("request/get-status")
+    Call<ApiResponse<RequestStatusResponse>> requestStatusData(@Header("Authorization") String token, @Body RequestStatusRequest requestStatusRequest);
 }

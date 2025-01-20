@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import com.example.appholaagri.R;
 
 public class HomeFragment extends Fragment {
-    LinearLayout thongkechamcong_container, bangcongluong_container;
+    LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -23,6 +23,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         thongkechamcong_container = view.findViewById(R.id.thongkechamcong_container);
         bangcongluong_container = view.findViewById(R.id.bangcongluong_container);
+        yeucau_dexuat_container = view.findViewById(R.id.yeucau_dexuat_container);
         thongkechamcong_container.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), TimekeepingStatisticsActivity.class);
             startActivity(intent);
@@ -31,7 +32,10 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(getContext(), SalaryTableActivity.class);
             startActivity(intent);
         });
-
+        yeucau_dexuat_container.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), RequestActivity.class);
+            startActivity(intent);
+        });
         return view;
     }
 }

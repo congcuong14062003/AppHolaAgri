@@ -70,7 +70,7 @@ public class DatePickerFragment extends Fragment {
         request.setDate(date); // Truyền ngày đầu tiên của tháng, ví dụ "01/12/2024"
         request.setIsDaily(0); // Thống kê theo tháng
         request.setPage(currentPage);
-        request.setSize(100);
+        request.setSize(20);
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
 
