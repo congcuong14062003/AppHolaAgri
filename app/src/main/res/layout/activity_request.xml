@@ -67,17 +67,34 @@
             android:drawableRight="@drawable/x_mark_2"
             android:background="@drawable/bg_search_input"
             style="@style/TextStyle_16_400"
-            android:textColor="@color/black"
+            android:textColor="@color/textcolor"
             android:drawablePadding="5dp"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginEnd="10dp"
+            android:imeOptions="actionDone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/SearchBtnReview"
             app:layout_constraintStart_toEndOf="@+id/backBtnReview"
             app:layout_constraintTop_toTopOf="parent"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/create_request_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="30dp"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/add_request_icon"
+            />
+    </LinearLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

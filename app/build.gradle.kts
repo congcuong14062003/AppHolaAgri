@@ -60,6 +60,10 @@ dependencies {
     // ZXing for QR scanning
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
 
+    // gson
+    implementation ("com.google.code.gson:gson:2.8.8")
+
+
     // RecyclerView for listing attendance
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
 

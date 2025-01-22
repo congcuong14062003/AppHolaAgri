@@ -91,7 +91,7 @@ public class InitTimekeeipingFragment extends Fragment {
                                     checkAllIcon.setImageResource(R.drawable.no_check); // Đổi icon về "no_check"
                                 } else {
                                     adapter.selectAll(); // Chọn tất cả
-                                    checkAllIcon.setImageResource(R.drawable.duyet); // Đổi icon về "checked"
+                                    checkAllIcon.setImageResource(R.drawable.checked_radio); // Đổi icon về "checked"
                                 }
                                 isAllChecked[0] = !isAllChecked[0]; // Đảo trạng thái
                             });

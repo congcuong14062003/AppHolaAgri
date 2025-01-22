@@ -37,7 +37,7 @@
                 android:id="@+id/imgCheckedIcon"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/duyet"
+                android:src="@drawable/checked_radio"
                 android:layout_gravity="top|end"
                 android:layout_margin="-4dp"
                 />

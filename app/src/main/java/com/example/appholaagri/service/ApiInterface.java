@@ -1,4 +1,5 @@
 package com.example.appholaagri.service;
+
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.ChangePassModel.ChangePassRequest;
 import com.example.appholaagri.model.CheckInInitFormData.CheckInInitFormData;
@@ -7,6 +8,9 @@ import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
+import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
+import com.example.appholaagri.model.RequestGroupModel.RequestGroupRequest;
+import com.example.appholaagri.model.RequestGroupModel.RequestGroupResponse;
 import com.example.appholaagri.model.RequestModel.RequestListData;
 import com.example.appholaagri.model.RequestModel.RequestListRequest;
 import com.example.appholaagri.model.RequestStatusModel.RequestStatusData;
@@ -37,27 +41,33 @@ import retrofit2.http.Query;
 
 public interface ApiInterface {
     // api đăng nhập
-    @POST("public/login") // Replace with your login endpoint
+    @POST("public/login")
+    // Replace with your login endpoint
     Call<ApiResponse<LoginData>> login(@Body LoginRequest loginRequest);
 
     // api check số điện thoại
-    @POST("auth/check-permission") // Replace with your actual endpoint
+    @POST("auth/check-permission")
+    // Replace with your actual endpoint
     Call<ApiResponse<String>> checkPhone(@Body CheckPhoneRequest checkPhoneRequest);
 
     // api quên mật khẩu
-    @POST("user/forget-password") // Replace with your actual endpoint
+    @POST("user/forget-password")
+    // Replace with your actual endpoint
     Call<ApiResponse<String>> forgotPassword(@Body ForgotPasswordRequest forgotPasswordRequest);
 
     // api đổi mật khẩu
-    @POST("user/change-password") // Replace with your login endpoint
+    @POST("user/change-password")
+    // Replace with your login endpoint
     Call<ApiResponse<String>> changePassword(@Header("Authorization") String token, @Body ChangePassRequest changePassRequest);
 
     // api đăng xuất
-    @POST("auth/logout") // Thay endpoint thành "user/detail" (hoặc endpoint thực tế của bạn)
+    @POST("auth/logout")
+    // Thay endpoint thành "user/detail" (hoặc endpoint thực tế của bạn)
     Call<ApiResponse<String>> handleLogout(@Header("Authorization") String token);
 
     // api xem thông tin cá nhân
-    @GET("user/detail") // Thay endpoint thành "user/detail" (hoặc endpoint thực tế của bạn)
+    @GET("user/detail")
+    // Thay endpoint thành "user/detail" (hoặc endpoint thực tế của bạn)
     Call<ApiResponse<UserData>> userData(@Header("Authorization") String token);
 
     // api danh sách ca làm việc
@@ -67,6 +77,7 @@ public interface ApiInterface {
     // check in qr code
     @POST("check-in/daily")
     Call<ApiResponse<String>> checkInQrCode(@Header("Authorization") String token, @Body CheckInQrCodeRequest checkInQrCodeRequest);
+
     // thống kê chấm công
     @POST("check-in/checkin-logs")
     Call<ApiResponse<TimekeepingStatisticsData>> timekeepingStatistics(@Header("Authorization") String token, @Body TimekeepingStatisticsRequest timekeepingStatisticsRequest);
@@ -98,4 +109,22 @@ public interface ApiInterface {
     // danh sách status-request
     @POST("request/get-status")
     Call<ApiResponse<RequestStatusResponse>> requestStatusData(@Header("Authorization") String token, @Body RequestStatusRequest requestStatusRequest);
+
+    // danh sách nhóm đề xuất
+    @POST("request/request-group")
+    Call<ApiResponse<RequestGroupResponse>> listRequestGroup(@Header("Authorization") String token, @Body RequestGroupRequest requestGroupRequest);
+
+    // chi tiết để xuất
+    @GET("request/detail")
+    Call<ApiResponse<RequestDetailData>> requestDetailData(
+            @Header("Authorization") String token,
+            @Query("requestId") int requestId   // Sử dụng @Query thay vì @Header
+    );
+
+    // init form đề xuất
+    @GET("request/init-form")
+    Call<ApiResponse<RequestDetailData>> initCreateRequest(
+            @Header("Authorization") String token,
+            @Query("id") int GroupRequestId
+    );
 }

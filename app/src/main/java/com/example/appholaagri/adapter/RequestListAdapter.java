@@ -21,17 +21,24 @@ import java.util.List;
 public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.ViewHolder> {
 
     private List<RequestListData.RequestData> dayDataList;
+    // Listener xử lý sự kiện click
+    private OnItemClickListener onItemClickListener;
 
+    public interface OnItemClickListener {
+        void onItemClick(Integer requestId, Integer typeRequest, Integer groupRequestType); // Truyền ID của request khi item được click
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
     public RequestListAdapter(List<RequestListData.RequestData> dayDataList) {
         this.dayDataList = dayDataList;
     }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.request_item_recycle_view, parent, false);
-        return new ViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.request_item_recycle_view, parent, false);
+        return new ViewHolder(view, onItemClickListener);
     }
-
     public void addData(List<RequestListData.RequestData> newData) {
         if (newData != null && !newData.isEmpty()) {
             int startPosition = dayDataList.size();
@@ -84,6 +91,15 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
                 .placeholder(R.drawable.avatar)           // Ảnh mặc định khi chưa tải được
                 .error(R.drawable.avatar)                 // Ảnh khi có lỗi tải
                 .into(holder.img_avatar_empployee);
+        // Gắn ID của request vào view
+        // Gắn ID và type vào view
+        // Sự kiện click
+        holder.itemView.setOnClickListener(v -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(dayData.getRequestId(), dayData.getStatusIdx(), dayData.getGroupRequestType());
+            }
+        });
+
     }
 
 
@@ -96,7 +112,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
         public TextView txt_request_name, txt_employee_name, txt_createdDate, txt_status;
         public ImageView img_avatar_empployee;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, OnItemClickListener listener) {
             super(itemView);
             txt_request_name = itemView.findViewById(R.id.txt_request_name);
             txt_employee_name = itemView.findViewById(R.id.txt_employee_name);
