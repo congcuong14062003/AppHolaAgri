@@ -35,7 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     Button btnForgotPass;
     Button btnLogin;
     private EditText txtPhoneNumber;
@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d("LoginActivity", "Device Id: " + deviceId);
         txtPhoneNumber = findViewById(R.id.phone_input);
         txtPassWord = findViewById(R.id.password_input);
         btnLogin.setOnClickListener(view -> {
@@ -123,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void login(String phone, String password, String deviceId) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         // Cập nhật các giá trị cho LoginRequest
         int isMobile = 1;  // Giả sử là điện thoại
         int rememberMe = 1;  // Không nhớ mật khẩu
@@ -238,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changePassword(String token, String confirmPass, String oldPass, String newPass, AlertDialog alertDialog) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         ChangePassRequest changePassRequest = new ChangePassRequest(confirmPass, oldPass, newPass);
         Call<ApiResponse<String>> call = apiInterface.changePassword(token, changePassRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {

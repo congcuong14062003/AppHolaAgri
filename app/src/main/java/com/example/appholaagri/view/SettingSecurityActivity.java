@@ -31,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SettingSecurityActivity extends AppCompatActivity {
+public class SettingSecurityActivity extends BaseActivity {
     private EditText oldPassInput, newPassInput, confirmPassInput;
     Button change_pass_button;
     TextInputLayout password_input_layout, confirm_new_pass_layout, new_pass_input_layout;
@@ -96,7 +96,7 @@ public class SettingSecurityActivity extends AppCompatActivity {
     }
 
     private void changePassword(String token, String confirmPass, String oldPass, String newPass) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         ChangePassRequest changePassRequest = new ChangePassRequest(confirmPass, oldPass, newPass);
         Call<ApiResponse<String>> call = apiInterface.changePassword(token, changePassRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {

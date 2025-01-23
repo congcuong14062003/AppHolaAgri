@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.appholaagri.R;
+import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
@@ -32,7 +33,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class UserDetailActivity extends AppCompatActivity {
+public class UserDetailActivity extends BaseActivity {
     private LinearLayout contentLayout;
     private TextView txtName, txtRole, txtPhone, txtEmail, txtBirthDay, txtIdentityCode, txtTaxCode, txtAddress, tv_don_vi_cong_tac_value, tv_phong_ban,tv_to_doi,tv_chuc_danh_value, tv_vi_tri_cong_viec_value, tv_quan_ly_truc_tiep_value, tv_loai_hop_dong_value, tv_ngay_bat_dau_lam_value, tv_ngay_lam_viec_chinh_thuc_value;
     private ImageView avatarUser, backBtnReview, cameraIcon;
@@ -92,41 +93,21 @@ public class UserDetailActivity extends AppCompatActivity {
     }
 
     private void getUserData(String token) {
-        try {
-            ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
-            Call<ApiResponse<UserData>> call = apiInterface.userData(token);
-            call.enqueue(new Callback<ApiResponse<UserData>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<UserData>> call, Response<ApiResponse<UserData>> response) {
-                    try {
-                        if (response.isSuccessful() && response.body() != null) {
-                            ApiResponse<UserData> apiResponse = response.body();
-                            if(apiResponse.getStatus() == 200) {
-                                UserData userData = apiResponse.getData();
-                                updateUserUI(userData);
-                                contentLayout.setVisibility(View.VISIBLE);
-                            }
-                        } else {
-                            Log.e("UserDetailActivity", "API response is unsuccessful");
-                            CustomToast.showCustomToast(UserDetailActivity.this,  "Lỗi kết nối, vui lòng thử lại.");
-                        }
-                    } catch (Exception e) {
-                        Log.e("UserDetailActivity", "Error during response handling: " + e.getMessage());
-                        CustomToast.showCustomToast(UserDetailActivity.this,  "Có lỗi xảy ra. Vui lòng thử lại.");
-                    }
-                }
+        UserDetailApiHelper.getUserData(this, token, new UserDetailApiHelper.UserDataCallback() {
+            @Override
+            public void onSuccess(UserData userData) {
+                updateUserUI(userData);
+                contentLayout.setVisibility(View.VISIBLE);
+            }
 
-                @Override
-                public void onFailure(Call<ApiResponse<UserData>> call, Throwable t) {
-                    Log.e("UserDetailActivity", "Error: " + t.getMessage());
-                    CustomToast.showCustomToast(UserDetailActivity.this,  "Lỗi: " + t.getMessage());
-                }
-            });
-        } catch (Exception e) {
-            Log.e("UserDetailActivity", "Error during API call: " + e.getMessage());
-            CustomToast.showCustomToast(UserDetailActivity.this,  "Có lỗi xảy ra. Vui lòng thử lại.");
-        }
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("UserDetailActivity", "Error: " + errorMessage);
+                CustomToast.showCustomToast(UserDetailActivity.this, "Lỗi: " + errorMessage);
+            }
+        });
     }
+
     private void updateUserUI(UserData userData) {
         try {
             if (userData == null) {

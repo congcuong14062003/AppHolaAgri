@@ -154,7 +154,7 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
 
     // Gọi API để lấy dữ liệu mặc định cho tháng hiện tại
     private void callTimekeepingApi(String date) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
 
         // Tạo yêu cầu để gửi cho API
         TimekeepingStatisticsRequest request = new TimekeepingStatisticsRequest();

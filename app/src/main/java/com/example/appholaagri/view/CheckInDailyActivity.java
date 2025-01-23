@@ -32,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CheckInDailyActivity extends AppCompatActivity {
+public class CheckInDailyActivity extends BaseActivity {
 
     private RadioGroup radioGroupShift;
     private List<ShiftModel.Shift> workShiftList = new ArrayList<>();
@@ -54,7 +54,7 @@ public class CheckInDailyActivity extends AppCompatActivity {
         barcodeScannerView.setStatusText("");  // Đặt thông báo là chuỗi rỗng
 
         // Initialize API interface
-        apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         close_scanner.setOnClickListener(view -> {
             onBackPressed();
         });

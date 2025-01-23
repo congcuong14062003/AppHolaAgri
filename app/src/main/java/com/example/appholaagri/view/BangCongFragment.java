@@ -29,7 +29,7 @@ import retrofit2.Response;
 
 import java.util.Arrays;
 
-public class BangCongFragment extends Fragment {
+public class BangCongFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private SalaryTableAdapter adapter;
     private LinearLayout emptyStateLayout;
@@ -49,7 +49,7 @@ public class BangCongFragment extends Fragment {
     }
 
     private void callSalaryTableApi() {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
 
         // Tạo yêu cầu để gửi cho API
         SalaryTableRequest request = new SalaryTableRequest();

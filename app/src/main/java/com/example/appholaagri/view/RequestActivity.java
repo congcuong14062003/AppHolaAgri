@@ -229,7 +229,7 @@ public class RequestActivity extends AppCompatActivity {
 
     }
     private void getInitFormData(String token) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         RequestTabListRequest requestTabListRequest = new RequestTabListRequest(1, 20);
         Call<ApiResponse<RequestTabListDataResponse>> call = apiInterface.requestTabListData(requestTabListRequest);
         call.enqueue(new Callback<ApiResponse<RequestTabListDataResponse>>() {
@@ -319,7 +319,7 @@ public class RequestActivity extends AppCompatActivity {
         requestStatusRequest.setSize(20); // Bạn có thể chỉnh kích thước nếu cần
         requestStatusRequest.setKeySearch("");
         requestStatusRequest.setStatus(-1);
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestStatusResponse>> call = apiInterface.requestStatusData(token, requestStatusRequest);
         call.enqueue(new Callback<ApiResponse<RequestStatusResponse>>() {
             @Override

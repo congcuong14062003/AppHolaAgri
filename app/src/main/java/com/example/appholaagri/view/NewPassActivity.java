@@ -28,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NewPassActivity extends AppCompatActivity {
+public class NewPassActivity extends BaseActivity {
     private EditText newPassInput, confirmPassInput;
     Button change_pass_button;
     @Override
@@ -85,7 +85,7 @@ public class NewPassActivity extends AppCompatActivity {
     }
 
     private void changePassword(String deviceId, String phoneNumber, String hashedPassword) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         int isMobile = 1;  // Giả sử là điện thoại
         int rememberMe = 1;  // Không nhớ mật khẩu
         String requestId = "requestId123";  // Thay bằng giá trị thực tế hoặc tạo UUID

@@ -75,7 +75,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:text=""
+                        android:text="Xin đi muộn/ về sớm"
                         android:textColor="@color/secon_textcolor" />
 
                     <LinearLayout
@@ -119,7 +119,7 @@
                             android:text="Tên đề xuất" />
 
                         <EditText
-                            android:id="@+id/txt_name_request_create"
+                            android:id="@+id/edt_name_request_create"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -131,7 +131,8 @@
                             android:gravity="center_vertical"
                             android:padding="35px"
                             android:hint="Nhập tên đề xuất"
-                            android:textColor="@color/textcolor" />
+                            android:textColor="@color/textcolor"
+                            android:imeOptions="actionNext" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -147,7 +148,7 @@
                             android:text="Người đề xuất" />
 
                         <EditText
-                            android:id="@+id/txt_name_employye_request_create"
+                            android:id="@+id/edt_name_employye_request_create"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -175,12 +176,13 @@
                             android:text="Bộ phận" />
 
                         <EditText
-                            android:id="@+id/txt_part_request_create"
+                            android:id="@+id/edt_part_request_create"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:inputType="text"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
+                            android:enabled="false"
                             android:layout_marginBottom="15dp"
                             android:background="@drawable/input_infor"
                             android:backgroundTint="#dee0df"
@@ -256,18 +258,35 @@
                             android:layout_marginStart="10dp"
                             android:text="Hình thức" />
 
-                        <!-- RadioGroup chọn mốc thời gian -->
-                        <Spinner
-                            android:id="@+id/spinnerHinhThuc"
-                            style="@style/TextStyle_14_500"
+                        <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="15dp"
-                            android:background="@drawable/input_infor"
-                            android:backgroundTint="#dee0df"
-                            android:padding="35px"
-                            android:textColor="@color/textcolor" />
+                            >
+                            <!-- RadioGroup chọn mốc thời gian -->
+                            <Spinner
+                                android:id="@+id/spinnerHinhThuc"
+                                style="@style/TextStyle_14_500"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="15dp"
+                                android:background="@drawable/input_infor"
+                                android:backgroundTint="#dee0df"
+                                android:drawableRight="@drawable/checked_radio"
+                                android:padding="35px"
+                                android:dropDownVerticalOffset="20dp"
+                                android:spinnerMode="dropdown"
+                                android:textColor="@color/textcolor" />
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:src="@drawable/dropdown_icon"
+                                android:layout_gravity="end|center_vertical"
+                                android:layout_marginBottom="5dp"
+                                android:layout_marginEnd="20dp" />
+                        </FrameLayout>
+
                     </LinearLayout>
 
                     <TextView
@@ -285,14 +304,14 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
+                            android:id="@+id/rbMotNgay_create_layout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center_vertical">
 
                             <ImageView
-                                android:id="@+id/rbMotNgay"
-
+                                android:id="@+id/rbMotNgay_create"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
@@ -308,13 +327,14 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/rbNhieuNgay_create_layout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center_vertical">
 
                             <ImageView
-                                android:id="@+id/rbNhieuNgay"
+                                android:id="@+id/rbNhieuNgay_create"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="10dp"
@@ -538,6 +558,71 @@ Em xin cảm ơn!"
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+    <!-- Overlay background mờ -->
+<!--    <View-->
+<!--        android:id="@+id/overlay_background"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="@color/black"-->
+<!--        android:alpha="0.5"-->
+<!--        android:visibility="visible" />-->
 
+    <!-- Overlay danh sách trạng thái -->
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:id="@+id/overlay_filter_status"-->
+<!--        android:visibility="visible"-->
+<!--        >-->
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/overlay_filter_status_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            android:background="@drawable/bg_rounded_26_top"-->
+<!--            android:backgroundTint="#F0F0F0"-->
+<!--            android:layout_gravity="center"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
+<!--            android:elevation="999dp"-->
+<!--            android:padding="16dp">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/title_filter"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Vui lòng chọn"-->
+<!--                android:textColor="@color/textcolor"-->
+<!--                style="@style/TextStyle_18_600"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/recycler_filter_status"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                tools:itemCount="2"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/title_filter"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                tools:listitem="@layout/item_method_create_request_recycle_view"-->
+<!--                android:layout_marginTop="8dp" />-->
+
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/button_close_overlay"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:text="Đóng"-->
+<!--                android:textColor="#ffffff"-->
+<!--                android:background="@drawable/button_custom"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/recycler_filter_status"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent" />-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -46,7 +46,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RequestDetailActivity extends AppCompatActivity {
+public class RequestDetailActivity extends BaseActivity {
     TextView txt_type_request, txt_reason_refused_request, txt_name_request, txt_name_employye_request, txt_part_request, txt_reason_request, txt_manager_direct_request,txt_fixed_reviewer_request,txt_follower_request;
 
     AppCompatButton txt_status_request;
@@ -92,7 +92,7 @@ public class RequestDetailActivity extends AppCompatActivity {
     }
     private void getDetailRequest(int requestId, int typeRequest, String token) {
         // Gọi API
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override

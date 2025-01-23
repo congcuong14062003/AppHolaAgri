@@ -19,7 +19,7 @@ import com.example.appholaagri.adapter.RequestListAdapter;
 import com.example.appholaagri.helper.ApiHelper;
 import com.example.appholaagri.model.RequestModel.RequestListData;
 
-public class SendToMeRequestFragment extends Fragment {
+public class SendToMeRequestFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private LinearLayout emptyStateLayout;
@@ -84,7 +84,6 @@ public class SendToMeRequestFragment extends Fragment {
                 data -> {
                     isLoading = false;
                     progressBar.setVisibility(View.GONE);
-
                     if (data != null && data.getData() != null) {
                         if (page == 1) {
                             // Lần đầu load dữ liệu, xóa danh sách cũ trong adapter
@@ -92,7 +91,6 @@ public class SendToMeRequestFragment extends Fragment {
                                 adapter.clearData();
                             }
                         }
-
                         if (data.getData().isEmpty()) {
                             isLastPage = true;
                             if (adapter == null || adapter.getItemCount() == 0) {

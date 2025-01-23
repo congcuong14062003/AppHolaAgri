@@ -15,7 +15,7 @@ import com.example.appholaagri.R;
  * Use the {@link BangLuongFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BangLuongFragment extends Fragment {
+public class BangLuongFragment extends BaseFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
+import com.example.appholaagri.model.RequestModel.RequestListData;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
 
 import java.util.List;
@@ -26,11 +27,19 @@ public class TimekeepingAdapter extends RecyclerView.Adapter<TimekeepingAdapter.
         return new ViewHolder(view);
     }
     public void addData(List<TimekeepingStatisticsData.DayData> newData) {
-        int startPosition = dayDataList.size();
-        dayDataList.addAll(newData);
-        notifyItemRangeInserted(startPosition, newData.size());
+        if (newData != null && !newData.isEmpty()) {
+            int startPosition = dayDataList.size();
+            dayDataList.addAll(newData);
+            notifyItemRangeInserted(startPosition, newData.size());
+        }
     }
 
+    public void clearData() {
+        if (dayDataList != null) {
+            dayDataList.clear();  // Xóa hết dữ liệu trong danh sách
+            notifyDataSetChanged(); // Cập nhật giao diện RecyclerView
+        }
+    }
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Lấy dữ liệu ngày

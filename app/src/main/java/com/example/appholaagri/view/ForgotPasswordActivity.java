@@ -28,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ForgotPasswordActivity extends AppCompatActivity {
+public class ForgotPasswordActivity extends BaseActivity {
     Button btnBackLogin, nextBtn;
     EditText phoneInput;
     ImageView errorIcon;
@@ -80,7 +80,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
 
     public void checkPhoneNumber(String deviceId, String phoneNumber) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         CheckPhoneRequest checkPhoneRequest = new CheckPhoneRequest(deviceId,phoneNumber);
         Log.d("ForgotPasswordActivity", "Thông tin: " + checkPhoneRequest.getDeviceId() + checkPhoneRequest.getUserName());
 

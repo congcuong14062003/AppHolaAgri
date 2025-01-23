@@ -59,7 +59,7 @@ public class TimekeepingManagementActivity extends AppCompatActivity {
     }
 
     private void getInitFormData(String token) {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<CheckInInitFormData>> call = apiInterface.checkInInitFormData(token);
         call.enqueue(new Callback<ApiResponse<CheckInInitFormData>>() {
             @Override

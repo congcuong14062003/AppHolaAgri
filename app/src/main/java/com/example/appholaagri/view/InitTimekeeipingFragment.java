@@ -23,7 +23,7 @@ import com.example.appholaagri.utils.TimekeepingManageApiHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InitTimekeeipingFragment extends Fragment {
+public class InitTimekeeipingFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private TimeKeepingManageInitAdapter adapter;
     private LinearLayout emptyStateLayout;

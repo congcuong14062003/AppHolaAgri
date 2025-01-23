@@ -19,7 +19,7 @@ import com.example.appholaagri.adapter.RequestListAdapter;
 import com.example.appholaagri.helper.ApiHelper;
 
 
-public class FollowingRequestFragment extends Fragment {
+public class FollowingRequestFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private LinearLayout emptyStateLayout;

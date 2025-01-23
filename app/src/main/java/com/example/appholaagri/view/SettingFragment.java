@@ -17,10 +17,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.appholaagri.R;
+import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.service.NetworkUtil;
 import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SettingFragment extends Fragment {
+public class SettingFragment extends BaseFragment {
 
     private ImageView avtUser;
     private TextView txtStaffName, txtStaffCode;
@@ -76,39 +78,21 @@ public class SettingFragment extends Fragment {
     }
 
     private void getUserData(String token) {
-        try {
-            // Create Retrofit and ApiInterface
-            ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
-            // Call the API
-            Call<ApiResponse<UserData>> call = apiInterface.userData(token);
+        UserDetailApiHelper.getUserData(getContext(), token, new UserDetailApiHelper.UserDataCallback() {
+            @Override
+            public void onSuccess(UserData userData) {
+                updateUserUI(userData);
+                contentLayout.setVisibility(View.VISIBLE); // Hiển thị layout sau khi dữ liệu sẵn sàng
+            }
 
-            call.enqueue(new Callback<ApiResponse<UserData>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<UserData>> call, Response<ApiResponse<UserData>> response) {
-                    Log.d("SettingFragment", "Response code: " + response.code());
-                    if (response.isSuccessful() && response.body() != null) {
-                        ApiResponse<UserData> apiResponse = response.body();
-                        UserData userData = apiResponse.getData();
-                        updateUserUI(userData);
-                        contentLayout.setVisibility(View.VISIBLE); // Show layout after data is ready
-                    } else {
-                        Log.e("SettingFragment", "API response unsuccessful");
-                        CustomToast.showCustomToast(requireContext(),  "Lỗi kết nối, vui lòng thử lại.");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse<UserData>> call, Throwable t) {
-                    Log.e("SettingFragment", "Error: " + t.getMessage());
-                    CustomToast.showCustomToast(requireContext(),  "Lỗi: " + t.getMessage());
-                }
-            });
-        } catch (Exception e) {
-            Log.e("SettingFragment", "Error during API call: " + e.getMessage());
-            CustomToast.showCustomToast(requireContext(),  "Lỗi khi lấy thông tin người dùng.");
-
-        }
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("SettingFragment", "Error: " + errorMessage);
+                CustomToast.showCustomToast(requireContext(), "Lỗi: " + errorMessage);
+            }
+        });
     }
+
 
     private void updateUserUI(UserData userData) {
         try {
@@ -145,15 +129,22 @@ public class SettingFragment extends Fragment {
 
     private void handleLogout() {
         try {
+            // Lấy SharedPreferences và xóa token
             SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.remove("auth_token");
-            editor.apply(); // Save changes
-            Intent intent = new Intent(getActivity(), MainActivity.class); // Or LoginActivity
+            editor.apply(); // Lưu thay đổi
+
+            // Khởi tạo Intent và chuyển hướng đến MainActivity (hoặc LoginActivity)
+            Intent intent = new Intent(getActivity(), MainActivity.class); // Hoặc LoginActivity
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Đảm bảo không quay lại màn hình trước đó
+
             startActivity(intent);
-            requireActivity().finish(); // Close current activity
+            requireActivity().finish(); // Đóng Activity hiện tại
+
         } catch (Exception e) {
             Log.e("SettingFragment", "Error during logout: " + e.getMessage());
         }
     }
+
 }

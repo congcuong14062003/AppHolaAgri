@@ -34,7 +34,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ListRequestToCreateActivity extends AppCompatActivity {
+public class ListRequestToCreateActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private GroupRequestListAdapter adapter;
     private ImageView backBtnReview;
@@ -55,7 +55,7 @@ public class ListRequestToCreateActivity extends AppCompatActivity {
         fetchData();
     }
     private void fetchData() {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
 
         // Tạo request object
         RequestGroupRequest request = new RequestGroupRequest(1, 20);

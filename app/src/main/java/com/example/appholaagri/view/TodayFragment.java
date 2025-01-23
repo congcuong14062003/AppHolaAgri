@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.TimekeepingAdapter;
+import com.example.appholaagri.helper.ApiHelper;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsRequest;
@@ -26,10 +28,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TodayFragment extends Fragment {
+public class TodayFragment extends BaseFragment {
 
     private RecyclerView recyclerView;
     private TimekeepingAdapter adapter;
+    private int currentPage = 1;
+    private ProgressBar progressBar;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private String currentDate = "";
+    private static final int PAGE_SIZE = 20;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,60 +48,74 @@ public class TodayFragment extends Fragment {
         // Kết nối RecyclerView
         recyclerView = view.findViewById(R.id.recyclerViewToday);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        progressBar = view.findViewById(R.id.progressBar);
 
         // Gọi API để lấy danh sách chấm công hôm nay
-        callTimekeepingApi();
+        fetchTimekeepingData(currentDate, currentPage);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null) {
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                    if (!isLoading && !isLastPage) {
+                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                                && firstVisibleItemPosition >= 0
+                                && totalItemCount >= PAGE_SIZE) {
+                            currentPage++;
+                            fetchTimekeepingData(currentDate, currentPage);
+                        }
+                    }
+                }
+            }
+        });
+
 
         return view;
     }
 
-    private void callTimekeepingApi() {
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+    private void fetchTimekeepingData(String date, int page) {
+        isLoading = true;
+        progressBar.setVisibility(View.VISIBLE);
 
-        // Tạo yêu cầu để gửi cho API
-        TimekeepingStatisticsRequest request = new TimekeepingStatisticsRequest();
-        request.setDate(""); // Chọn ngày hôm nay
-        request.setIsDaily(1);
-        request.setPage(1);
-        request.setSize(20);
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
-        String token = sharedPreferences.getString("auth_token", null);
-
-        // Gọi API
-        Call<ApiResponse<TimekeepingStatisticsData>> call = apiInterface.timekeepingStatistics(token, request);
-
-        call.enqueue(new Callback<ApiResponse<TimekeepingStatisticsData>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<TimekeepingStatisticsData>> call, Response<ApiResponse<TimekeepingStatisticsData>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<TimekeepingStatisticsData> apiResponse = response.body();
-                    if (apiResponse.getStatus() == 200) {
-                        TimekeepingStatisticsData data = apiResponse.getData();
-                        Log.d("TodayFragment", "Data ngay hôm nay: " + (data != null ? data.getData() : "null"));
-
-                        // Kiểm tra dữ liệu trả về từ API
-                        if (data != null && data.getData() != null && !data.getData().isEmpty()) {
-                            // Cập nhật dữ liệu vào RecyclerView
-                            adapter = new TimekeepingAdapter(data.getData());
-                            recyclerView.setAdapter(adapter);
-                        } else {
-                            // Xử lý khi dữ liệu trống hoặc không hợp lệ
-                            Log.e("TodayFragment", "No data available or data is empty");
+        ApiHelper.fetchTimekeepingStatistics(getContext(), date, page, 1,
+                data -> {
+                    isLoading = false;
+                    progressBar.setVisibility(View.GONE);
+                    if (data != null && data.getData() != null) {
+                        if (page == 1) {
+                            // Lần đầu load dữ liệu, xóa danh sách cũ trong adapter
+                            if (adapter != null) {
+                                adapter.clearData();
+                            }
                         }
-                    } else {
-                        CustomToast.showCustomToast(getContext(),  apiResponse.getMessage());
-                        Log.d("LoginActivity", "Error message: " + apiResponse.getMessage());
-                    }
-                } else {
-                    // Xử lý khi API trả về không thành công
-                    Log.e("TodayFragment", "API call failed or response body is null");
-                }
-            }
+                        if (data.getData().isEmpty()) {
+                            isLastPage = true;
+                            if (adapter == null || adapter.getItemCount() == 0) {
+//                                emptyStateLayout.setVisibility(View.VISIBLE);
+                            }
+                        } else {
+//                            emptyStateLayout.setVisibility(View.GONE);
+                            if (adapter == null) {
+                                adapter = new TimekeepingAdapter(data.getData());
 
-            @Override
-            public void onFailure(Call<ApiResponse<TimekeepingStatisticsData>> call, Throwable t) {
-                Log.e("API Error", t.getMessage());
-            }
-        });
+                                recyclerView.setAdapter(adapter);
+                            } else {
+                                adapter.addData(data.getData());
+                            }
+                        }
+                    }
+                },
+                errorMessage -> {
+                    isLoading = false;
+                    progressBar.setVisibility(View.GONE);
+                    Log.e("LazyLoadFragment", "Error: " + errorMessage);
+                }
+        );
     }
 }

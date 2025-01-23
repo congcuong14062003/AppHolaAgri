@@ -32,9 +32,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SalaryTableDetailActivity extends AppCompatActivity {
+public class SalaryTableDetailActivity extends BaseActivity {
     TextView txt_cong_chuan, txt_tong_cong, txt_ngay_phep_con_lai,title_detail_salary;
     ImageView backBtnReview;
+    LinearLayout container_salary_table_detail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +47,8 @@ public class SalaryTableDetailActivity extends AppCompatActivity {
         txt_ngay_phep_con_lai = findViewById(R.id.txt_ngay_phep_con_lai);
         title_detail_salary = findViewById(R.id.title_detail_salary);
         backBtnReview = findViewById(R.id.backBtnReview);
-
+        container_salary_table_detail = findViewById(R.id.container_salary_table_detail);
+        container_salary_table_detail.setVisibility(View.GONE);
         backBtnReview.setOnClickListener(view -> {
             onBackPressed();
         });
@@ -79,7 +81,7 @@ public class SalaryTableDetailActivity extends AppCompatActivity {
         request.setWorkSummaryMonthly(workSummaryMonthly);
 
         // Khởi tạo API interface
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
 
         // Gọi API
         Call<ApiResponse<SalaryTableDetailData>> call = apiInterface.salaryTableDetailData(token, request);
@@ -90,10 +92,15 @@ public class SalaryTableDetailActivity extends AppCompatActivity {
                 Log.d("SalaryTableDetailActivity", "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<SalaryTableDetailData> apiResponse = response.body();
-                    SalaryTableDetailData detailData = apiResponse.getData();
-                    // Xử lý dữ liệu nhận được từ API
-                    updatUiDetail(detailData);
-                    Log.d("SalaryTableDetailActivity", "Detail Data: " + detailData.toString());
+                    if(apiResponse.getStatus() == 200) {
+                        SalaryTableDetailData detailData = apiResponse.getData();
+                        // Xử lý dữ liệu nhận được từ API
+                        updatUiDetail(detailData);
+                        container_salary_table_detail.setVisibility(View.VISIBLE);
+                        Log.d("SalaryTableDetailActivity", "Detail Data: " + detailData.toString());
+                    } else {
+
+                    }
                 } else {
                     Log.e("SalaryTableDetailActivity", "API response unsuccessful");
                 }

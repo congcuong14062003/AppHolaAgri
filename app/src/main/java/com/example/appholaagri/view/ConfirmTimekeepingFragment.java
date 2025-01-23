@@ -20,7 +20,7 @@ import com.example.appholaagri.utils.TimekeepingManageApiHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfirmTimekeepingFragment extends Fragment {
+public class ConfirmTimekeepingFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private TimeKeepingManageConfirmAdapter adapter;
     private LinearLayout emptyStateLayout;

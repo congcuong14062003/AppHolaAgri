@@ -47,7 +47,7 @@ public class TimekeepingManageApiHelper {
             endDate = today;
         }
 
-        ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
 
         // Tạo request
         TimeKeepingManageRequest request = new TimeKeepingManageRequest(
