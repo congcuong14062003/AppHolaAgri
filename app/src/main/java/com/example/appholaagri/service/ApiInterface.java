@@ -9,6 +9,8 @@ import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
+import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
+import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateResponse;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupRequest;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupResponse;
 import com.example.appholaagri.model.RequestModel.RequestListData;
@@ -127,4 +129,16 @@ public interface ApiInterface {
             @Header("Authorization") String token,
             @Query("id") int GroupRequestId
     );
+
+    // Đơn xin nghỉ phép
+    @POST("request/day-off")
+    Call<ApiResponse<GroupRequestCreateResponse>> dayOffCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+
+    // Đăng ký mua sắm vật tư
+    @POST("request/buy-new")
+    Call<ApiResponse<GroupRequestCreateResponse>> buyNewCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+
+    // Đơn xin nghỉ phép
+    @POST("request/over-time")
+    Call<ApiResponse<GroupRequestCreateResponse>> overTimeCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
 }

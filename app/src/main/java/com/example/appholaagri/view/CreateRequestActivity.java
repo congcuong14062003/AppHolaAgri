@@ -44,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CreateRequestActivity extends BaseActivity {
-    EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create;
+    EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,edt_manager_direct_request_create,edt_fixed_reviewer_request_create, edt_follower_request_create;
     TextView txt_type_request;
     ImageView backBtnReview, rbMotNgayImage, rbNhieuNgayImage ;
     // Khởi tạo các LinearLayout và ImageView
@@ -62,6 +62,9 @@ public class CreateRequestActivity extends BaseActivity {
         rbNhieuNgayLayout = findViewById(R.id.rbNhieuNgay_create_layout);
         rbMotNgayImage = findViewById(R.id.rbMotNgay_create);
         rbNhieuNgayImage  = findViewById(R.id.rbNhieuNgay_create);
+        edt_manager_direct_request_create  = findViewById(R.id.edt_manager_direct_request_create);
+        edt_fixed_reviewer_request_create  = findViewById(R.id.edt_fixed_reviewer_request_create);
+        edt_follower_request_create  = findViewById(R.id.edt_follower_request_create);
 
         backBtnReview = findViewById(R.id.backBtnReview_create);
         rbMotNgayImage.setImageResource(R.drawable.checked_radio);
@@ -138,6 +141,46 @@ public class CreateRequestActivity extends BaseActivity {
             txt_type_request.setText(requestDetailData.getRequestGroup().getName());
             edt_name_employye_request_create.setText(requestDetailData.getEmployee().getName());
             edt_part_request_create.setText(requestDetailData.getDepartment().getName());
+            if(requestDetailData.getDirectManager() != null) {
+                edt_manager_direct_request_create.setText(requestDetailData.getDirectManager().getName());
+            } else {
+                edt_manager_direct_request_create.setText("Chưa có quản lý trực tiếp");
+            }
+
+            List<Consignee> consigneeList = requestDetailData.getConsignee(); // Giả sử đây là danh sách Consignee
+            if (consigneeList != null && !consigneeList.isEmpty()) {
+                StringBuilder consigneeNames = new StringBuilder();
+
+                // Lặp qua danh sách để lấy tên
+                for (Consignee consignee : consigneeList) {
+                    if (consignee != null && consignee.getName() != null) {
+                        consigneeNames.append(consignee.getName()).append(" "); // Nối thêm khoảng trắng sau mỗi tên
+                    }
+                }
+                // Gán chuỗi kết quả vào TextView
+                edt_fixed_reviewer_request_create.setText(consigneeNames.toString().trim()); // trim() để loại bỏ khoảng trắng dư thừa ở cuối
+            } else {
+                // Trường hợp danh sách trống hoặc null
+                edt_fixed_reviewer_request_create.setText("Không có người duyệt cố định"); // Thông báo mặc định
+            }
+
+
+            List<Follower> followerList = requestDetailData.getFollower(); // Giả sử đây là danh sách Consignee
+            if (followerList != null && !followerList.isEmpty()) {
+                StringBuilder followerNames = new StringBuilder();
+
+                // Lặp qua danh sách để lấy tên
+                for (Follower follower : followerList) {
+                    if (follower != null && follower.getName() != null) {
+                        followerNames.append(follower.getName()).append(" "); // Nối thêm khoảng trắng sau mỗi tên
+                    }
+                }
+                edt_follower_request_create.setText(followerNames.toString().trim()); // trim() để loại bỏ khoảng trắng dư thừa ở cuối
+            } else {
+                // Trường hợp danh sách trống hoặc null
+                edt_follower_request_create.setText("Không có người theo dõi"); // Thông báo mặc định
+            }
+
 
             // Lấy danh sách hình thức từ API
             List<RequestMethod> listMethods = requestDetailData.getListMethod();
@@ -184,6 +227,11 @@ public class CreateRequestActivity extends BaseActivity {
             } else {
                 Log.e("SpinnerData", "ListMethod is null or empty");
             }
+
+
+
+
+
         } catch (Exception e) {
             Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage());
         }

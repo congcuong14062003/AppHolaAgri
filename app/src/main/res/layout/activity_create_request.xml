@@ -360,8 +360,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
+                            android:layout_marginStart="10dp"
                             android:text="Thời gian"
-                            android:textSize="16sp" />
+                             />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -399,15 +400,17 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="15dp"
                         android:orientation="vertical">
 
                         <TextView
+                            android:layout_marginStart="10dp"
                             android:id="@+id/tvThoiGianKetThuc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
                             android:text="Thời gian kết thúc"
-                            android:textSize="16sp" />
+                            />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -455,7 +458,6 @@
                             android:text="Lí do" />
 
                         <EditText
-                            android:enabled="false"
                             android:id="@+id/txt_reason_request_create"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
@@ -464,15 +466,14 @@
                             android:layout_marginBottom="15dp"
                             android:background="@drawable/bg_rounded"
                             android:backgroundTint="#dee0df"
-                            android:gravity="center_vertical"
-                            android:padding="35px"
-                            android:text="Kính thưa đại ca!
-Hôm nay em xin phép đi muộn do ốm nên
-người hơi mệt ạ!
-Do sức khỏe chưa có dấu hiệu giảm nên
-em xin phép đi muộn 1 tiếng để ăn sáng.
-Em xin cảm ơn!"
+                            android:gravity="top|start"
+                            android:padding="16dp"
+                            android:hint="Mô tả chi tiết (*)"
+                            android:inputType="textMultiLine"
+                            android:minLines="4"
+                            android:scrollbars="vertical"
                             android:textColor="@color/textcolor" />
+
                     </LinearLayout>
                     <LinearLayout
                         android:id="@+id/manager_direct_request_layout"
@@ -488,7 +489,7 @@ Em xin cảm ơn!"
 
                         <EditText
                             android:enabled="false"
-                            android:id="@+id/txt_manager_direct_request_create"
+                            android:id="@+id/edt_manager_direct_request_create"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -515,7 +516,7 @@ Em xin cảm ơn!"
 
                         <EditText
                             android:enabled="false"
-                            android:id="@+id/txt_fixed_reviewer_request_create"
+                            android:id="@+id/edt_fixed_reviewer_request_create"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -542,7 +543,7 @@ Em xin cảm ơn!"
 
                         <EditText
                             android:enabled="false"
-                            android:id="@+id/txt_follower_request_create"
+                            android:id="@+id/edt_follower_request_create"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
