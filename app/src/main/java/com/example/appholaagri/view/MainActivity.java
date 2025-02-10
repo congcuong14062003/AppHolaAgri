@@ -1,13 +1,17 @@
 package com.example.appholaagri.view;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,6 +30,7 @@ import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.R;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.KeyboardUtils;
 import com.example.appholaagri.utils.Utils;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
@@ -270,5 +275,9 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
-
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
+        return super.dispatchTouchEvent(event);
+    }
 }

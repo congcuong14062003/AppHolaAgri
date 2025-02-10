@@ -19,8 +19,9 @@ public class RequestDetailData {
     private Status status;
     private Object fileAttachment;
     private String rejectReason;
-    private Object device;
-    private Object contact;
+    private Device device;
+    private String contact;
+    private int type;
     private Employee employee;
     private Department department;
     private Company company;
@@ -29,7 +30,7 @@ public class RequestDetailData {
     private DirectManager directManager;
     private List<Consignee> consignee;
     private List<Follower> follower;
-    private Object listStatus;
+    private List<ListStatus> listStatus;
     private List<ApprovalLogs> approvalLogs;
     private List<ListApproveTime> listApproval;
     private String createdDate;
@@ -165,20 +166,28 @@ public class RequestDetailData {
         this.rejectReason = rejectReason;
     }
 
-    public Object getDevice() {
+    public Device getDevice() {
         return device;
     }
 
-    public void setDevice(Object device) {
+    public void setDevice(Device device) {
         this.device = device;
     }
 
-    public Object getContact() {
+    public String getContact() {
         return contact;
     }
 
-    public void setContact(Object contact) {
+    public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public Employee getEmployee() {
@@ -245,11 +254,11 @@ public class RequestDetailData {
         this.follower = follower;
     }
 
-    public Object getListStatus() {
+    public List<ListStatus> getListStatus() {
         return listStatus;
     }
 
-    public void setListStatus(Object listStatus) {
+    public void setListStatus(List<ListStatus> listStatus) {
         this.listStatus = listStatus;
     }
 

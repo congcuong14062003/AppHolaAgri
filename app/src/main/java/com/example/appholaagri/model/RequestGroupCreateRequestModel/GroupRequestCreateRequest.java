@@ -6,7 +6,7 @@ import java.util.Map;
 public class GroupRequestCreateRequest {
     private String contact;
     private int dateType;
-    private Map<String, String> device;
+    private Device device;
     private int duration;
     private String endDate;
     private String endTime;
@@ -20,7 +20,7 @@ public class GroupRequestCreateRequest {
     private String startDate;
     private String startTime;
     private Status status;
-
+    private int type;
     // Getters and Setters
     public String getContact() {
         return contact;
@@ -38,20 +38,63 @@ public class GroupRequestCreateRequest {
         this.dateType = dateType;
     }
 
-    public Map<String, String> getDevice() {
+    public Device getDevice() {
         return device;
     }
 
-    public void setDevice(Map<String, String> device) {
+    public void setDevice(Device device) {
         this.device = device;
     }
 
+    public static class Device {
+        private String additionalProp1;
+        private String additionalProp2;
+        private String additionalProp3;
+
+        public Device(String code, int id, String name, int status) {
+        }
+
+        public Device(String additionalProp1, String additionalProp2, String additionalProp3) {
+        }
+
+        public String getAdditionalProp1() {
+            return additionalProp1;
+        }
+
+        public void setAdditionalProp1(String additionalProp1) {
+            this.additionalProp1 = additionalProp1;
+        }
+
+        public String getAdditionalProp2() {
+            return additionalProp2;
+        }
+
+        public void setAdditionalProp2(String additionalProp2) {
+            this.additionalProp2 = additionalProp2;
+        }
+
+        public String getAdditionalProp3() {
+            return additionalProp3;
+        }
+
+        public void setAdditionalProp3(String additionalProp3) {
+            this.additionalProp3 = additionalProp3;
+        }
+    }
     public int getDuration() {
         return duration;
     }
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public String getEndDate() {
@@ -157,6 +200,13 @@ public class GroupRequestCreateRequest {
         private String name;
         private int status;
 
+        public RequestGroup(String code, int id, String name, int status) {
+            this.code = code;
+            this.id = id;
+            this.name = name;
+            this.status = status;
+        }
+
         public String getCode() {
             return code;
         }
@@ -191,10 +241,28 @@ public class GroupRequestCreateRequest {
     }
 
     public static class RequestMethod {
-        private String code;
         private int id;
+        private String code;
         private String name;
         private int status;
+        private String color;
+        private int index;
+
+        public RequestMethod(String code, int id, String name, int status) {
+            this.code = code;
+            this.id = id;
+            this.name = name;
+            this.status = status;
+        }
+
+        // Getters and Setters
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
 
         public String getCode() {
             return code;
@@ -202,14 +270,6 @@ public class GroupRequestCreateRequest {
 
         public void setCode(String code) {
             this.code = code;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
         }
 
         public String getName() {
@@ -227,6 +287,22 @@ public class GroupRequestCreateRequest {
         public void setStatus(int status) {
             this.status = status;
         }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
     }
 
     public static class Status {
@@ -234,6 +310,13 @@ public class GroupRequestCreateRequest {
         private int id;
         private String name;
         private int status;
+
+        public Status(String code, int id, String name, int status) {
+            this.code = code;
+            this.id = id;
+            this.name = name;
+            this.status = status;
+        }
 
         public String getCode() {
             return code;

@@ -80,7 +80,7 @@ public class ActionRequestDetailAdapter extends RecyclerView.Adapter<ActionReque
 
     @Override
     public int getItemCount() {
-        return approvalLogs.size();
+        return (approvalLogs != null) ? approvalLogs.size() : 0;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

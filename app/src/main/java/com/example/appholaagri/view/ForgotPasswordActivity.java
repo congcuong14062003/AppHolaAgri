@@ -3,6 +3,7 @@ package com.example.appholaagri.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,7 @@ import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.KeyboardUtils;
 import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
@@ -115,5 +117,10 @@ public class ForgotPasswordActivity extends BaseActivity {
     }
     public void onBackPressed() {
         super.onBackPressed(); // Quay lại trang trước đó
+    }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
+        return super.dispatchTouchEvent(event);
     }
 }

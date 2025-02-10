@@ -141,5 +141,18 @@
             style="@style/TextStyle_14_400"
             android:textColor="@color/white" />
     </LinearLayout>
-
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/back_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:text="Quay lại"
+        android:background="@drawable/button_custom"
+        android:backgroundTint="@android:color/transparent"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.7867" />
 </androidx.constraintlayout.widget.ConstraintLayout>

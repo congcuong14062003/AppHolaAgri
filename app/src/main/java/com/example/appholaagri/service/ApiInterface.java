@@ -132,7 +132,7 @@ public interface ApiInterface {
 
     // Đơn xin nghỉ phép
     @POST("request/day-off")
-    Call<ApiResponse<GroupRequestCreateResponse>> dayOffCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+    Call<ApiResponse<String>> dayOffCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
 
     // Đăng ký mua sắm vật tư
     @POST("request/buy-new")

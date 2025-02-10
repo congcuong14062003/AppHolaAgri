@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.KeyboardUtils;
 import com.example.appholaagri.utils.Utils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -30,7 +32,7 @@ import retrofit2.Response;
 
 public class NewPassActivity extends BaseActivity {
     private EditText newPassInput, confirmPassInput;
-    Button change_pass_button;
+    Button change_pass_button, back_btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +52,10 @@ public class NewPassActivity extends BaseActivity {
         newPassInput = findViewById(R.id.new_pass_input);
         confirmPassInput = findViewById(R.id.confirm_pass_input);
         change_pass_button = findViewById(R.id.change_pass_button);
+        back_btn = findViewById(R.id.back_btn);
+        back_btn.setOnClickListener(view -> {
+            onBackPressed();
+        });
         change_pass_button.setOnClickListener(view -> {
             String newPassword = newPassInput.getText().toString().trim();
             String confirmPassword = confirmPassInput.getText().toString().trim();
@@ -116,5 +122,13 @@ public class NewPassActivity extends BaseActivity {
                 CustomToast.showCustomToast(NewPassActivity.this, "Lỗi: " + t.getMessage());
             }
         });
+    }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
+        return super.dispatchTouchEvent(event);
+    }
+    public void onBackPressed() {
+        super.onBackPressed(); // Quay lại trang trước đó
     }
 }
