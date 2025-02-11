@@ -126,8 +126,8 @@
                             android:layout_marginTop="5dp"
                             android:layout_marginBottom="15dp"
                             android:layout_weight="1"
+                            android:maxLines="1"
                             android:background="@drawable/input_infor"
-                            android:backgroundTint="#dee0df"
                             android:gravity="center_vertical"
                             android:padding="35px"
                             android:hint="Nhập tên đề xuất"
@@ -191,61 +191,6 @@
                             android:textColor="@color/textcolor" />
                     </LinearLayout>
 
-                    <!--                    <LinearLayout-->
-                    <!--                        android:id="@+id/form_request_layout"-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:orientation="vertical">-->
-
-                    <!--                        <TextView-->
-                    <!--                            android:layout_width="wrap_content"-->
-                    <!--                            android:layout_height="wrap_content"-->
-                    <!--                            android:layout_marginStart="10dp"-->
-                    <!--                            android:text="Hình thức" />-->
-
-                    <!--                        <TextView-->
-                    <!--                            android:id="@+id/txt_form"-->
-                    <!--                            style="@style/TextStyle_14_500"-->
-                    <!--                            android:layout_width="match_parent"-->
-                    <!--                            android:layout_height="wrap_content"-->
-                    <!--                            android:layout_marginTop="5dp"-->
-                    <!--                            android:layout_marginBottom="15dp"-->
-                    <!--                            android:background="@drawable/input_infor"-->
-                    <!--                            android:backgroundTint="#dee0df"-->
-                    <!--                            android:gravity="center_vertical"-->
-                    <!--                            android:padding="35px"-->
-                    <!--                            android:text="Xin phép đi muộn"-->
-                    <!--                            android:textColor="@color/textcolor" />-->
-                    <!--                    </LinearLayout>-->
-                    <!--                    <LinearLayout-->
-                    <!--                        android:id="@+id/time_request_layout"-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:orientation="vertical">-->
-
-                    <!--                        <TextView-->
-                    <!--                            android:layout_width="wrap_content"-->
-                    <!--                            android:layout_height="wrap_content"-->
-                    <!--                            android:layout_marginStart="10dp"-->
-                    <!--                            android:text="Mốc thời gian" />-->
-                    <!--                        <EditText-->
-                    <!--                            android:id="@+id/edtSearch"-->
-                    <!--                            android:layout_height="wrap_content"-->
-                    <!--                            android:textAllCaps="true"-->
-                    <!--                            android:visibility="visible"-->
-                    <!--                            android:hint="Tìm kiếm..."-->
-                    <!--                            android:padding="15dp"-->
-                    <!--                            android:layout_width="match_parent"-->
-                    <!--                            android:inputType="text"-->
-                    <!--                            android:background="@drawable/bg_search_input"-->
-                    <!--                            style="@style/TextStyle_14_500"-->
-                    <!--                            android:textColor="@color/textcolor"-->
-                    <!--                            android:clickable="true"-->
-                    <!--                            android:focusable="true"-->
-                    <!--                            />-->
-                    <!--                            -->
-                    <!--                    </LinearLayout>-->
-                    <!-- Spinner chọn hình thức -->
                     <LinearLayout
                         android:id="@+id/form_request_layout"
                         android:layout_width="match_parent"
@@ -263,8 +208,8 @@
                             android:layout_height="wrap_content"
                             >
                             <!-- RadioGroup chọn mốc thời gian -->
-                            <Spinner
-                                android:id="@+id/spinnerHinhThuc"
+                            <TextView
+                                android:id="@+id/select_method_request"
                                 style="@style/TextStyle_14_500"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -272,10 +217,8 @@
                                 android:layout_marginBottom="15dp"
                                 android:background="@drawable/input_infor"
                                 android:backgroundTint="#dee0df"
-                                android:drawableRight="@drawable/checked_radio"
+                                android:gravity="center_vertical"
                                 android:padding="35px"
-                                android:dropDownVerticalOffset="20dp"
-                                android:spinnerMode="dropdown"
                                 android:textColor="@color/textcolor" />
 
                             <ImageView
@@ -289,7 +232,39 @@
 
                     </LinearLayout>
 
+<!--                    <LinearLayout-->
+<!--                        android:id="@+id/time_request_layout"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="10dp"-->
+<!--                            android:text="Mốc thời gian" />-->
+
+<!--                        <EditText-->
+<!--                            android:id="@+id/edtSearch"-->
+<!--                            style="@style/TextStyle_14_500"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="@drawable/bg_search_input"-->
+<!--                            android:clickable="true"-->
+<!--                            android:focusable="true"-->
+<!--                            android:hint="Tìm kiếm..."-->
+<!--                            android:inputType="text"-->
+<!--                            android:padding="15dp"-->
+<!--                            android:textAllCaps="true"-->
+<!--                            android:textColor="@color/textcolor"-->
+<!--                            android:visibility="visible" />-->
+
+<!--                    </LinearLayout>-->
+                    <!-- Spinner chọn hình thức -->
+
+
                     <LinearLayout
+                        android:visibility="gone"
                         android:id="@+id/form_time_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -355,7 +330,7 @@
                             </LinearLayout>
 
                         </LinearLayout></LinearLayout>
-
+<!--                    thời gian bắt đầu-->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -382,7 +357,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@drawable/input_infor"
-                                android:backgroundTint="#dee0df"
                                 android:drawableEnd="@drawable/lich_icon2"
                                 android:hint="Chọn ngày"
                                 android:focusable="false"
@@ -397,7 +371,6 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:background="@drawable/input_infor"
-                                android:backgroundTint="#dee0df"
                                 android:drawableEnd="@drawable/icon_lock"
                                 android:hint="Chọn giờ"
                                 android:focusable="false"
@@ -434,7 +407,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@drawable/input_infor"
-                                android:backgroundTint="#dee0df"
                                 android:drawableEnd="@drawable/lich_icon2"
                                 android:hint="Chọn ngày"
                                 android:focusable="false"
@@ -449,7 +421,6 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:background="@drawable/input_infor"
-                                android:backgroundTint="#dee0df"
                                 android:drawableEnd="@drawable/icon_lock"
                                 android:hint="Chọn giờ"
                                 android:focusable="false"
@@ -458,7 +429,36 @@
                         </LinearLayout>
                     </LinearLayout>
 
+<!--                    số ngày báo trước-->
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/number_of_days_notice_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
+                        <TextView
+                            style="@style/TextStyle_14_500"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="Số ngày báo trước" />
+
+                        <EditText
+                            android:id="@+id/edt_number_of_days_notice"
+                            style="@style/TextStyle_14_500"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="15dp"
+                            android:layout_weight="1"
+                            android:maxLines="1"
+                            android:background="@drawable/input_infor"
+                            android:gravity="center_vertical"
+                            android:padding="35px"
+                            android:textColor="@color/textcolor"
+                            android:imeOptions="actionNext" />
+                    </LinearLayout>
 <!--                    Lí do-->
                     <LinearLayout
                         android:id="@+id/reason_request_layout"
@@ -480,13 +480,13 @@
                             android:layout_marginTop="5dp"
                             android:layout_marginBottom="15dp"
                             android:background="@drawable/bg_rounded"
-                            android:backgroundTint="#dee0df"
                             android:gravity="top|start"
                             android:padding="16dp"
                             android:hint="Mô tả chi tiết (*)"
                             android:inputType="textMultiLine"
                             android:minLines="4"
                             android:scrollbars="vertical"
+                            android:textStyle="italic"
                             android:textColor="@color/textcolor" />
 
                     </LinearLayout>
@@ -588,71 +588,70 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+    <!-- Overlay background mờ -->
+    <View
+        android:id="@+id/overlay_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:alpha="0.5"
+        android:visibility="gone" />
+
+    <!--                     Overlay danh sách trạng thái -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/overlay_filter_status"
+        android:visibility="gone"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/overlay_filter_status_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/bg_rounded_26_top"
+            android:backgroundTint="#F0F0F0"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:elevation="999dp"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/title_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vui lòng chọn"
+                android:textColor="@color/textcolor"
+                style="@style/TextStyle_18_600"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_filter_status_create"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/title_filter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:listitem="@layout/item_request_method"
+                android:layout_marginTop="8dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/button_close_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Đóng"
+                android:textColor="#ffffff"
+                android:background="@drawable/button_custom"
+                app:layout_constraintTop_toBottomOf="@id/recycler_filter_status_create"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- Overlay background mờ -->
-    <!--    <View-->
-    <!--        android:id="@+id/overlay_background"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:background="@color/black"-->
-    <!--        android:alpha="0.5"-->
-    <!--        android:visibility="visible" />-->
-
-    <!-- Overlay danh sách trạng thái -->
-    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:id="@+id/overlay_filter_status"-->
-    <!--        android:visibility="visible"-->
-    <!--        >-->
-    <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--            android:id="@+id/overlay_filter_status_container"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            android:background="@drawable/bg_rounded_26_top"-->
-    <!--            android:backgroundTint="#F0F0F0"-->
-    <!--            android:layout_gravity="center"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--            app:layout_constraintRight_toRightOf="parent"-->
-    <!--            android:elevation="999dp"-->
-    <!--            android:padding="16dp">-->
-
-    <!--            <TextView-->
-    <!--                android:id="@+id/title_filter"-->
-    <!--                android:layout_width="wrap_content"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:text="Vui lòng chọn"-->
-    <!--                android:textColor="@color/textcolor"-->
-    <!--                style="@style/TextStyle_18_600"-->
-    <!--                app:layout_constraintTop_toTopOf="parent"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                app:layout_constraintEnd_toEndOf="parent" />-->
-
-    <!--            <androidx.recyclerview.widget.RecyclerView-->
-    <!--                android:id="@+id/recycler_filter_status"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                tools:itemCount="2"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/title_filter"-->
-    <!--                app:layout_constraintStart_toStartOf="parent"-->
-    <!--                app:layout_constraintEnd_toEndOf="parent"-->
-    <!--                tools:listitem="@layout/item_method_create_request_recycle_view"-->
-    <!--                android:layout_marginTop="8dp" />-->
-
-    <!--            <androidx.appcompat.widget.AppCompatButton-->
-    <!--                android:id="@+id/button_close_overlay"-->
-    <!--                android:layout_width="match_parent"-->
-    <!--                android:layout_height="wrap_content"-->
-    <!--                android:layout_marginTop="20dp"-->
-    <!--                android:text="Đóng"-->
-    <!--                android:textColor="#ffffff"-->
-    <!--                android:background="@drawable/button_custom"-->
-    <!--                app:layout_constraintTop_toBottomOf="@id/recycler_filter_status"-->
-    <!--                app:layout_constraintEnd_toEndOf="parent"-->
-    <!--                app:layout_constraintBottom_toBottomOf="parent" />-->
-    <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->

@@ -88,9 +88,10 @@ public class ListRequestToCreateActivity extends BaseActivity {
                             Log.d("FetchData", "Data loaded successfully. Total items: " + dataItems.size());
 
                             adapter = new GroupRequestListAdapter(dataItems);
-                            adapter.setOnItemClickListener((GroupRequestId) -> {
+                            adapter.setOnItemClickListener((GroupRequestId, GroupRequestType) -> {
                                 Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestActivity.class);
                                 intent.putExtra("GroupRequestId", GroupRequestId);
+                                intent.putExtra("GroupRequestType", GroupRequestType);
                                 startActivity(intent);
                             });
                             recyclerView.setAdapter(adapter);

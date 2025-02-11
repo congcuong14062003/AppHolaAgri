@@ -10,6 +10,7 @@ public class GroupRequestCreateRequest {
     private int duration;
     private String endDate;
     private String endTime;
+    private List<ListDayReq> listDayReqs;
     private List<String> fileAttachment;
     private String reason;
     private String rejectReason;
@@ -46,41 +47,6 @@ public class GroupRequestCreateRequest {
         this.device = device;
     }
 
-    public static class Device {
-        private String additionalProp1;
-        private String additionalProp2;
-        private String additionalProp3;
-
-        public Device(String code, int id, String name, int status) {
-        }
-
-        public Device(String additionalProp1, String additionalProp2, String additionalProp3) {
-        }
-
-        public String getAdditionalProp1() {
-            return additionalProp1;
-        }
-
-        public void setAdditionalProp1(String additionalProp1) {
-            this.additionalProp1 = additionalProp1;
-        }
-
-        public String getAdditionalProp2() {
-            return additionalProp2;
-        }
-
-        public void setAdditionalProp2(String additionalProp2) {
-            this.additionalProp2 = additionalProp2;
-        }
-
-        public String getAdditionalProp3() {
-            return additionalProp3;
-        }
-
-        public void setAdditionalProp3(String additionalProp3) {
-            this.additionalProp3 = additionalProp3;
-        }
-    }
     public int getDuration() {
         return duration;
     }
@@ -111,6 +77,14 @@ public class GroupRequestCreateRequest {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public List<ListDayReq> getListDayReqs() {
+        return listDayReqs;
+    }
+
+    public void setListDayReqs(List<ListDayReq> listDayReqs) {
+        this.listDayReqs = listDayReqs;
     }
 
     public List<String> getFileAttachment() {
@@ -194,6 +168,65 @@ public class GroupRequestCreateRequest {
     }
 
     // Nested classes for RequestGroup, RequestMethod, and Status
+    public static class Device {
+        private String additionalProp1;
+        private String additionalProp2;
+        private String additionalProp3;
+
+        public Device(String code, int id, String name, int status) {
+        }
+
+        public Device(String additionalProp1, String additionalProp2, String additionalProp3) {
+        }
+
+        public String getAdditionalProp1() {
+            return additionalProp1;
+        }
+
+        public void setAdditionalProp1(String additionalProp1) {
+            this.additionalProp1 = additionalProp1;
+        }
+
+        public String getAdditionalProp2() {
+            return additionalProp2;
+        }
+
+        public void setAdditionalProp2(String additionalProp2) {
+            this.additionalProp2 = additionalProp2;
+        }
+
+        public String getAdditionalProp3() {
+            return additionalProp3;
+        }
+
+        public void setAdditionalProp3(String additionalProp3) {
+            this.additionalProp3 = additionalProp3;
+        }
+    }
+
+    public static class ListDayReq {
+        private List<BreakTime> breakTimes;
+        private String day;
+        private String endTime;
+        private String startTime;
+
+        public ListDayReq(List<BreakTime> breakTimes, String day, String startTime, String endTime) {
+            this.breakTimes = breakTimes;
+            this.day = day;
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+    }
+
+    public static class BreakTime {
+        private String startTime;
+        private String endTime;
+
+        public BreakTime(String startTime, String endTime) {
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+    }
     public static class RequestGroup {
         private String code;
         private int id;

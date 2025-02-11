@@ -136,9 +136,18 @@ public interface ApiInterface {
 
     // Đăng ký mua sắm vật tư
     @POST("request/buy-new")
-    Call<ApiResponse<GroupRequestCreateResponse>> buyNewCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+    Call<ApiResponse<String>> buyNewCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
 
-    // Đơn xin nghỉ phép
+    // Đơn xin làm thêm
     @POST("request/over-time")
-    Call<ApiResponse<GroupRequestCreateResponse>> overTimeCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+    Call<ApiResponse<String>> overTimeCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);    // Đơn xin làm thêm
+
+    // đơn xin đi muộn về sớm
+    @POST("request/late-early")
+   Call<ApiResponse<String>> lateEarlyCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+
+    // đơn xin thôi việc
+
+    @POST("request/resign")
+    Call<ApiResponse<String>> resignCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
 }

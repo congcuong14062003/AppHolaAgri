@@ -8,10 +8,13 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -30,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
@@ -45,10 +50,14 @@ import com.example.appholaagri.utils.KeyboardUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -57,16 +66,19 @@ import retrofit2.Response;
 
 public class CreateRequestActivity extends BaseActivity {
     EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
-            edt_manager_direct_request_create,edt_fixed_reviewer_request_create, edt_follower_request_create,
-            edt_reason_request_create;
-    TextView txt_type_request;
-    ImageView backBtnReview, rbMotNgayImage, rbNhieuNgayImage ;
+            edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
+            edt_reason_request_create,edt_number_of_days_notice;
+    TextView txt_type_request, select_method_request, tvThoiGianBatDau, tvThoiGianKetThuc;
+    ImageView backBtnReview, rbMotNgayImage, rbNhieuNgayImage;
     // Khởi tạo các LinearLayout và ImageView
-    LinearLayout rbMotNgayLayout,cancel_create_request_layout, form_time_layout;
+    LinearLayout rbMotNgayLayout, cancel_create_request_layout, form_time_layout, form_request_layout, number_of_days_notice_layout;
     LinearLayout rbNhieuNgayLayout;
-
+    View overlay_background;
     EditText etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc;
     private RequestDetailData requestDetailData; // Biến toàn cục
+    private ConstraintLayout overlay, overlay_filter_status_container;
+    ConstraintLayout overlayFilterStatus;
+    private Integer GroupRequestType,GroupRequestId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,22 +91,73 @@ public class CreateRequestActivity extends BaseActivity {
         rbMotNgayLayout = findViewById(R.id.rbMotNgay_create_layout);
         rbNhieuNgayLayout = findViewById(R.id.rbNhieuNgay_create_layout);
         rbMotNgayImage = findViewById(R.id.rbMotNgay_create);
-        rbNhieuNgayImage  = findViewById(R.id.rbNhieuNgay_create);
-        edt_manager_direct_request_create  = findViewById(R.id.edt_manager_direct_request_create);
-        edt_fixed_reviewer_request_create  = findViewById(R.id.edt_fixed_reviewer_request_create);
-        edt_follower_request_create  = findViewById(R.id.edt_follower_request_create);
+        rbNhieuNgayImage = findViewById(R.id.rbNhieuNgay_create);
+        edt_manager_direct_request_create = findViewById(R.id.edt_manager_direct_request_create);
+        edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
+        edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
         form_time_layout = findViewById(R.id.form_time_layout);
         backBtnReview = findViewById(R.id.backBtnReview_create);
         cancel_create_request_layout = findViewById(R.id.cancel_create_request_layout);
         edt_reason_request_create = findViewById(R.id.edt_reason_request_create);
-
-
-        rbMotNgayImage.setImageResource(R.drawable.checked_radio);
+        select_method_request = findViewById(R.id.select_method_request);
+        overlay_background = findViewById(R.id.overlay_background);
+        overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
+        overlay = findViewById(R.id.overlay_filter_status);
+        form_request_layout = findViewById(R.id.form_request_layout);
+        tvThoiGianBatDau = findViewById(R.id.tvThoiGianBatDau);
+        tvThoiGianKetThuc = findViewById(R.id.tvThoiGianKetThuc);
+        number_of_days_notice_layout = findViewById(R.id.number_of_days_notice_layout);
+        edt_number_of_days_notice = findViewById(R.id.edt_number_of_days_notice);
 
         etNgayBatDau = findViewById(R.id.etNgayBatDau);
         etGioBatDau = findViewById(R.id.etGioBatDau);
         etNgayKetThuc = findViewById(R.id.etNgayKetThuc);
         etGioKetThuc = findViewById(R.id.etGioKetThuc);
+        // đóng request method
+        Button buttonCloseOverlay = findViewById(R.id.button_close_overlay);
+        overlayFilterStatus = findViewById(R.id.overlay_filter_status);
+
+
+
+
+        rbMotNgayImage.setImageResource(R.drawable.checked_radio);
+
+        buttonCloseOverlay.setOnClickListener(v -> {
+            overlayFilterStatus.setVisibility(View.GONE);
+            overlay_background.setVisibility(View.GONE);
+        });
+        select_method_request.setOnClickListener(v -> {
+            overlayFilterStatus.setVisibility(View.VISIBLE);
+            overlay_background.setVisibility(View.VISIBLE);
+        });
+        overlay_background.setOnTouchListener((view, event) -> {
+            // Check if the touch event is outside the overlay_filter_status_container
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                // Get the coordinates of the touch
+                float x = event.getX();
+                float y = event.getY();
+
+                // Check if the touch is outside the overlay_filter_status_container
+                int[] location = new int[2];
+                overlay_filter_status_container.getLocationOnScreen(location);
+                int containerX = location[0];
+                int containerY = location[1];
+                int containerWidth = overlay_filter_status_container.getWidth();
+                int containerHeight = overlay_filter_status_container.getHeight();
+
+                if (x < containerX || x > containerX + containerWidth || y < containerY || y > containerY + containerHeight) {
+                    // Touch is outside the container, so hide the overlay
+                    overlay.setVisibility(View.GONE);
+                    overlay_background.setVisibility(View.GONE);
+                }
+            }
+            return true; // Handle the touch event and prevent further propagation
+        });
+
+        // Lấy ngày hiện tại
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String currentDateStr = sdf.format(calendar.getTime());
 
         // Chọn ngày & giờ bắt đầu
         etNgayBatDau.setOnClickListener(v -> showDatePicker(etNgayBatDau));
@@ -103,6 +166,25 @@ public class CreateRequestActivity extends BaseActivity {
         // Chọn ngày & giờ kết thúc
         etNgayKetThuc.setOnClickListener(v -> showDatePicker(etNgayKetThuc));
         etGioKetThuc.setOnClickListener(v -> showTimePicker(etGioKetThuc));
+
+
+        // Sau khi chọn ngày kết thúc, tính số ngày báo trước
+        etNgayKetThuc.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String endDateStr = etNgayKetThuc.getText().toString();
+                if (!endDateStr.isEmpty()) {
+                    int daysNotice = calculateDaysBetween(currentDateStr, endDateStr);
+                    edt_number_of_days_notice.setText(String.valueOf(daysNotice));
+                }
+            }
+        });
         // Đặt sự kiện click cho "1 ngày"
         rbMotNgayLayout.setOnClickListener(v -> {
             rbMotNgayImage.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
@@ -129,19 +211,68 @@ public class CreateRequestActivity extends BaseActivity {
         });
         Intent intent = getIntent();
         if (intent != null) {
-            Integer GroupRequestId = intent.getIntExtra("GroupRequestId", -1); // Nhận requestId
+            GroupRequestId = intent.getIntExtra("GroupRequestId", -1); // Nhận requestId
+            GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
             // điều kiện để check theo group request
-            if(GroupRequestId == 2) {
+            // đi muộn về sớm
+            if (GroupRequestType == 1) {
+                form_time_layout.setVisibility(View.VISIBLE);
+                etNgayKetThuc.setVisibility(View.GONE);
+                etGioBatDau.setVisibility(View.GONE);
+                etGioKetThuc.setVisibility(View.GONE);
+            }
+
+            if(GroupRequestType == 2) {
+                tvThoiGianBatDau.setText("Ngày bắt đầu nghỉ");
+                tvThoiGianKetThuc.setText("Ngày kết thúc");
+
+            }
+
+            if (GroupRequestType == 2 || GroupRequestType == 4) {
                 form_time_layout.setVisibility(View.GONE);
             }
+            if(GroupRequestType == 4) {
+                form_request_layout.setVisibility(View.GONE);
+                form_time_layout.setVisibility(View.GONE);
+                tvThoiGianBatDau.setText("Ngày đề xuất");
+                tvThoiGianKetThuc.setText("Ngày mong muốn được phê duyệt");
+                edt_reason_request_create.setHint("Nhập vật tư cần mua sắm, mô tả chi tiết");
+            }
+
+            if(GroupRequestType == 5) {
+                form_time_layout.setVisibility(View.GONE);
+                form_request_layout.setVisibility(View.GONE);
+                tvThoiGianBatDau.setText("Ngày mong muốn được chấm dứt hợp đồng");
+                tvThoiGianKetThuc.setText("Ngày làm việc cuối cùng");
+                edt_reason_request_create.setHint("Giải trình lý do thôi việc");
+                number_of_days_notice_layout.setVisibility(View.VISIBLE);
+            }
+
+
             Log.d("CreateRequestActivity", "GroupRequestId" + GroupRequestId);
             SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
             String token = sharedPreferences.getString("auth_token", null);
-            if(GroupRequestId != null && token != null) {
+            if (GroupRequestId != null && token != null) {
                 getInitFormCreateRequest(token, GroupRequestId);
             }
         }
     }
+    private int calculateDaysBetween(String startDateStr, String endDateStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date startDate = sdf.parse(startDateStr);
+            Date endDate = sdf.parse(endDateStr);
+
+            if (startDate != null && endDate != null) {
+                long diff = endDate.getTime() - startDate.getTime();
+                return (int) (diff / (1000 * 60 * 60 * 24)); // Chuyển đổi sang số ngày
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     // Hàm hiển thị DatePickerDialog
     private void showDatePicker(EditText editText) {
         final Calendar calendar = Calendar.getInstance();
@@ -154,13 +285,55 @@ public class CreateRequestActivity extends BaseActivity {
                 (view, year1, month1, dayOfMonth) -> {
                     String selectedDate = String.format("%02d/%02d/%d", dayOfMonth, month1 + 1, year1);
                     editText.setText(selectedDate);
+
+                    String startDate = etNgayBatDau.getText().toString();
+                    String endDate = etNgayKetThuc.getText().toString();
+
+                    // Kiểm tra ngày kết thúc
+                    if (editText.getId() == R.id.etNgayKetThuc) {
+                        if (!startDate.isEmpty() && compareDates(selectedDate, startDate) < 0) {
+                            CustomToast.showCustomToast(this, "Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
+                            editText.setText(""); // Xóa nếu không hợp lệ
+                            return;
+                        }
+                    }
+
+                    // Kiểm tra ngày bắt đầu
+                    if (editText.getId() == R.id.etNgayBatDau) {
+                        if (!endDate.isEmpty() && compareDates(selectedDate, endDate) > 0) {
+                            CustomToast.showCustomToast(this, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
+                            editText.setText(""); // Xóa nếu không hợp lệ
+                            return;
+                        }
+                    }
+
+                    // Nếu ngày bắt đầu == ngày kết thúc -> Kiểm tra giờ
+                    if (!startDate.isEmpty() && !endDate.isEmpty() && compareDates(startDate, endDate) == 0) {
+                        String startTime = etGioBatDau.getText().toString();
+                        String endTime = etGioKetThuc.getText().toString();
+
+                        if (!startTime.isEmpty() && !endTime.isEmpty() && compareTimes(startTime, endTime) > 0) {
+                            CustomToast.showCustomToast(this, "Giờ kết thúc không được nhỏ hơn giờ bắt đầu!");
+                            etGioKetThuc.setText(""); // Xóa giờ kết thúc nếu không hợp lệ
+                        }
+                    }
                 },
                 year, month, day);
 
         datePickerDialog.show();
     }
-
-    // Hàm hiển thị TimePickerDialog
+    // Hàm so sánh 2 ngày (dd/MM/yyyy)
+    private int compareDates(String date1, String date2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date d1 = sdf.parse(date1);
+            Date d2 = sdf.parse(date2);
+            return d1.compareTo(d2); // Trả về <0 nếu d1 < d2, >0 nếu d1 > d2, =0 nếu bằng nhau
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
     private void showTimePicker(EditText editText) {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -171,12 +344,56 @@ public class CreateRequestActivity extends BaseActivity {
                 (view, hourOfDay, minute1) -> {
                     String selectedTime = String.format("%02d:%02d", hourOfDay, minute1);
                     editText.setText(selectedTime);
+
+                    // Nếu chọn giờ kết thúc, kiểm tra giờ bắt đầu
+                    if (editText.getId() == R.id.etGioKetThuc) {
+                        String startDate = etNgayBatDau.getText().toString();
+                        String endDate = etNgayKetThuc.getText().toString();
+                        String startTime = etGioBatDau.getText().toString();
+
+                        if (!startDate.isEmpty() && startDate.equals(endDate) && !startTime.isEmpty()) {
+                            if (compareTimes(selectedTime, startTime) < 0) {
+                                CustomToast.showCustomToast(this, "Giờ kết thúc không thể nhỏ hơn giờ bắt đầu!");
+
+                                editText.setText(""); // Xóa nếu không hợp lệ
+                            }
+                        }
+                    }
+
+                    // Nếu chọn giờ bắt đầu, kiểm tra giờ kết thúc
+                    if (editText.getId() == R.id.etGioBatDau) {
+                        String startDate = etNgayBatDau.getText().toString();
+                        String endDate = etNgayKetThuc.getText().toString();
+                        String endTime = etGioKetThuc.getText().toString();
+
+                        if (!startDate.isEmpty() && startDate.equals(endDate) && !endTime.isEmpty()) {
+                            if (compareTimes(selectedTime, endTime) > 0) {
+                                CustomToast.showCustomToast(this, "Giờ bắt đầu không thể lớn hơn giờ kết thúc!");
+                                editText.setText(""); // Xóa nếu không hợp lệ
+                            }
+                        }
+                    }
                 },
                 hour, minute, true);
 
         timePickerDialog.show();
     }
-    private void getInitFormCreateRequest(String token,  int GroupRequestId) {
+
+    // Hàm so sánh 2 giờ (HH:mm)
+    private int compareTimes(String time1, String time2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        try {
+            Date date1 = sdf.parse(time1);
+            Date date2 = sdf.parse(time2);
+            return date1.compareTo(date2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
+    private void getInitFormCreateRequest(String token, int GroupRequestId) {
         Log.d("CreateRequestActivity", "GroupRequestId: " + GroupRequestId);
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
@@ -208,6 +425,8 @@ public class CreateRequestActivity extends BaseActivity {
             }
         });
     }
+
+
     private void updateUserUI(RequestDetailData requestDetailData) {
         try {
             if (requestDetailData == null) {
@@ -217,7 +436,7 @@ public class CreateRequestActivity extends BaseActivity {
             txt_type_request.setText(requestDetailData.getRequestGroup().getName());
             edt_name_employye_request_create.setText(requestDetailData.getEmployee().getName());
             edt_part_request_create.setText(requestDetailData.getDepartment().getName());
-            if(requestDetailData.getDirectManager() != null) {
+            if (requestDetailData.getDirectManager() != null) {
                 edt_manager_direct_request_create.setText(requestDetailData.getDirectManager().getName());
             } else {
                 edt_manager_direct_request_create.setText("Chưa có quản lý trực tiếp");
@@ -259,53 +478,16 @@ public class CreateRequestActivity extends BaseActivity {
             // Lấy danh sách hình thức từ API
             List<RequestMethod> listMethods = requestDetailData.getListMethod();
             if (listMethods != null && !listMethods.isEmpty()) {
-                // Tìm Spinner
-                Spinner spinnerHinhThuc = findViewById(R.id.spinnerHinhThuc);
+                RecyclerView recyclerView = findViewById(R.id.recycler_filter_status_create);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-                // Chuyển danh sách `RequestMethod` thành danh sách chuỗi tên hiển thị
-                List<String> methodNames = new ArrayList<>();
-                methodNames.add("--Vui lòng chọn--"); // Thêm giá trị mặc định vào đầu danh sách
-                for (RequestMethod method : listMethods) {
-                    methodNames.add(method.getName()); // Giả sử RequestMethod có phương thức `getName()`
-                }
 
-                // Tạo ArrayAdapter cho Spinner
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_item,
-                        methodNames
-                );
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerHinhThuc.setAdapter(adapter);
-
-                // Lắng nghe sự kiện chọn item
-                spinnerHinhThuc.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0) {
-                            // Người dùng chưa chọn gì, vị trí mặc định
-                            Log.d("SelectedMethod", "No method selected (default item)");
-                        } else {
-                            RequestMethod selectedMethod = listMethods.get(position - 1); // Trừ 1 vì có mục mặc định
-                            requestDetailData.setRequestMethod(selectedMethod);
-                            Gson gson = new GsonBuilder()
-                                    .setPrettyPrinting() // Định dạng đẹp
-                                    .serializeNulls()    // Giữ lại giá trị null
-                                    .create();
-
-                            String jsonLog = gson.toJson(selectedMethod); // Chuyển object thành JSON
-                            Log.d("SelectedMethod", "User selected: " + jsonLog);
-                            // Bạn có thể xử lý thêm với `selectedMethod` tại đây
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(android.widget.AdapterView<?> parent) {
-                        Log.d("SelectedMethod", "No method selected");
-                    }
+                RequestMethodAdapter adapter = new RequestMethodAdapter(listMethods, select_method_request, overlayFilterStatus, overlay_background,GroupRequestType, selectedMethod -> {
+                    requestDetailData.setRequestMethod(selectedMethod);
+                    Log.d("SelectedMethod", "User selected: " + selectedMethod.getName());
                 });
-            } else {
-                Log.e("SpinnerData", "ListMethod is null or empty");
+
+                recyclerView.setAdapter(adapter);
             }
 
 
@@ -348,9 +530,22 @@ public class CreateRequestActivity extends BaseActivity {
                     }
                     button.setLayoutParams(params);
                     button.setOnClickListener(v -> {
+                        String nameInput = edt_name_request_create.getText().toString().trim();
+
+//                        if (!nameInput.matches("^[\\p{L}0-9 ]+$")) {
+//                            edt_name_request_create.setError("Chỉ nhập chữ cái có dấu và số!");
+//                            return;
+//                        }
+//
+//                        if (nameInput.length() > 150) {
+//                            edt_name_request_create.setError("Tên không được vượt quá 150 ký tự!");
+//                            return;
+//                        }
+
                         Log.d("ButtonClick", "Clicked on: " + listStatus1.getName());
                         handleCreateRequest(requestDetailData, listStatus1);
                     });
+
 
                     actionButtonContainer.addView(button);
                 }
@@ -363,113 +558,203 @@ public class CreateRequestActivity extends BaseActivity {
         }
     }
 
-    public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1 ) {
-        requestDetailData.setRequestName(edt_name_request_create.getText().toString());
-        requestDetailData.setEndDate(etNgayKetThuc.getText().toString());
-        requestDetailData.setEndTime(etGioKetThuc.getText().toString());
-        requestDetailData.setStartDate(etNgayBatDau.getText().toString());
-        requestDetailData.setStartTime(etGioBatDau.getText().toString());
-        // Cập nhật lý do (Reason)
-        requestDetailData.setReason(edt_reason_request_create.getText().toString());
 
-        // Cập nhật hình thức (Request Method)
+    public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
+        // Lấy dữ liệu từ giao diện nhập vào requestDetailData
+        requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
+        requestDetailData.setEndDate(etNgayKetThuc.getText().toString().trim());
+        requestDetailData.setEndTime(etGioKetThuc.getText().toString().trim());
+        requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
+        requestDetailData.setStartTime(etGioBatDau.getText().toString().trim());
+        requestDetailData.setReason(edt_reason_request_create.getText().toString().trim());
 
+        // Kiểm tra nếu listStatus1.id == 3
+//        if (listStatus1.getId() == 3) {
+            if (requestDetailData.getRequestName().isEmpty()) {
+                CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
+                return;
+            }
+            if (requestDetailData.getStartDate().isEmpty() || requestDetailData.getStartTime().isEmpty()) {
+                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian bắt đầu!");
+                return;
+            }
+            if (requestDetailData.getEndDate().isEmpty() || requestDetailData.getEndTime().isEmpty()) {
+                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian kết thúc!");
+                return;
+            }
+            if (requestDetailData.getReason().isEmpty()) {
+                CustomToast.showCustomToast(this, "Vui lòng nhập lý do!");
+                return;
+            }
+//        }
 
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting() // Định dạng đẹp
-                .serializeNulls()    // Giữ lại giá trị null
-                .create();
+        // Kiểm tra nếu ngày bắt đầu lớn hơn ngày kết thúc
+        if (!requestDetailData.getStartDate().isEmpty() && !requestDetailData.getEndDate().isEmpty()) {
+            if (compareDates(requestDetailData.getStartDate(), requestDetailData.getEndDate()) > 0) {
+                CustomToast.showCustomToast(this, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
+                return;
+            }
+        }
 
-        String jsonLog = gson.toJson(requestDetailData.getRequestMethod()); // Chuyển object thành JSON
+        // Kiểm tra nếu ngày bắt đầu == ngày kết thúc thì phải kiểm tra giờ
+        if (!requestDetailData.getStartDate().isEmpty() && !requestDetailData.getEndDate().isEmpty() &&
+                !requestDetailData.getStartTime().isEmpty() && !requestDetailData.getEndTime().isEmpty()) {
+            if (requestDetailData.getStartDate().equals(requestDetailData.getEndDate())) {
+                if (compareTimes(requestDetailData.getStartTime(), requestDetailData.getEndTime()) > 0) {
+                    CustomToast.showCustomToast(this, "Khi ngày bắt đầu và ngày kết thúc trùng nhau, giờ kết thúc phải lớn hơn giờ bắt đầu!");
+                    return;
+                }
+            }
+        }
 
+        // Tạo JSON log để kiểm tra dữ liệu
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String jsonLog = gson.toJson(requestDetailData.getRequestMethod());
         Log.d("CreateRequestActivity", "listStatus selected: " + jsonLog);
-        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
 
-        // Lấy token từ SharedPreferences
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
 
         // Tạo object để gửi request
         GroupRequestCreateRequest groupRequestCreateRequest = new GroupRequestCreateRequest();
-
-        // Gán dữ liệu từ API init form (giả sử đã lưu trong `requestDetailData`)
         groupRequestCreateRequest.setContact(requestDetailData.getContact());
         groupRequestCreateRequest.setDateType(requestDetailData.getDateType());
-
-
         groupRequestCreateRequest.setDuration(requestDetailData.getDuration());
         groupRequestCreateRequest.setEndDate(requestDetailData.getEndDate());
         groupRequestCreateRequest.setEndTime(requestDetailData.getEndTime());
-
-
-        groupRequestCreateRequest.setReason(edt_reason_request_create.getText().toString());
+        groupRequestCreateRequest.setReason(requestDetailData.getReason());
         groupRequestCreateRequest.setRejectReason("");
 
-
-        // **Gán dữ liệu cho requestGroup**
+        // Gán requestGroup
         GroupRequestCreateRequest.RequestGroup requestGroup = new GroupRequestCreateRequest.RequestGroup(
-                requestDetailData.getRequestGroup().getCode(),  // code
-                requestDetailData.getRequestGroup().getId(),    // id
-                requestDetailData.getRequestGroup().getName(),  // name
-                requestDetailData.getRequestGroup().getStatus() // status
+                requestDetailData.getRequestGroup().getCode(),
+                requestDetailData.getRequestGroup().getId(),
+                requestDetailData.getRequestGroup().getName(),
+                requestDetailData.getRequestGroup().getStatus()
         );
         groupRequestCreateRequest.setRequestGroup(requestGroup);
 
-        GroupRequestCreateRequest.RequestMethod requestMethod = new GroupRequestCreateRequest.RequestMethod(
-                requestDetailData.getRequestMethod().getCode(),  // code
-                requestDetailData.getRequestMethod().getId(),    // id
-                requestDetailData.getRequestMethod().getName(),  // name
-                requestDetailData.getRequestMethod().getStatus() // status
-        );
-        groupRequestCreateRequest.setRequestMethod(requestMethod);
+        // Gán requestMethod
+        if (requestDetailData.getRequestMethod() != null) {
+            GroupRequestCreateRequest.RequestMethod requestMethod = new GroupRequestCreateRequest.RequestMethod(
+                    requestDetailData.getRequestMethod().getCode(),
+                    requestDetailData.getRequestMethod().getId(),
+                    requestDetailData.getRequestMethod().getName(),
+                    requestDetailData.getRequestMethod().getStatus()
+            );
+            groupRequestCreateRequest.setRequestMethod(requestMethod);
+        }
 
 
+        // Gán status
         GroupRequestCreateRequest.Status status = new GroupRequestCreateRequest.Status(
-                listStatus1.getCode(),  // code
-                listStatus1.getId(),    // id
-                listStatus1.getName(),  // name
-                listStatus1.getStatus() // status
+                listStatus1.getCode(),
+                listStatus1.getId(),
+                listStatus1.getName(),
+                listStatus1.getStatus()
         );
         groupRequestCreateRequest.setStatus(status);
 
-
         groupRequestCreateRequest.setRequestId(requestDetailData.getRequestId());
-
         groupRequestCreateRequest.setRequestName(requestDetailData.getRequestName());
         groupRequestCreateRequest.setStartDate(requestDetailData.getStartDate());
         groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
         groupRequestCreateRequest.setType(requestDetailData.getType());
 
-        String dataObject = gson.toJson(groupRequestCreateRequest); // Chuyển object thành JSON
-
+        String dataObject = gson.toJson(groupRequestCreateRequest);
         Log.d("CreateRequestActivity", "data to createeeeee: " + dataObject);
-
-
-
-        // Gửi request tạo mới
-        Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
-        call.enqueue(new Callback<ApiResponse<String>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                Log.d("CreateRequest", "Response: " + response);
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<String> apiResponse = response.body();
-                    if (apiResponse.getStatus() == 200) {
-                        CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                        startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
+        Log.d("GroupRequestType: ", "GroupRequestType: " + GroupRequestType);
+        if(GroupRequestType == 2) {
+            // đơn xin nghỉ phép
+            Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
+            call.enqueue(new Callback<ApiResponse<String>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                    Log.d("CreateRequest", "Response: " + response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse<String> apiResponse = response.body();
+                        if (apiResponse.getStatus() == 200) {
+                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                        }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
-                } else {
-                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
+                }
+            });
+        } else if (GroupRequestType == 7) {
+            // đề xuất đổi ca
+        } else if (GroupRequestType == 3) {
+            // đăng ký làm thêm
+        } else if (GroupRequestType == 8) {
+            // đề nghị thanh toán
+        } else if (GroupRequestType == 9) {
+            // đề nghị tạm ứng
+        } else if (GroupRequestType == 4) {
+            // Đăng ký mua sắm vật tư
+            Call<ApiResponse<String>> call = apiInterface.buyNewCreateRequest(token, groupRequestCreateRequest);
+            call.enqueue(new Callback<ApiResponse<String>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                    Log.d("CreateRequest", "Response: " + response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse<String> apiResponse = response.body();
+                        if (apiResponse.getStatus() == 200) {
+                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                        }
+                    } else {
+                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
+                }
+            });
+        } else if (GroupRequestType == 5) {
+            requestDetailData.setDuration(Integer.parseInt(edt_number_of_days_notice.getText().toString().trim()));
+            // đơn xin thôi vc
+            groupRequestCreateRequest.setDuration(requestDetailData.getDuration());
+            Call<ApiResponse<String>> call = apiInterface.resignCreateRequest(token, groupRequestCreateRequest);
+            call.enqueue(new Callback<ApiResponse<String>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                    Log.d("CreateRequest", "Response: " + response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse<String> apiResponse = response.body();
+                        if (apiResponse.getStatus() == 200) {
+                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                        }
+                    } else {
+                        Log.d("Vào", "Vào");
+                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
+                }
+            });
+        } else {
+            // chuyển thiết bị
+        }
+
     }
 
     @Override
@@ -477,6 +762,7 @@ public class CreateRequestActivity extends BaseActivity {
         KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
         return super.dispatchTouchEvent(event);
     }
+
     public void onBackPressed() {
         super.onBackPressed(); // Quay lại trang trước đó
     }
