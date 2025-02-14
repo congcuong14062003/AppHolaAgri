@@ -100,12 +100,27 @@ public class SendToMeRequestFragment extends BaseFragment {
                             emptyStateLayout.setVisibility(View.GONE);
                             if (adapter == null) {
                                 adapter = new RequestListAdapter(data.getData());
-                                adapter.setOnItemClickListener((requestId, typeRequest, groupRequestType) -> {
-                                    Intent intent = new Intent(getContext(), RequestDetailActivity.class);
-                                    intent.putExtra("requestId", requestId);
-                                    intent.putExtra("typeRequest", typeRequest);
-                                    intent.putExtra("groupRequestType", groupRequestType);
-                                    startActivity(intent);
+                                adapter.setOnItemClickListener((requestId, StatusRequest, GroupRequest) -> {
+                                    if(GroupRequest == 1) {
+                                        // đi muộn về sớm
+                                        Intent intent = new Intent(getContext(), RequestLateEarlyDetail.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    } else if (GroupRequest == 2) {
+                                        // xin nghỉ phép
+                                        Intent intent = new Intent(getContext(), RequestDayOffDetail.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+//                                    Intent intent = new Intent(getContext(), RequestDetailActivity.class);
+//                                    intent.putExtra("requestId", requestId);
+//                                    intent.putExtra("StatusRequest", StatusRequest);
+//                                    intent.putExtra("GroupRequest", GroupRequest);
+//                                    startActivity(intent);
                                 });
                                 recyclerView.setAdapter(adapter);
                             } else {

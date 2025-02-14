@@ -8,17 +8,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -27,39 +24,35 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
-import com.example.appholaagri.adapter.SalaryTableAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
+import com.example.appholaagri.model.RequestDetailModel.ListStatus;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
-import com.example.appholaagri.model.RequestModel.RequestListData;
-import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
-import com.squareup.picasso.Picasso;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RequestDetailActivity extends BaseActivity {
-    TextView txt_type_request, txt_reason_refused_request, txt_name_request, txt_name_employye_request, txt_part_request, txt_reason_request, txt_manager_direct_request,txt_fixed_reviewer_request,txt_follower_request;
-
+public class RequestDayOffDetail extends AppCompatActivity {
+    TextView etNgayBatDau, etGioBatDau, notice_lately_layout, etNgayKetThuc, etGioKetThuc, etDurationLateEarly,  txt_type_request, txt_reason_refused_request, txt_name_request, txt_name_employye_request, select_method_request, txt_part_request, txt_reason_request, txt_manager_direct_request,txt_fixed_reviewer_request,txt_follower_request;
     AppCompatButton txt_status_request;
-    LinearLayout reason_refused_request_layout;
-    EditText etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc;
+    LinearLayout reason_refused_request_layout, actionButtonContainer;
     private RecyclerView recyclerView;
     private ActionRequestDetailAdapter adapter;
-    ImageView backBtnReview;
+    ImageView backBtnReview, rbNhieuNgay_detail, rbMotNgay_detail, rbWork_detail, rbIndividual_detail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_request_detail);
+        setContentView(R.layout.activity_request_day_off_detail);
         txt_type_request = findViewById(R.id.txt_type_request);
         txt_reason_refused_request = findViewById(R.id.txt_reason_refused_request);
         txt_name_request = findViewById(R.id.txt_name_request);
@@ -77,6 +70,14 @@ public class RequestDetailActivity extends BaseActivity {
         txt_follower_request = findViewById(R.id.txt_follower_request);
         recyclerView = findViewById(R.id.recyclerViewActionRequest);
         backBtnReview = findViewById(R.id.backBtnReview);
+        rbMotNgay_detail = findViewById(R.id.rbMotNgay_detail);
+        rbNhieuNgay_detail = findViewById(R.id.rbNhieuNgay_detail);
+        etDurationLateEarly = findViewById(R.id.etDurationLateEarly);
+        rbWork_detail = findViewById(R.id.rbWork_detail);
+        rbIndividual_detail = findViewById(R.id.rbIndividual_detail);
+        select_method_request = findViewById(R.id.select_method_request);
+        notice_lately_layout = findViewById(R.id.notice_lately_layout);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         backBtnReview.setOnClickListener(view -> {
             onBackPressed();
@@ -88,13 +89,14 @@ public class RequestDetailActivity extends BaseActivity {
             Integer GroupRequest = intent.getIntExtra("GroupRequest", -1);            // Nhận type
             SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
 
-            Log.d("RequestDetailActivity", "requestId: " + requestId);
-            Log.d("RequestDetailActivity", "StatusRequest: " + StatusRequest);
-            Log.d("RequestDetailActivity", "GroupRequest: " + GroupRequest);
+            Log.d("RequestLateEarlyDetail", "requestId: " + requestId);
+            Log.d("RequestLateEarlyDetail", "StatusRequest: " + StatusRequest);
+            Log.d("RequestLateEarlyDetail", "GroupRequest: " + GroupRequest);
             String token = sharedPreferences.getString("auth_token", null);
             getDetailRequest(requestId, StatusRequest, token);
         }
     }
+
     private void getDetailRequest(int requestId, String StatusRequest, String token) {
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
@@ -111,11 +113,11 @@ public class RequestDetailActivity extends BaseActivity {
                         }
                     } else {
                         Log.e("RequestDetailActivity", "API response is unsuccessful");
-                        CustomToast.showCustomToast(RequestDetailActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(RequestDayOffDetail.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
                     Log.e("RequestDetailActivity", "Error during response handling: " + e.getMessage());
-                    CustomToast.showCustomToast(RequestDetailActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                    CustomToast.showCustomToast(RequestDayOffDetail.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
@@ -132,11 +134,22 @@ public class RequestDetailActivity extends BaseActivity {
             if (requestDetailData == null) {
                 return;
             }
+            Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+            String dataObject = gson.toJson(requestDetailData);
+            Log.d("RequestLateEarlyDetail", "data detail: " + dataObject);
+
             if (requestDetailData.getRejectReason() == null) {
                 reason_refused_request_layout.setVisibility(View.GONE);
             } else {
                 reason_refused_request_layout.setVisibility(View.VISIBLE);
             }
+
+
+            select_method_request.setText(requestDetailData.getRequestMethod().getName());
+            etNgayBatDau.setText(requestDetailData.getStartDate());
+            etNgayKetThuc.setText(requestDetailData.getEndDate());
+            etGioBatDau.setText(requestDetailData.getStartTime());
+            etGioKetThuc.setText(requestDetailData.getEndTime());
             txt_type_request.setText(requestDetailData.getRequestGroup().getName());
             txt_name_request.setText(requestDetailData.getRequestName());
             txt_reason_refused_request.setText(requestDetailData.getRejectReason());
@@ -166,55 +179,17 @@ public class RequestDetailActivity extends BaseActivity {
             }
 
 
-            // Cập nhật Spinner với giá trị requestMethod
-            Spinner spinnerHinhThuc = findViewById(R.id.spinnerHinhThuc);
-            ArrayList<String> spinnerItems = new ArrayList<>();
-            if (requestDetailData.getRequestMethod() != null) {
-                spinnerItems.add(requestDetailData.getRequestMethod().getName()); // Thêm tên vào Spinner
-            }
 
-            // Nếu bạn muốn thêm nhiều item cho spinner, bạn có thể thay thế mảng ở đây
-            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerItems);
-            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerHinhThuc.setAdapter(spinnerAdapter);
-
-            // Kiểm tra giá trị dateTypeName và cập nhật trạng thái của RadioButton
-            String dateTypeName = requestDetailData.getDateTypeName(); // Giả sử đây là trường lưu giá trị "Nhiều ngày" hoặc "1 ngày"
-            ImageView rbMotNgay = findViewById(R.id.rbMotNgay);
-            ImageView rbNhieuNgay = findViewById(R.id.rbNhieuNgay);
-
-            // Log ra giá trị của dateTypeName
-            Log.d("RequestDetailActivity", "dateTypeName: " + dateTypeName);
-
-            // Kiểm tra nếu dateTypeName không null và so sánh
-            if (dateTypeName != null) {
-                if (dateTypeName.equals("Nhiều ngày")) {
-                    rbNhieuNgay.setImageDrawable(getResources().getDrawable(R.drawable.checked_radio)); // Chọn RadioButton "Nhiều ngày"
-                    rbMotNgay.setImageDrawable(getResources().getDrawable(R.drawable.unchecked_radio)); // Bỏ chọn RadioButton "1 ngày" nếu có
-                } else if (dateTypeName.equals("1 ngày")) {
-                    rbMotNgay.setImageDrawable(getResources().getDrawable(R.drawable.checked_radio)); // Chọn RadioButton "1 ngày"
-                    rbNhieuNgay.setImageDrawable(getResources().getDrawable(R.drawable.unchecked_radio)); // Bỏ chọn RadioButton "Nhiều ngày" nếu có
-                } else {
-                    // Nếu không có giá trị hợp lệ, có thể bỏ cả hai chọn
-                    rbMotNgay.setImageDrawable(getResources().getDrawable(R.drawable.unchecked_radio));
-                    rbNhieuNgay.setImageDrawable(getResources().getDrawable(R.drawable.unchecked_radio));
-                }
-            } else {
-                // Nếu dateTypeName là null, bỏ cả hai chọn
-                rbMotNgay.setImageDrawable(getResources().getDrawable(R.drawable.unchecked_radio));
-                rbNhieuNgay.setImageDrawable(getResources().getDrawable(R.drawable.unchecked_radio));
-            }
-            // ngày bắt đầu
-            String ngayBatDau = requestDetailData.getStartDate(); // Định dạng: "dd/MM/yyyy"
-            String gioBatDau = requestDetailData.getStartTime(); // Định dạng: "HH:mm"
-            String ngayKetThuc = requestDetailData.getEndDate(); // Định dạng: "dd/MM/yyyy"
-            String gioKetThuc = requestDetailData.getEndTime(); // Định dạng: "HH:mm"
-            etNgayBatDau.setText(ngayBatDau);
-            etGioBatDau.setText(gioBatDau);
-            etNgayKetThuc.setText(ngayKetThuc);
-            etGioKetThuc.setText(gioKetThuc);
             txt_reason_request.setText(requestDetailData.getReason());
-            txt_manager_direct_request.setText(requestDetailData.getDirectManager().getName());
+
+            if(requestDetailData.getDirectManager() != null) {
+                txt_manager_direct_request.setText(requestDetailData.getDirectManager().getName());
+            } else {
+                txt_manager_direct_request.setText("Chưa có quản lý trực tiếp");
+            }
+
+
+
             List<Consignee> consigneeList = requestDetailData.getConsignee(); // Giả sử đây là danh sách Consignee
             if (consigneeList != null && !consigneeList.isEmpty()) {
                 StringBuilder consigneeNames = new StringBuilder();
@@ -250,11 +225,48 @@ public class RequestDetailActivity extends BaseActivity {
                 txt_follower_request.setText("Không có người theo dõi"); // Thông báo mặc định
             }
 
-            txt_follower_request.setText(requestDetailData.getDirectManager().getName());
 
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+            // các nút hành động
+            actionButtonContainer = findViewById(R.id.action_button_container);
+            actionButtonContainer.removeAllViews(); // Xóa các button cũ (nếu có)
+            List<ListStatus> listStatus = requestDetailData.getListStatus();
+            if (listStatus != null && !listStatus.isEmpty()) {
+                int totalItems = listStatus.size();
+                for (int i = 0; i < totalItems; i++) {
+                    ListStatus listStatus1 = listStatus.get(i);
+                    AppCompatButton button = new AppCompatButton(this);
+
+                    // Set text and normal case
+                    button.setText(listStatus1.getName().toLowerCase());
+                    button.setAllCaps(false);
+                    button.setTextColor(Color.WHITE);
+                    button.setPadding(24, 12, 24, 12); // Thêm padding
+
+                    int buttonColor = Color.parseColor(listStatus1.getColor() != null ? listStatus1.getColor() : "#007BFF");
+                    button.setBackgroundTintList(ColorStateList.valueOf(buttonColor));
+                    button.setBackground(ContextCompat.getDrawable(this, R.drawable.button_custom));
+                    button.setStateListAnimator(null);
+
+                    // Căn các nút cách đều và sát hai bên
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            1.0f // Chia đều khoảng trống
+                    );
+                    params.setMargins(4, 8, 4, 8); // Margin nhỏ đều hai bên
+
+                    button.setLayoutParams(params);
+                    button.setOnClickListener(v -> {
+                        Log.d("ButtonClick", "Clicked on: " + listStatus1.getName());
+                    });
+                    actionButtonContainer.addView(button);
+                }
+            } else {
+                Log.e("ButtonList", "No buttons found in API response");
+            }
 
 
 
@@ -273,5 +285,4 @@ public class RequestDetailActivity extends BaseActivity {
             super.onBackPressed();
         }
     }
-
 }

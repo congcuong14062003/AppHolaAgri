@@ -102,11 +102,11 @@ public class FollowingRequestFragment extends BaseFragment {
                             emptyStateLayout.setVisibility(View.GONE);
                             if (adapter == null) {
                                 adapter = new RequestListAdapter(data.getData());
-                                adapter.setOnItemClickListener((requestId, typeRequest, groupRequestType) -> {
+                                adapter.setOnItemClickListener((requestId, StatusRequest, GroupRequest) -> {
                                     Intent intent = new Intent(getContext(), RequestDetailActivity.class);
                                     intent.putExtra("requestId", requestId);
-                                    intent.putExtra("typeRequest", typeRequest);
-                                    intent.putExtra("groupRequestType", groupRequestType);
+                                    intent.putExtra("StatusRequest", StatusRequest);
+                                    intent.putExtra("GroupRequest", GroupRequest);
                                     startActivity(intent);
                                 });
                                 recyclerView.setAdapter(adapter);

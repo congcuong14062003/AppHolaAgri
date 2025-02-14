@@ -100,33 +100,36 @@
         android:layout_height="match_parent"
         android:layout_marginTop="90dp">
         <LinearLayout
-            android:paddingEnd="16dp"
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/white"
             android:gravity="center_vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:orientation="horizontal"
-            >
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Tab Layout (chiếm hết phần còn lại) -->
             <com.google.android.material.tabs.TabLayout
-                android:layout_marginLeft="10dp"
                 android:id="@+id/tabRequest"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="@color/white"
-                app:tabTextAppearance="@style/CustomTabTextStyle"
+                app:tabGravity="fill"
                 app:tabIndicatorColor="@color/secondarycolor"
+                app:tabMode="fixed"
                 app:tabSelectedTextColor="@color/secondarycolor"
+                app:tabTextAppearance="@style/CustomTabTextStyle"
                 app:tabTextColor="@color/textcolor" />
-            <!-- Icon lọc -->
+
+            <!-- Icon lọc (Nằm bên phải) -->
             <ImageView
                 android:id="@+id/filterIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
                 android:src="@drawable/filter_icon" />
         </LinearLayout>
         <androidx.viewpager2.widget.ViewPager2

@@ -23,6 +23,9 @@ public class RequestAdapterTabList extends FragmentStateAdapter {
         super(fragmentActivity);
         this.requestTabListData = requestTabListData;
     }
+    public int getTabIdAtPosition(int position) {
+        return requestTabListData.get(position).getId();
+    }
 
     public void setTabList(List<RequestTabListData> tabList) {
         this.requestTabListData = tabList;

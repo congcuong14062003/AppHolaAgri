@@ -1,0 +1,49 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="8dp">
+    <LinearLayout
+        android:id="@+id/tvAddtimeOvertime_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle_14_500"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Nghỉ giữa giờ -----" />
+
+            <!-- Chọn giờ -->
+            <EditText
+                android:id="@+id/etBreakTimeTimeOvertime"
+                style="@style/TextStyle_14_500"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/input_infor"
+                android:clickable="true"
+                android:drawableEnd="@drawable/icon_lock"
+                android:focusable="false"
+                android:hint="Chọn giờ"
+                android:padding="10dp" />
+            <ImageView
+                android:layout_weight="0"
+                android:id="@+id/delete_break_time"
+                android:layout_marginStart="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/delete_break_time_icon"
+                android:layerType="software" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

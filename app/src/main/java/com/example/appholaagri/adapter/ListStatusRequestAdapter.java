@@ -1,4 +1,5 @@
 package com.example.appholaagri.adapter;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ public class ListStatusRequestAdapter extends RecyclerView.Adapter<ListStatusReq
 
     private final List<RequestStatusData> statusList;
     private final OnStatusClickListener listener;
-
+    private int selectedPosition = -1; // Vị trí mặc định
     public interface OnStatusClickListener {
         void onStatusClick(RequestStatusData status);
     }
@@ -32,11 +33,16 @@ public class ListStatusRequestAdapter extends RecyclerView.Adapter<ListStatusReq
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder,@SuppressLint("RecyclerView") int position) {
+        RequestStatusData requestStatusData = statusList.get(position);
         RequestStatusData status = statusList.get(position);
         holder.statusName.setText(status.getName());
         holder.statusCount.setText( " (" + status.getCount() + ")");
-        holder.itemView.setOnClickListener(v -> listener.onStatusClick(status));
+        holder.itemView.setOnClickListener(v -> {
+            selectedPosition = position;
+            listener.onStatusClick(status);
+                }
+        );
     }
 
     @Override

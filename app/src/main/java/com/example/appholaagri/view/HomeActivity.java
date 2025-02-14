@@ -2,6 +2,7 @@ package com.example.appholaagri.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +16,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.appholaagri.R;
 import com.example.appholaagri.databinding.ActivityHomeBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 public class HomeActivity extends AppCompatActivity {
     ActivityHomeBinding binding;
     FloatingActionButton checkin_daily;
@@ -25,6 +27,22 @@ public class HomeActivity extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomAppBar, (v, insets) -> {
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+            v.setPadding(0, 0, 0, -bottomInset);  // Đặt padding âm để vẽ phía dưới
+            return insets;
+        });
+
+
         binding.bottomNavigationView.setBackground(null);
         checkin_daily = findViewById(R.id.checkin_daily);
         checkin_daily.setOnClickListener(view -> {

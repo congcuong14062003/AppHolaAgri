@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_home"
-    tools:context=".view.CreateRequestActivity">
+    tools:context=".view.RequestLateEarlyDetail">
     <!-- AppBarLayout chứa phần tiêu đề và nút back -->
     <!-- Toolbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,7 +17,7 @@
         android:paddingEnd="20dp">
 
         <ImageView
-            android:id="@+id/backBtnReview_create"
+            android:id="@+id/backBtnReview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -33,7 +33,7 @@
             style="@style/TextStyle_16_600"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tạo đề xuất mới"
+            android:text="Chi tiết đề xuất"
             android:textAllCaps="true"
             android:textColor="@color/black"
             android:visibility="visible"
@@ -42,22 +42,25 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="95dp">
+
         <LinearLayout
             android:id="@+id/contentLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical">
+
             <LinearLayout
                 android:id="@+id/thong_tin_lien_he"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/bg_rounded"
+                android:background="@drawable/bg_rounded_26_top"
                 android:orientation="vertical">
                 <!--Quản lý thông tin-->
                 <LinearLayout
@@ -69,34 +72,26 @@
                     android:padding="20dp">
 
                     <TextView
-                        android:id="@+id/txt_type_request_create"
+                        android:id="@+id/txt_type_request"
                         style="@style/TextStyle_16_600"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:text="Xin đi muộn/ về sớm"
+                        android:text="Xin đi muộn về sớm"
                         android:textColor="@color/secon_textcolor" />
 
-<!--                    <LinearLayout-->
-<!--                        android:id="@+id/cancel_create_request_layout"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:gravity="center_vertical"-->
-<!--                        >-->
-<!--                        <ImageView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:src="@drawable/remove"-->
-<!--                            />-->
-<!--                        <TextView-->
-<!--                            style="@style/TextStyle_14_500"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginStart="5dp"-->
-<!--                            android:text="Huỷ bỏ" />-->
-
-<!--                    </LinearLayout>-->
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/txt_status_request_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:background="@drawable/bg_rounded_10_no_color"
+                        android:backgroundTint="#FFE9E4"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="Từ chối"
+                        android:textAllCaps="false"
+                        android:textColor="#FF5C39" />
                 </LinearLayout>
 
                 <!--Quản lý thông tin-->
@@ -105,6 +100,61 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="20dp">
+
+<!--                    <LinearLayout-->
+<!--                        android:id="@+id/reason_refused_request_layout"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:orientation="horizontal">-->
+
+<!--                            <TextView-->
+<!--                                style="@style/TextStyle_14_500"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginStart="10dp"-->
+<!--                                android:text="Lý do từ chối"-->
+<!--                                android:textColor="@color/secon_textcolor" />-->
+
+<!--                            <TextView-->
+<!--                                style="@style/TextStyle_14_500"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginStart="10dp"-->
+<!--                                android:text="-"-->
+<!--                                android:textColor="@color/secon_textcolor" />-->
+
+<!--                            <TextView-->
+<!--                                style="@style/TextStyle_14_500"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginStart="10dp"-->
+<!--                                android:text="Nguyễn Thu Thùy"-->
+<!--                                android:textColor="@color/secon_textcolor" />-->
+<!--                        </LinearLayout>-->
+
+
+<!--                        <TextView-->
+<!--                            android:enabled="false"-->
+<!--                            android:id="@+id/txt_reason_refused_request"-->
+<!--                            style="@style/TextStyle_14_500"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="5dp"-->
+<!--                            android:layout_marginBottom="15dp"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:background="@drawable/input_infor"-->
+<!--                            android:backgroundTint="#dee0df"-->
+<!--                            android:gravity="center_vertical"-->
+<!--                            android:padding="35px"-->
+<!--                            android:text="Xin phép đại ca cho em đi muộn nhé! "-->
+<!--                            android:textColor="@color/textcolor" />-->
+<!--                    </LinearLayout>-->
+
                     <LinearLayout
                         android:id="@+id/name_request_layout"
                         android:layout_width="match_parent"
@@ -119,20 +169,20 @@
                             android:text="Tên đề xuất" />
 
                         <EditText
-                            android:id="@+id/edt_name_request_create"
+                            android:enabled="false"
+                            android:id="@+id/txt_name_request"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:layout_marginBottom="15dp"
                             android:layout_weight="1"
-                            android:maxLines="1"
                             android:background="@drawable/input_infor"
+                            android:backgroundTint="#dee0df"
                             android:gravity="center_vertical"
                             android:padding="35px"
-                            android:hint="Nhập tên đề xuất"
-                            android:textColor="@color/textcolor"
-                            android:imeOptions="actionNext" />
+                            android:text="Xin phép đại ca cho em đi muộn nhé! "
+                            android:textColor="@color/textcolor" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -142,25 +192,24 @@
                         android:orientation="vertical">
 
                         <TextView
-                            style="@style/TextStyle_14_500"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:text="Người đề xuất" />
 
-                        <EditText
-                            android:id="@+id/edt_name_employye_request_create"
+                        <TextView
+                            android:enabled="false"
+                            android:id="@+id/txt_name_employye_request"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:inputType="text"
-                            android:enabled="false"
                             android:layout_marginBottom="15dp"
                             android:background="@drawable/input_infor"
                             android:backgroundTint="#dee0df"
                             android:gravity="center_vertical"
                             android:padding="35px"
+                            android:text="Lừ Văn Quân"
                             android:textColor="@color/textcolor" />
                     </LinearLayout>
 
@@ -171,28 +220,82 @@
                         android:orientation="vertical">
 
                         <TextView
-                            style="@style/TextStyle_14_500"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:text="Bộ phận" />
 
-                        <EditText
-                            android:id="@+id/edt_part_request_create"
+                        <TextView
+                            android:enabled="false"
+                            android:id="@+id/txt_part_request"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
-                            android:inputType="text"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:enabled="false"
                             android:layout_marginBottom="15dp"
                             android:background="@drawable/input_infor"
                             android:backgroundTint="#dee0df"
                             android:gravity="center_vertical"
                             android:padding="35px"
+                            android:text="Kỹ thuật vận hành"
                             android:textColor="@color/textcolor" />
                     </LinearLayout>
 
+                    <!--                    <LinearLayout-->
+                    <!--                        android:id="@+id/form_request_layout"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:orientation="vertical">-->
+
+                    <!--                        <TextView-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_marginStart="10dp"-->
+                    <!--                            android:text="Hình thức" />-->
+
+                    <!--                        <TextView-->
+                    <!--                            android:id="@+id/txt_form"-->
+                    <!--                            style="@style/TextStyle_14_500"-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_marginTop="5dp"-->
+                    <!--                            android:layout_marginBottom="15dp"-->
+                    <!--                            android:background="@drawable/input_infor"-->
+                    <!--                            android:backgroundTint="#dee0df"-->
+                    <!--                            android:gravity="center_vertical"-->
+                    <!--                            android:padding="35px"-->
+                    <!--                            android:text="Xin phép đi muộn"-->
+                    <!--                            android:textColor="@color/textcolor" />-->
+                    <!--                    </LinearLayout>-->
+                    <!--                    <LinearLayout-->
+                    <!--                        android:id="@+id/time_request_layout"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:orientation="vertical">-->
+
+                    <!--                        <TextView-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_marginStart="10dp"-->
+                    <!--                            android:text="Mốc thời gian" />-->
+                    <!--                        <EditText-->
+                    <!--                            android:id="@+id/edtSearch"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:textAllCaps="true"-->
+                    <!--                            android:visibility="visible"-->
+                    <!--                            android:hint="Tìm kiếm..."-->
+                    <!--                            android:padding="15dp"-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:inputType="text"-->
+                    <!--                            android:background="@drawable/bg_search_input"-->
+                    <!--                            style="@style/TextStyle_14_500"-->
+                    <!--                            android:textColor="@color/textcolor"-->
+                    <!--                            android:clickable="true"-->
+                    <!--                            android:focusable="true"-->
+                    <!--                            />-->
+                    <!--                            -->
+                    <!--                    </LinearLayout>-->
+                    <!-- Spinner chọn hình thức -->
                     <LinearLayout
                         android:id="@+id/form_request_layout"
                         android:layout_width="match_parent"
@@ -219,54 +322,25 @@
                                 android:layout_marginTop="5dp"
                                 android:layout_marginBottom="15dp"
                                 android:background="@drawable/input_infor"
+                                android:backgroundTint="#dee0df"
                                 android:gravity="center_vertical"
                                 android:padding="35px"
                                 android:textColor="@color/textcolor" />
 
-                            <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:src="@drawable/dropdown_icon"
-                                android:layout_gravity="end|center_vertical"
-                                android:layout_marginBottom="5dp"
-                                android:layout_marginEnd="20dp" />
+<!--                            <ImageView-->
+<!--                                android:layout_width="12dp"-->
+<!--                                android:layout_height="12dp"-->
+<!--                                android:src="@drawable/dropdown_icon"-->
+<!--                                android:layout_gravity="end|center_vertical"-->
+<!--                                android:layout_marginBottom="5dp"-->
+<!--                                android:layout_marginEnd="20dp" />-->
+
                         </FrameLayout>
 
                     </LinearLayout>
 
-<!--                    <LinearLayout-->
-<!--                        android:id="@+id/time_request_layout"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:orientation="vertical">-->
-
-<!--                        <TextView-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginStart="10dp"-->
-<!--                            android:text="Mốc thời gian" />-->
-
-<!--                        <EditText-->
-<!--                            android:id="@+id/edtSearch"-->
-<!--                            style="@style/TextStyle_14_500"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:background="@drawable/bg_search_input"-->
-<!--                            android:clickable="true"-->
-<!--                            android:focusable="true"-->
-<!--                            android:hint="Tìm kiếm..."-->
-<!--                            android:inputType="text"-->
-<!--                            android:padding="15dp"-->
-<!--                            android:textAllCaps="true"-->
-<!--                            android:textColor="@color/textcolor"-->
-<!--                            android:visibility="visible" />-->
-
-<!--                    </LinearLayout>-->
-                    <!-- Spinner chọn hình thức -->
-
-
                     <LinearLayout
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:id="@+id/form_time_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -295,7 +369,7 @@
                                 android:gravity="center_vertical">
 
                                 <ImageView
-                                    android:id="@+id/rbMotNgay_create"
+                                    android:id="@+id/rbMotNgay_detail"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="10dp"
@@ -318,7 +392,7 @@
                                 android:gravity="center_vertical">
 
                                 <ImageView
-                                    android:id="@+id/rbNhieuNgay_create"
+                                    android:id="@+id/rbNhieuNgay_detail"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="10dp"
@@ -334,7 +408,7 @@
 
                         </LinearLayout>
                     </LinearLayout>
-<!--                    thời gian bắt đầu-->
+                    <!--                    thời gian bắt đầu-->
                     <LinearLayout
                         android:id="@+id/tvThoiGianBatDau_layout"
                         android:layout_width="match_parent"
@@ -349,7 +423,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
                             android:layout_marginStart="10dp"
-                            android:text="Thời gian" />
+                            android:text="Thời gian" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -359,43 +433,32 @@
                             <!-- Chọn ngày -->
                             <EditText
                                 style="@style/TextStyle_14_500"
-                                android:id="@+id/etNgayBatDau"
+                                android:id="@+id/edtNgayBatDau"
                                 android:layout_width="0dp"
+                                android:textColor="@color/textcolor"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@drawable/rounded_background"
                                 android:drawableEnd="@drawable/lich_icon2"
-                                android:hint="Chọn ngày"
+                                android:backgroundTint="#dee0df"
+                                android:text="Chọn ngày"
                                 android:focusable="false"
                                 android:clickable="true"
                                 android:padding="10dp" />
 
-                            <!-- Chọn giờ -->
-                            <EditText
-                                android:id="@+id/etGioBatDau"
-                                android:layout_width="0dp"
-                                style="@style/TextStyle_14_500"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_weight="1"
-                                android:background="@drawable/rounded_background_right"
-                                android:drawableEnd="@drawable/icon_lock"
-                                android:hint="Chọn giờ"
-                                android:focusable="false"
-                                android:clickable="true"
-                                android:padding="10dp" />
                             <!-- Chọn phút  -->
                             <EditText
-                                android:visibility="gone"
                                 style="@style/TextStyle_14_500"
-                                android:id="@+id/etDurationLately"
+                                android:id="@+id/etDurationLateEarly"
                                 android:layout_width="0dp"
+                                android:textColor="@color/textcolor"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:background="@drawable/rounded_background_right"
                                 android:drawableEnd="@drawable/icon_lock"
                                 android:focusable="false"
+                                android:backgroundTint="#dee0df"
                                 android:clickable="true"
                                 android:padding="10dp" />
                         </LinearLayout>
@@ -416,7 +479,7 @@
                             style="@style/TextStyle_14_500"
                             android:layout_marginStart="10dp"
                             android:layout_marginBottom="8dp"
-                            android:text="Thời gian kết thúc" />
+                            android:text="Thời gian kết thúc" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -430,229 +493,34 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 style="@style/TextStyle_14_500"
-                                android:background="@drawable/rounded_background"
+                                android:background="@drawable/input_infor"
                                 android:drawableEnd="@drawable/lich_icon2"
+                                android:backgroundTint="#dee0df"
                                 android:hint="Chọn ngày"
                                 android:focusable="false"
-                                android:clickable="true"
-                                android:padding="10dp" />
-
-                            <!-- Chọn giờ kết thúc -->
-                            <EditText
-                                android:id="@+id/etGioKetThuc"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_weight="1"
-                                style="@style/TextStyle_14_500"
-                                android:background="@drawable/rounded_background_right"
-                                android:drawableEnd="@drawable/icon_lock"
-                                android:hint="Chọn giờ"
-                                android:focusable="false"
+                                android:textColor="@color/textcolor"
                                 android:clickable="true"
                                 android:padding="10dp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!--đăng ký làm thêm-->
-
-                    <LinearLayout
-                        android:id="@+id/dayContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        >
-
-                        <!--                    thời gian đăng ky lam thêm-->
-                        <LinearLayout
-                            android:id="@+id/tvOvertime_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                style="@style/TextStyle_14_500"
-                                android:id="@+id/tvOvertime"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginStart="10dp"
-                                android:text="Thời gian đăng ký làm thêm" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <!-- Chọn ngày -->
-                                <EditText
-                                    style="@style/TextStyle_14_500"
-                                    android:id="@+id/etDateOvertime"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:background="@drawable/rounded_background"
-                                    android:drawableEnd="@drawable/lich_icon2"
-                                    android:hint="Chọn ngày"
-                                    android:focusable="false"
-                                    android:clickable="true"
-                                    android:padding="10dp" />
-
-                                <!-- Chọn giờ -->
-                                <EditText
-                                    android:id="@+id/etTimeOvertime"
-                                    android:layout_width="0dp"
-                                    style="@style/TextStyle_14_500"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_weight="1"
-                                    android:background="@drawable/rounded_background_right"
-                                    android:drawableEnd="@drawable/icon_lock"
-                                    android:hint="Chọn giờ"
-                                    android:focusable="false"
-                                    android:clickable="true"
-                                    android:padding="10dp" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!--                    chọn thời gian nghỉ giữa giờ-->
-                        <LinearLayout
-                            android:id="@+id/breakTimeContainer"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:orientation="vertical">
-                            <!--                        <LinearLayout-->
-                            <!--                            android:gravity="center_vertical"-->
-                            <!--                            android:layout_width="match_parent"-->
-                            <!--                            android:layout_height="wrap_content"-->
-                            <!--                            android:orientation="horizontal">-->
-
-                            <!--                            <TextView-->
-                            <!--                                style="@style/TextStyle_14_500"-->
-                            <!--                                android:layout_width="0dp"-->
-                            <!--                                android:layout_weight="1"-->
-                            <!--                                android:layout_height="wrap_content"-->
-                            <!--                                android:text="Nghỉ giữa giờ -&#45;&#45;&#45;&#45;" />-->
-
-                            <!--                            &lt;!&ndash; Chọn giờ &ndash;&gt;-->
-                            <!--                            <EditText-->
-                            <!--                                android:id="@+id/etBreakTimeTimeOvertime"-->
-                            <!--                                style="@style/TextStyle_14_500"-->
-                            <!--                                android:layout_width="0dp"-->
-                            <!--                                android:layout_height="wrap_content"-->
-                            <!--                                android:layout_weight="1"-->
-                            <!--                                android:background="@drawable/input_infor"-->
-                            <!--                                android:clickable="true"-->
-                            <!--                                android:drawableEnd="@drawable/icon_lock"-->
-                            <!--                                android:focusable="false"-->
-                            <!--                                android:hint="Chọn giờ"-->
-                            <!--                                android:padding="10dp" />-->
-                            <!--                            <ImageView-->
-                            <!--                                android:layout_weight="0"-->
-                            <!--                                android:id="@+id/delete_break_time"-->
-                            <!--                                android:layout_marginStart="10dp"-->
-                            <!--                                android:layout_width="wrap_content"-->
-                            <!--                                android:layout_height="wrap_content"-->
-                            <!--                                android:src="@drawable/delete_break_time_icon"-->
-                            <!--                                android:layerType="software" />-->
-                            <!--                        </LinearLayout>-->
-                        </LinearLayout>
-
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/add_break_time_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="20dp"
-                            android:paddingEnd="20dp"
-                            android:background="@drawable/button_custom"
-                            android:backgroundTint="@color/secondarycolor"
-                            android:elevation="0dp"
-                            android:textStyle="normal"
-                            android:stateListAnimator="@null"
-                            android:text="Thêm nghỉ giữa giờ"
-                            android:textColor="@color/white" />
-
-                        <!-- Dòng kẻ -->
-                        <ImageView
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="5dp"
-                            android:src="@drawable/dashed_line"
-                            android:layerType="software" />
-                    </LinearLayout>
-
-<!--                    nút thêm ngày-->
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/add_day_btn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="20dp"
-                        android:background="@drawable/button_custom"
-                        android:backgroundTint="@color/secondarycolor"
-                        android:elevation="0dp"
-                        android:textStyle="normal"
-                        android:stateListAnimator="@null"
-                        android:text="+ Thêm ngày"
-                        android:textColor="@color/white" />
-
-
-
-
-                    <!-- số ngày báo trước-->
-                    <LinearLayout
-                        android:visibility="gone"
-                        android:id="@+id/number_of_days_notice_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            style="@style/TextStyle_14_500"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="Số ngày báo trước" />
-
-                        <EditText
-                            android:id="@+id/edt_number_of_days_notice"
-                            style="@style/TextStyle_14_500"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="15dp"
-                            android:layout_weight="1"
-                            android:maxLines="1"
-                            android:background="@drawable/input_infor"
-                            android:gravity="center_vertical"
-                            android:padding="35px"
-                            android:textColor="@color/textcolor"
-                            android:imeOptions="actionNext" />
-                    </LinearLayout>
-
-<!--                    thông báo trừ công-->
                     <LinearLayout
                         android:layout_marginBottom="10dp"
-                        android:visibility="gone"
-                        android:id="@+id/notice_lately_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
                         >
                         <TextView
+                            android:id="@+id/notice_lately_layout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:textColor="#C62C2C"
-                            android:text="Trừ 0.5 công do muộn > 31 phút " />
+                            android:text="" />
                     </LinearLayout>
-
-<!--                    chọn lí do-->
+                    <!--                chọn lý do-->
                     <LinearLayout
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:id="@+id/select_reason_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -681,7 +549,7 @@
                                 android:gravity="center_vertical">
 
                                 <ImageView
-                                    android:id="@+id/rbIndividual_create"
+                                    android:id="@+id/rbIndividual_detail"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="10dp"
@@ -705,7 +573,7 @@
                                 android:gravity="center_vertical">
 
                                 <ImageView
-                                    android:id="@+id/rbWork_create"
+                                    android:id="@+id/rbWork_detail"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="10dp"
@@ -721,7 +589,6 @@
 
                         </LinearLayout></LinearLayout>
 
-<!--                    Lí do-->
                     <LinearLayout
                         android:id="@+id/reason_request_layout"
                         android:layout_width="match_parent"
@@ -735,24 +602,26 @@
                             android:text="Lí do" />
 
                         <EditText
-                            android:id="@+id/edt_reason_request_create"
+                            android:enabled="false"
+                            android:id="@+id/txt_reason_request"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:layout_marginBottom="15dp"
                             android:background="@drawable/bg_rounded"
-                            android:gravity="top|start"
-                            android:padding="16dp"
-                            android:hint="Mô tả chi tiết (*)"
-                            android:inputType="textMultiLine"
-                            android:minLines="4"
-                            android:scrollbars="vertical"
+                            android:backgroundTint="#dee0df"
+                            android:gravity="center_vertical"
+                            android:padding="35px"
+                            android:text="Kính thưa đại ca!
+Hôm nay em xin phép đi muộn do ốm nên
+người hơi mệt ạ!
+Do sức khỏe chưa có dấu hiệu giảm nên
+em xin phép đi muộn 1 tiếng để ăn sáng.
+Em xin cảm ơn!"
                             android:textColor="@color/textcolor" />
-
                     </LinearLayout>
 
-<!--                    quản lý trực tiếp-->
                     <LinearLayout
                         android:id="@+id/manager_direct_request_layout"
                         android:layout_width="match_parent"
@@ -760,16 +629,14 @@
                         android:orientation="vertical">
 
                         <TextView
-                            style="@style/TextStyle_14_500"
-
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:text="Quản lý trực tiếp" />
 
-                        <EditText
+                        <TextView
                             android:enabled="false"
-                            android:id="@+id/edt_manager_direct_request_create"
+                            android:id="@+id/txt_manager_direct_request"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -779,10 +646,10 @@
                             android:backgroundTint="#dee0df"
                             android:gravity="center_vertical"
                             android:padding="35px"
+                            android:text="@vietda"
                             android:textColor="@color/textcolor" />
                     </LinearLayout>
 
-<!--                    người duyệt cố định-->
                     <LinearLayout
                         android:id="@+id/fixed_reviewer_request_layout"
                         android:layout_width="match_parent"
@@ -792,13 +659,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="@style/TextStyle_14_500"
                             android:layout_marginStart="10dp"
                             android:text="Người duyệt cố định" />
 
-                        <EditText
+                        <TextView
                             android:enabled="false"
-                            android:id="@+id/edt_fixed_reviewer_request_create"
+                            android:id="@+id/txt_fixed_reviewer_request"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -808,10 +674,10 @@
                             android:backgroundTint="#dee0df"
                             android:gravity="center_vertical"
                             android:padding="35px"
+                            android:text="@vietda"
                             android:textColor="@color/textcolor" />
                     </LinearLayout>
 
-<!--                    người theo dõi-->
                     <LinearLayout
                         android:id="@+id/follower_request_layout"
                         android:layout_width="match_parent"
@@ -822,12 +688,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            style="@style/TextStyle_14_500"
                             android:text="Người theo dõi" />
 
-                        <EditText
+                        <TextView
                             android:enabled="false"
-                            android:id="@+id/edt_follower_request_create"
+                            android:id="@+id/txt_follower_request"
                             style="@style/TextStyle_14_500"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -837,19 +702,45 @@
                             android:backgroundTint="#dee0df"
                             android:gravity="center_vertical"
                             android:padding="35px"
+                            android:text="@hoavtt @thuynt @chuha @tupn"
                             android:textColor="@color/textcolor" />
                     </LinearLayout>
-
-<!--                    danh sách nút action-->
-                    <LinearLayout
-                        android:id="@+id/action_button_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-                    </LinearLayout>
-
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#f2f2f2"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tvHeader"
+                    style="@style/TextStyle_18_600"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="HÀNH ĐỘNG CHÍNH"
+                    android:textColor="@color/textcolor" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewActionRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:padding="8dp"
+                    android:scrollbars="vertical"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginBottom="10dp"
+                android:id="@+id/action_button_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp">
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

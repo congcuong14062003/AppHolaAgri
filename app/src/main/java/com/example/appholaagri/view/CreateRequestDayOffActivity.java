@@ -1,6 +1,5 @@
 package com.example.appholaagri.view;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -12,17 +11,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
-import android.widget.PopupMenu;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -37,14 +31,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
-import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
-import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
-import com.example.appholaagri.model.RequestDetailModel.BreakTime;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
-import com.example.appholaagri.model.RequestDetailModel.ListDayReq;
 import com.example.appholaagri.model.RequestDetailModel.ListStatus;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestDetailModel.RequestMethod;
@@ -58,27 +48,22 @@ import com.google.gson.GsonBuilder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestActivity extends BaseActivity {
+public class CreateRequestDayOffActivity extends AppCompatActivity {
     EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
             edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
-            edt_reason_request_create,edt_number_of_days_notice, etDurationLately;
+            edt_reason_request_create;
     TextView txt_type_request, select_method_request, tvThoiGianBatDau, tvThoiGianKetThuc;
     ImageView backBtnReview, rbMotNgayImage, rbNhieuNgayImage, rbIndividual_create, rbWork_create;
     // Khởi tạo các LinearLayout và ImageView
-    LinearLayout rbMotNgayLayout, cancel_create_request_layout,tvThoiGianBatDau_layout, form_time_layout, form_request_layout, number_of_days_notice_layout;
-    LinearLayout rbNhieuNgayLayout, select_reason_layout, breakTimeContainer,dayContainer, tvThoiGianKetThuc_layout, rbIndividual_create_layout, rbWork_create_layout,notice_lately_layout;
     View overlay_background;
     EditText etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc;
     private RequestDetailData requestDetailData; // Biến toàn cục
@@ -86,65 +71,55 @@ public class CreateRequestActivity extends BaseActivity {
     ConstraintLayout overlayFilterStatus;
     private Integer GroupRequestType,GroupRequestId;
 
-
-
-
-    // Danh sách lưu thời gian nghỉ giữa giờ
-    private List<BreakTime> breakTimes = new ArrayList<>();
-    private Button addBreakTimeBtn, addDayBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_create_request);
+        setContentView(R.layout.activity_create_request_day_off);
+
+        // ánh xạ
         txt_type_request = findViewById(R.id.txt_type_request_create);
         edt_name_request_create = findViewById(R.id.edt_name_request_create);
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         edt_part_request_create = findViewById(R.id.edt_part_request_create);
-        rbMotNgayLayout = findViewById(R.id.rbMotNgay_create_layout);
-        rbNhieuNgayLayout = findViewById(R.id.rbNhieuNgay_create_layout);
         rbMotNgayImage = findViewById(R.id.rbMotNgay_create);
         rbNhieuNgayImage = findViewById(R.id.rbNhieuNgay_create);
         edt_manager_direct_request_create = findViewById(R.id.edt_manager_direct_request_create);
         edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
         edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
-        form_time_layout = findViewById(R.id.form_time_layout);
         backBtnReview = findViewById(R.id.backBtnReview_create);
-//        cancel_create_request_layout = findViewById(R.id.cancel_create_request_layout);
         edt_reason_request_create = findViewById(R.id.edt_reason_request_create);
         select_method_request = findViewById(R.id.select_method_request);
         overlay_background = findViewById(R.id.overlay_background);
         overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
-        overlay = findViewById(R.id.overlay_filter_status);
-        form_request_layout = findViewById(R.id.form_request_layout);
         tvThoiGianBatDau = findViewById(R.id.tvThoiGianBatDau);
         tvThoiGianKetThuc = findViewById(R.id.tvThoiGianKetThuc);
-        number_of_days_notice_layout = findViewById(R.id.number_of_days_notice_layout);
-        edt_number_of_days_notice = findViewById(R.id.edt_number_of_days_notice);
-        etDurationLately = findViewById(R.id.etDurationLately);
-        notice_lately_layout = findViewById(R.id.notice_lately_layout);
         etNgayBatDau = findViewById(R.id.etNgayBatDau);
         etGioBatDau = findViewById(R.id.etGioBatDau);
         etNgayKetThuc = findViewById(R.id.etNgayKetThuc);
         etGioKetThuc = findViewById(R.id.etGioKetThuc);
-        tvThoiGianKetThuc_layout = findViewById(R.id.tvThoiGianKetThuc_layout);
-        rbIndividual_create_layout = findViewById(R.id.rbIndividual_create_layout);
-        rbWork_create_layout = findViewById(R.id.rbWork_create_layout);
-        rbIndividual_create = findViewById(R.id.rbIndividual_create);
-        rbWork_create = findViewById(R.id.rbWork_create);
-        select_reason_layout = findViewById(R.id.select_reason_layout);
-        tvThoiGianBatDau_layout = findViewById(R.id.tvThoiGianBatDau_layout);
+        overlayFilterStatus = findViewById(R.id.overlay_filter_status);
 
+
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+        Intent intent = getIntent();
+        if (intent != null) {
+            GroupRequestId = intent.getIntExtra("GroupRequestId", -1); // Nhận requestId
+            GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
+        }
+        if (GroupRequestId != null && token != null) {
+            getInitFormCreateRequest(token, GroupRequestId);
+        }
+
+
+        // event
         Button buttonCloseOverlay = findViewById(R.id.button_close_overlay);
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         // event
-
-        etDurationLately.setOnClickListener(v -> showMinutePicker());
-
-
-        rbMotNgayImage.setImageResource(R.drawable.checked_radio);
-        rbIndividual_create.setImageResource(R.drawable.checked_radio);
-
+        backBtnReview.setOnClickListener(view -> {
+            onBackPressed();
+        });
         buttonCloseOverlay.setOnClickListener(v -> {
             overlayFilterStatus.setVisibility(View.GONE);
             overlay_background.setVisibility(View.GONE);
@@ -153,6 +128,7 @@ public class CreateRequestActivity extends BaseActivity {
             overlayFilterStatus.setVisibility(View.VISIBLE);
             overlay_background.setVisibility(View.VISIBLE);
         });
+
         overlay_background.setOnTouchListener((view, event) -> {
             // Check if the touch event is outside the overlay_filter_status_container
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -189,289 +165,6 @@ public class CreateRequestActivity extends BaseActivity {
         // Chọn ngày & giờ kết thúc
         etNgayKetThuc.setOnClickListener(v -> showDatePicker(etNgayKetThuc));
         etGioKetThuc.setOnClickListener(v -> showTimePicker(etGioKetThuc));
-
-
-        // Sau khi chọn ngày kết thúc, tính số ngày báo trước
-        etNgayKetThuc.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String endDateStr = etNgayKetThuc.getText().toString();
-                if (!endDateStr.isEmpty()) {
-                    int daysNotice = calculateDaysBetween(currentDateStr, endDateStr);
-                    edt_number_of_days_notice.setText(String.valueOf(daysNotice));
-                }
-            }
-        });
-        // Đặt sự kiện click cho "1 ngày"
-        rbMotNgayLayout.setOnClickListener(v -> {
-            rbMotNgayImage.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbNhieuNgayImage.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
-            if (GroupRequestType == 1) {
-                tvThoiGianKetThuc_layout.setVisibility(View.GONE);
-                etNgayKetThuc.setText("");
-                requestDetailData.setDateType(0);
-            }
-            // Xử lý thêm logic cho lựa chọn "1 ngày"
-            Log.d("Selection", "1 ngày được chọn");
-        });
-//        cancel_create_request_layout.setOnClickListener(view -> {
-//            onBackPressed();
-//        });
-
-        // Đặt sự kiện click cho "Nhiều ngày"
-        rbNhieuNgayLayout.setOnClickListener(v -> {
-            rbNhieuNgayImage.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbMotNgayImage.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
-            if (GroupRequestType == 1) {
-                tvThoiGianKetThuc_layout.setVisibility(View.VISIBLE);
-                etNgayKetThuc.setBackgroundResource(R.drawable.input_infor);
-                requestDetailData.setDateType(1);
-            }
-            // Xử lý thêm logic cho lựa chọn "Nhiều ngày"
-            Log.d("Selection", "Nhiều ngày được chọn");
-        });
-
-
-        // Đặt sự kiện click cho "lí do cá nhân"
-        rbIndividual_create.setOnClickListener(v -> {
-            rbIndividual_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbWork_create.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
-            if (GroupRequestType == 1) {
-               requestDetailData.setType(1);
-            }
-        });
-        // Đặt sự kiện click cho "lí do công việc"
-        rbWork_create.setOnClickListener(v -> {
-            rbWork_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbIndividual_create.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
-            if (GroupRequestType == 1) {
-                requestDetailData.setType(2);
-            }
-        });
-
-        backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
-        });
-        Intent intent = getIntent();
-        if (intent != null) {
-            GroupRequestId = intent.getIntExtra("GroupRequestId", -1); // Nhận requestId
-            GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
-            // điều kiện để check theo group request
-            // đi muộn về sớm
-            if (GroupRequestType == 1) {
-                form_time_layout.setVisibility(View.VISIBLE);
-                tvThoiGianKetThuc_layout.setVisibility(View.GONE);
-                etGioBatDau.setVisibility(View.GONE);
-                etGioKetThuc.setVisibility(View.GONE);
-                etDurationLately.setVisibility(View.VISIBLE);
-                etDurationLately.setText("--30 phút--"); // Giá trị mặc định
-                select_reason_layout.setVisibility(View.VISIBLE);
-                if (requestDetailData != null) {
-                    requestDetailData.setDuration(30); // Gán giá trị mặc định
-                } else {
-                    Log.e("CreateRequestActivity", "requestDetailData is null");
-                }
-
-                // Lấy ngày hôm nay
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                String today = dateFormat.format(Calendar.getInstance().getTime());
-
-                etNgayBatDau.setText(today); // Gán ngày hôm nay vào EditText
-            }
-
-            if(GroupRequestType == 2) {
-                tvThoiGianBatDau.setText("Ngày bắt đầu nghỉ");
-                tvThoiGianKetThuc.setText("Ngày kết thúc");
-
-            }
-            if(GroupRequestType == 3) {
-                form_time_layout.setVisibility(View.GONE);
-                tvThoiGianBatDau_layout.setVisibility(View.GONE);
-                tvThoiGianKetThuc_layout.setVisibility(View.GONE);
-
-            }
-            if (GroupRequestType == 2 || GroupRequestType == 4) {
-                form_time_layout.setVisibility(View.GONE);
-            }
-            if(GroupRequestType == 4) {
-                form_request_layout.setVisibility(View.GONE);
-                form_time_layout.setVisibility(View.GONE);
-                tvThoiGianBatDau.setText("Ngày đề xuất");
-                tvThoiGianKetThuc.setText("Ngày mong muốn được phê duyệt");
-                edt_reason_request_create.setHint("Nhập vật tư cần mua sắm, mô tả chi tiết");
-            }
-
-            if(GroupRequestType == 5) {
-                form_time_layout.setVisibility(View.GONE);
-                form_request_layout.setVisibility(View.GONE);
-                tvThoiGianBatDau.setText("Ngày mong muốn được chấm dứt hợp đồng");
-                tvThoiGianKetThuc.setText("Ngày làm việc cuối cùng");
-                edt_reason_request_create.setHint("Giải trình lý do thôi việc");
-                number_of_days_notice_layout.setVisibility(View.VISIBLE);
-            }
-
-
-            Log.d("CreateRequestActivity", "GroupRequestId" + GroupRequestId);
-            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-            String token = sharedPreferences.getString("auth_token", null);
-            if (GroupRequestId != null && token != null) {
-                getInitFormCreateRequest(token, GroupRequestId);
-            }
-        }
-
-
-        // sự kiện cho làm thêm
-        breakTimeContainer = findViewById(R.id.breakTimeContainer);
-        dayContainer = findViewById(R.id.dayContainer);
-
-        tvThoiGianKetThuc_layout = findViewById(R.id.tvThoiGianKetThuc_layout);
-        addBreakTimeBtn = findViewById(R.id.add_break_time_btn);
-        addDayBtn = findViewById(R.id.add_day_btn);
-
-        // Sự kiện thêm nghỉ giữa giờ
-        addBreakTimeBtn.setOnClickListener(v -> addBreakTime(breakTimeContainer));
-        // Ẩn danh sách ban đầu nếu không có item
-        // Sự kiện thêm ngày mới
-        addDayBtn.setOnClickListener(v -> addNewDay());
-    }
-
-
-    // Hàm thêm nghỉ giữa giờ
-    private void addBreakTime(LinearLayout breakTimeContainer) {
-        if (breakTimeContainer == null) {
-            Log.e("ERROR", "breakTimeContainer vẫn NULL!");
-            return;
-        }
-
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View breakTimeView = inflater.inflate(R.layout.item_break_time, breakTimeContainer, false);
-
-        ImageView deleteBreakTime = breakTimeView.findViewById(R.id.delete_break_time);
-        deleteBreakTime.setOnClickListener(v -> {
-            breakTimeContainer.removeView(breakTimeView);
-
-            if (breakTimeContainer.getChildCount() == 0) {
-                breakTimeContainer.setVisibility(View.GONE);
-            }
-        });
-
-        // Hiện breakTimeContainer nếu đang ẩn
-        if (breakTimeContainer.getVisibility() == View.GONE) {
-            breakTimeContainer.setVisibility(View.VISIBLE);
-        }
-
-        breakTimeContainer.addView(breakTimeView);
-    }
-
-
-
-    // Thêm ngày mới
-    private void addNewDay() {
-        LayoutInflater inflater = LayoutInflater.from(this);
-        View newDayView = inflater.inflate(R.layout.item_day_overtime, null);
-
-        // Lấy breakTimeContainer và nút addBreakTimeBtn của ngày mới
-        LinearLayout breakTimeContainer = newDayView.findViewById(R.id.breakTimeContainer);
-        AppCompatButton addBreakTimeBtn = newDayView.findViewById(R.id.add_break_time_btn);
-
-        // Gán sự kiện thêm nghỉ giữa giờ cho nút trong từng ngày mới
-        addBreakTimeBtn.setOnClickListener(v -> addBreakTime(breakTimeContainer));
-
-        dayContainer.addView(newDayView);
-    }
-
-
-    private List<ListDayReq> getListDayReqsFromUI() {
-        List<ListDayReq> listDayReqs = new ArrayList<>();
-
-        for (int i = 0; i < dayContainer.getChildCount(); i++) {
-            View dayView = dayContainer.getChildAt(i);
-            EditText etDate = dayView.findViewById(R.id.etDateOvertime);
-            EditText etStartTime = dayView.findViewById(R.id.etTimeOvertime);
-            EditText etEndTime = dayView.findViewById(R.id.etGioKetThuc);
-
-            List<BreakTime> breakTimes = new ArrayList<>();
-            for (int j = 0; j < breakTimeContainer.getChildCount(); j++) {
-                View breakView = breakTimeContainer.getChildAt(j);
-//                EditText etBreakStart = breakView.findViewById(R.id.etBreakTimeStart);
-//                EditText etBreakEnd = breakView.findViewById(R.id.etBreakTimeEnd);
-
-//                breakTimes.add(new BreakTime(etBreakStart.getText().toString(), etBreakEnd.getText().toString()));
-            }
-
-            listDayReqs.add(new ListDayReq(
-                    breakTimes,  // Đưa breakTimes lên đầu
-                    etDate.getText().toString(),
-                    etStartTime.getText().toString(),
-                    etEndTime.getText().toString()
-            ));
-        }
-
-        return listDayReqs;
-    }
-
-
-
-
-    private void showMinutePicker() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Chọn số phút");
-
-        // Tạo Layout chứa NumberPicker
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(50, 20, 50, 20);
-
-        // Tạo NumberPicker
-        final NumberPicker numberPicker = new NumberPicker(this);
-        numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(120);
-        numberPicker.setValue(30); // Giá trị mặc định là 30 phút
-        numberPicker.setWrapSelectorWheel(true); // Cuộn vô tận
-
-        layout.addView(numberPicker);
-        builder.setView(layout);
-
-        // Nút chọn
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            int selectedMinute = numberPicker.getValue();
-            etDurationLately.setText("--" + selectedMinute + " phút--"); // Hiển thị số phút chọn
-            requestDetailData.setDuration(selectedMinute);
-            if(selectedMinute > 31) {
-                notice_lately_layout.setVisibility(View.VISIBLE);
-            } else {
-                notice_lately_layout.setVisibility(View.GONE);
-            }
-         });
-
-        // Nút hủy
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-
-    private int calculateDaysBetween(String startDateStr, String endDateStr) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        try {
-            Date startDate = sdf.parse(startDateStr);
-            Date endDate = sdf.parse(endDateStr);
-
-            if (startDate != null && endDate != null) {
-                long diff = endDate.getTime() - startDate.getTime();
-                return (int) (diff / (1000 * 60 * 60 * 24)); // Chuyển đổi sang số ngày
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 
     // Hàm hiển thị DatePickerDialog
@@ -595,7 +288,7 @@ public class CreateRequestActivity extends BaseActivity {
 
 
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
-        Log.d("CreateRequestActivity", "GroupRequestId: " + GroupRequestId);
+        Log.d("CreateRequestDayOffActivity", "GroupRequestId: " + GroupRequestId);
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
@@ -610,12 +303,12 @@ public class CreateRequestActivity extends BaseActivity {
                             updateUserUI(requestDetailData);
                         }
                     } else {
-                        Log.e("RequestDetailActivity", "API response is unsuccessful");
-                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        Log.e("CreateRequestDayOffActivity", "API response is unsuccessful");
+                        CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("RequestDetailActivity", "Error during response handling: " + e.getMessage());
-                    CustomToast.showCustomToast(CreateRequestActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                    Log.e("CreateRequestDayOffActivity", "Error during response handling: " + e.getMessage());
+                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
@@ -627,13 +320,17 @@ public class CreateRequestActivity extends BaseActivity {
         });
     }
 
-
     private void updateUserUI(RequestDetailData requestDetailData) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String requestDetailDataJson = gson.toJson(requestDetailData);
+
         try {
             if (requestDetailData == null) {
                 return;
             }
             // Hiển thị thông tin cơ bản
+            Log.d("CreateRequestDayOffActivity", "txt_type_request: " + requestDetailData.getRequestGroup().getName());
+
             txt_type_request.setText(requestDetailData.getRequestGroup().getName());
             edt_name_employye_request_create.setText(requestDetailData.getEmployee().getName());
             edt_part_request_create.setText(requestDetailData.getDepartment().getName());
@@ -660,7 +357,6 @@ public class CreateRequestActivity extends BaseActivity {
                 edt_fixed_reviewer_request_create.setText("Không có người duyệt cố định"); // Thông báo mặc định
             }
 
-
             List<Follower> followerList = requestDetailData.getFollower(); // Giả sử đây là danh sách Consignee
             if (followerList != null && !followerList.isEmpty()) {
                 StringBuilder followerNames = new StringBuilder();
@@ -681,16 +377,13 @@ public class CreateRequestActivity extends BaseActivity {
             if (listMethods != null && !listMethods.isEmpty()) {
                 RecyclerView recyclerView = findViewById(R.id.recycler_filter_status_create);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
-                RequestMethodAdapter adapter = new RequestMethodAdapter(listMethods, select_method_request, overlayFilterStatus, overlay_background,GroupRequestType, selectedMethod -> {
+                RequestMethodAdapter adapter = new RequestMethodAdapter(listMethods, select_method_request, overlayFilterStatus, overlay_background, GroupRequestType, selectedMethod -> {
                     requestDetailData.setRequestMethod(selectedMethod);
-                    Log.d("SelectedMethod", "User selected: " + selectedMethod.getName());
-
                 });
 
                 recyclerView.setAdapter(adapter);
             }
+            Log.d("CreateRequestDayOffActivity", "User selected: " + requestDetailData.getRequestMethod().getName());
 
 
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
@@ -759,8 +452,7 @@ public class CreateRequestActivity extends BaseActivity {
             Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage());
         }
     }
-
-
+    // tạo request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
         // Lấy dữ liệu từ giao diện nhập vào requestDetailData
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
@@ -769,26 +461,23 @@ public class CreateRequestActivity extends BaseActivity {
         requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
         requestDetailData.setStartTime(etGioBatDau.getText().toString().trim());
         requestDetailData.setReason(edt_reason_request_create.getText().toString().trim());
-
-        // Kiểm tra nếu listStatus1.id == 3
-//        if (listStatus1.getId() == 3) {
-            if (requestDetailData.getRequestName().isEmpty()) {
-                CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
+        // validate
+        if (requestDetailData.getRequestName().isEmpty()) {
+            CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
+            return;
+        }
+            if (requestDetailData.getStartDate().isEmpty() || requestDetailData.getStartTime().isEmpty()) {
+                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian bắt đầu!");
                 return;
             }
-//            if (requestDetailData.getStartDate().isEmpty() || requestDetailData.getStartTime().isEmpty()) {
-//                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian bắt đầu!");
-//                return;
-//            }
-//            if (requestDetailData.getEndDate().isEmpty() || requestDetailData.getEndTime().isEmpty()) {
-//                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian kết thúc!");
-//                return;
-//            }
-            if (requestDetailData.getReason().isEmpty()) {
-                CustomToast.showCustomToast(this, "Vui lòng nhập lý do!");
+            if (requestDetailData.getEndDate().isEmpty() || requestDetailData.getEndTime().isEmpty()) {
+                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian kết thúc!");
                 return;
             }
-//        }
+        if (requestDetailData.getReason().isEmpty()) {
+            CustomToast.showCustomToast(this, "Vui lòng nhập lý do!");
+            return;
+        }
 
         // Kiểm tra nếu ngày bắt đầu lớn hơn ngày kết thúc
         if (!requestDetailData.getStartDate().isEmpty() && !requestDetailData.getEndDate().isEmpty()) {
@@ -808,11 +497,6 @@ public class CreateRequestActivity extends BaseActivity {
                 }
             }
         }
-
-        // Tạo JSON log để kiểm tra dữ liệu
-        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-        String jsonLog = gson.toJson(requestDetailData.getRequestMethod());
-        Log.d("CreateRequestActivity", "listStatus selected: " + jsonLog);
 
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
@@ -863,12 +547,11 @@ public class CreateRequestActivity extends BaseActivity {
         groupRequestCreateRequest.setStartDate(requestDetailData.getStartDate());
         groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
         groupRequestCreateRequest.setType(requestDetailData.getType());
-
+        // Tạo JSON log để kiểm tra dữ liệu
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         String dataObject = gson.toJson(groupRequestCreateRequest);
-        Log.d("CreateRequestActivity", "data to createeeeee: " + dataObject);
-        Log.d("GroupRequestType: ", "GroupRequestType: " + GroupRequestType);
+        Log.d("CreateRequestDayOffActivity", "data to createeeeee: " + dataObject);
 
-        if(GroupRequestType == 2) {
             // đơn xin nghỉ phép
             Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
@@ -878,143 +561,29 @@ public class CreateRequestActivity extends BaseActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
+                            startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
                         } else {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
+                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
-        } else if (GroupRequestType == 1) {
-            // đi muộn về sớm
-            Call<ApiResponse<String>> call = apiInterface.lateEarlyCreateRequest(token, groupRequestCreateRequest);
-            call.enqueue(new Callback<ApiResponse<String>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                    Log.d("CreateRequest", "Response: " + response);
-                    if (response.isSuccessful() && response.body() != null) {
-                        ApiResponse<String> apiResponse = response.body();
-                        if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
-                        } else {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                        }
-                    } else {
-                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
-                }
-            });
-        } else if (GroupRequestType == 7) {
-            // đề xuất đổi ca
-        } else if (GroupRequestType == 3) {
-            // đăng ký làm thêm
-//            Call<ApiResponse<String>> call = apiInterface.overTimeCreateRequest(token, groupRequestCreateRequest);
-//            call.enqueue(new Callback<ApiResponse<String>>() {
-//                @Override
-//                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-//                    Log.d("CreateRequest", "Response: " + response);
-//                    if (response.isSuccessful() && response.body() != null) {
-//                        ApiResponse<String> apiResponse = response.body();
-//                        if (apiResponse.getStatus() == 200) {
-//                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-//                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
-//                        } else {
-//                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-//                        }
-//                    } else {
-//                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-//                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
-//                }
-//            });
-        } else if (GroupRequestType == 8) {
-            // đề nghị thanh toán
-        } else if (GroupRequestType == 9) {
-            // đề nghị tạm ứng
-        } else if (GroupRequestType == 4) {
-            // Đăng ký mua sắm vật tư
-            Call<ApiResponse<String>> call = apiInterface.buyNewCreateRequest(token, groupRequestCreateRequest);
-            call.enqueue(new Callback<ApiResponse<String>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                    Log.d("CreateRequest", "Response: " + response);
-                    if (response.isSuccessful() && response.body() != null) {
-                        ApiResponse<String> apiResponse = response.body();
-                        if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
-                        } else {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                        }
-                    } else {
-                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
-                }
-            });
-        } else if (GroupRequestType == 5) {
-            requestDetailData.setDuration(Integer.parseInt(edt_number_of_days_notice.getText().toString().trim()));
-            // đơn xin thôi vc
-            groupRequestCreateRequest.setDuration(requestDetailData.getDuration());
-            Call<ApiResponse<String>> call = apiInterface.resignCreateRequest(token, groupRequestCreateRequest);
-            call.enqueue(new Callback<ApiResponse<String>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                    Log.d("CreateRequest", "Response: " + response);
-                    if (response.isSuccessful() && response.body() != null) {
-                        ApiResponse<String> apiResponse = response.body();
-                        if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestActivity.this, RequestActivity.class));
-                        } else {
-                            CustomToast.showCustomToast(CreateRequestActivity.this, apiResponse.getMessage());
-                        }
-                    } else {
-                        Log.d("Vào", "Vào");
-                        CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi kết nối, vui lòng thử lại.");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    CustomToast.showCustomToast(CreateRequestActivity.this, "Lỗi: " + t.getMessage());
-                }
-            });
-        } else {
-            // chuyển thiết bị
-        }
-
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
-        return super.dispatchTouchEvent(event);
     }
 
     public void onBackPressed() {
         super.onBackPressed(); // Quay lại trang trước đó
+    }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
+        return super.dispatchTouchEvent(event);
     }
 }

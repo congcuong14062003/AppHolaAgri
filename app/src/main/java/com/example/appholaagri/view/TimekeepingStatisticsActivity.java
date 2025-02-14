@@ -54,18 +54,18 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
         backBtnReview = findViewById(R.id.backBtnReview);
-        quanlychamcong_btn = findViewById(R.id.quanlychamcong_btn);
+//        quanlychamcong_btn = findViewById(R.id.quanlychamcong_btn);
         // Thiết lập Adapter cho ViewPager
         timekeepingStatisticsAdapterTabList = new TimekeepingStatisticsAdapterTabList(this);
         viewPager.setAdapter(timekeepingStatisticsAdapterTabList);
         backBtnReview.setOnClickListener(view -> {
             onBackPressed();
         });
-        quanlychamcong_btn.setOnClickListener(view -> {
-            Intent intent = new Intent(TimekeepingStatisticsActivity.this, TimekeepingManagementActivity.class);
-            startActivity(intent);
-            finish();
-        });
+//        quanlychamcong_btn.setOnClickListener(view -> {
+//            Intent intent = new Intent(TimekeepingStatisticsActivity.this, TimekeepingManagementActivity.class);
+//            startActivity(intent);
+//            finish();
+//        });
         // Liên kết TabLayout với ViewPager
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             switch (position) {

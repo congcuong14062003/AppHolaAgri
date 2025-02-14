@@ -66,6 +66,7 @@ public class RequestActivity extends AppCompatActivity {
     private EditText edtSearch;
     private ConstraintLayout overlay, overlay_filter_status_container;
     private LinearLayout create_request_btn;
+    private int tabId = 1; // Giá trị mặc định là 0
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,6 +202,7 @@ public class RequestActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 // Xóa nội dung EditText khi tab thay đổi
+                tabId = requestAdapterTabList.getTabIdAtPosition(position);
                 edtSearch.setText("");
 
                 // Ẩn EditText và hiển thị lại tiêu đề nếu đang ở chế độ tìm kiếm
@@ -313,8 +315,9 @@ public class RequestActivity extends AppCompatActivity {
     }
 
     private void getStatusList(String token) {
+
         RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
-        requestStatusRequest.setRequestType(1);
+        requestStatusRequest.setRequestType(tabId);
         requestStatusRequest.setPage(1);
         requestStatusRequest.setSize(20); // Bạn có thể chỉnh kích thước nếu cần
         requestStatusRequest.setKeySearch("");
@@ -347,5 +350,9 @@ public class RequestActivity extends AppCompatActivity {
         intent.putExtra("navigate_to", "home"); // Thêm thông tin để xác định chuyển hướng đến SettingFragment
         startActivity(intent);
         finish();
+    }
+
+    public void ChangeStatusList() {
+
     }
 }

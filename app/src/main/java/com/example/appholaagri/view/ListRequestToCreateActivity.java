@@ -8,10 +8,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,8 +18,7 @@ import com.example.appholaagri.adapter.GroupRequestListAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupRequest;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupResponse;
-import com.example.appholaagri.model.RequestModel.RequestListData;
-import com.example.appholaagri.model.RequestModel.RequestListRequest;
+
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
@@ -89,10 +85,43 @@ public class ListRequestToCreateActivity extends BaseActivity {
 
                             adapter = new GroupRequestListAdapter(dataItems);
                             adapter.setOnItemClickListener((GroupRequestId, GroupRequestType) -> {
-                                Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestActivity.class);
-                                intent.putExtra("GroupRequestId", GroupRequestId);
-                                intent.putExtra("GroupRequestType", GroupRequestType);
-                                startActivity(intent);
+
+                                Log.d("ListRequestToCreateActivity", "GroupRequestId" + GroupRequestId);
+                                Log.d("ListRequestToCreateActivity", "GroupRequestType" + GroupRequestType);
+                                if(GroupRequestType == 1) {
+                                    // Đi muộn về sớm
+                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestLateEarlyActivity.class);
+                                    intent.putExtra("GroupRequestId", GroupRequestId);
+                                    intent.putExtra("GroupRequestType", GroupRequestType);
+                                    startActivity(intent);
+
+                                } else if (GroupRequestType == 2) {
+                                    // Đơn xin nghỉ phép
+                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestDayOffActivity.class);
+                                    intent.putExtra("GroupRequestId", GroupRequestId);
+                                    intent.putExtra("GroupRequestType", GroupRequestType);
+                                    startActivity(intent);
+                                } else if (GroupRequestType == 3) {
+                                    // Đăng ký làm thêm
+                                } else if (GroupRequestType == 4) {
+                                    // Đăng ký mua sắm vật tư
+                                } else if (GroupRequestType == 5) {
+                                    // Đơn xin thôi việc
+                                } else if (GroupRequestType == 6) {
+                                    // Chuyển thiết bị
+                                } else if (GroupRequestType == 7) {
+                                    // Đề xuất đổi ca
+                                }
+                                else if (GroupRequestType == 8) {
+                                    // Đề nghị thanh toán
+                                }
+                                else if (GroupRequestType == 8) {
+                                    // Đề nghị tạm ứng
+                                }
+//                                Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestActivity.class);
+//                                intent.putExtra("GroupRequestId", GroupRequestId);
+//                                intent.putExtra("GroupRequestType", GroupRequestType);
+//                                startActivity(intent);
                             });
                             recyclerView.setAdapter(adapter);
                             adapter.notifyDataSetChanged();

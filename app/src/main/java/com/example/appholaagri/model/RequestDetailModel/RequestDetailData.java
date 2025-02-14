@@ -1,5 +1,7 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
+import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
+
 import java.util.List;
 
 public class RequestDetailData {
@@ -26,6 +28,7 @@ public class RequestDetailData {
     private Department department;
     private Company company;
     private Division division;
+    private List<ListDayReq> listDayReqs;
     private List<RequestMethod> listMethod;
     private DirectManager directManager;
     private List<Consignee> consignee;
@@ -56,6 +59,14 @@ public class RequestDetailData {
 
     public String getRequestName() {
         return requestName;
+    }
+
+    public List<ListDayReq> getListDayReqs() {
+        return listDayReqs;
+    }
+
+    public void setListDayReqs(List<ListDayReq> listDayReqs) {
+        this.listDayReqs = listDayReqs;
     }
 
     public void setRequestName(String requestName) {

@@ -104,12 +104,39 @@ public class IsendRequestFragment extends BaseFragment {
                             emptyStateLayout.setVisibility(View.GONE);
                             if (adapter == null) {
                                 adapter = new RequestListAdapter(data.getData());
-                                adapter.setOnItemClickListener((requestId, typeRequest, groupRequestType) -> {
-                                    Intent intent = new Intent(getContext(), RequestDetailActivity.class);
-                                    intent.putExtra("requestId", requestId);
-                                    intent.putExtra("typeRequest", typeRequest);
-                                    intent.putExtra("groupRequestType", groupRequestType);
-                                    startActivity(intent);
+                                adapter.setOnItemClickListener((requestId, StatusRequest, GroupRequest) -> {
+                                    Log.d("IsendRequestFragment", "GroupRequest" + GroupRequest);
+                                        if(GroupRequest == 1) {
+                                            // đi muộn về sớm
+                                            if((StatusRequest.equals("Lưu nháp") || StatusRequest.equals("Từ chối"))) {
+                                                Intent intent = new Intent(getContext(), CreateRequestLateEarlyActivity.class);
+                                                intent.putExtra("requestId", requestId);
+                                                intent.putExtra("StatusRequest", StatusRequest);
+                                                intent.putExtra("GroupRequest", GroupRequest);
+                                                startActivity(intent);
+                                            } else {
+                                                Intent intent = new Intent(getContext(), RequestLateEarlyDetail.class);
+                                                intent.putExtra("requestId", requestId);
+                                                intent.putExtra("StatusRequest", StatusRequest);
+                                                intent.putExtra("GroupRequest", GroupRequest);
+                                                startActivity(intent);
+                                            }
+
+                                        } else if (GroupRequest == 2) {
+                                            Intent intent = new Intent(getContext(), RequestDayOffDetail.class);
+                                            intent.putExtra("requestId", requestId);
+                                            intent.putExtra("StatusRequest", StatusRequest);
+                                            intent.putExtra("GroupRequest", GroupRequest);
+                                            startActivity(intent);
+                                        }
+
+
+//                                    Intent intent = new Intent(getContext(), RequestDetailActivity.class);
+//                                    intent.putExtra("requestId", requestId);
+//                                    intent.putExtra("StatusRequest", StatusRequest);
+//                                    intent.putExtra("GroupRequest", GroupRequest);
+//
+//                                    startActivity(intent);
                                 });
                                 recyclerView.setAdapter(adapter);
                             } else {
@@ -145,5 +172,6 @@ public class IsendRequestFragment extends BaseFragment {
             adapter.clearData(); // Xóa dữ liệu cũ
         }
         fetchRequests(currentPage, tabId); // Gọi lại API với trạng thái mới
+
     }
 }

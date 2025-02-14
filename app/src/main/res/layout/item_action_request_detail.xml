@@ -15,7 +15,6 @@
             android:layout_marginTop="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -76,7 +75,7 @@
 
         <!-- Tên và trạng thái -->
         <LinearLayout
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:layout_marginTop="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
