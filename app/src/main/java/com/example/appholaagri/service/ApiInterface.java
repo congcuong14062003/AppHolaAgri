@@ -150,4 +150,9 @@ public interface ApiInterface {
 
     @POST("request/resign")
     Call<ApiResponse<String>> resignCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+
+    // chỉnh sửa đề xuất
+    @POST("request/modify")
+    Call<ApiResponse<String>> modifyRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+
 }

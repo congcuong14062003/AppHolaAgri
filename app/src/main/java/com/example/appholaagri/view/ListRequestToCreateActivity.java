@@ -103,6 +103,10 @@ public class ListRequestToCreateActivity extends BaseActivity {
                                     startActivity(intent);
                                 } else if (GroupRequestType == 3) {
                                     // Đăng ký làm thêm
+                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestOvertTime.class);
+                                    intent.putExtra("GroupRequestId", GroupRequestId);
+                                    intent.putExtra("GroupRequestType", GroupRequestType);
+                                    startActivity(intent);
                                 } else if (GroupRequestType == 4) {
                                     // Đăng ký mua sắm vật tư
                                 } else if (GroupRequestType == 5) {

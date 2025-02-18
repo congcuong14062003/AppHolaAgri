@@ -25,7 +25,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
     private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(Integer requestId, String StatusRequest, Integer GroupRequest); // Truyền ID của request khi item được click
+        void onItemClick(Integer requestId, Integer StatusRequest, Integer GroupRequest); // Truyền ID của request khi item được click
     }
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
@@ -96,7 +96,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
         // Sự kiện click
         holder.itemView.setOnClickListener(v -> {
             if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(dayData.getRequestId(), dayData.getStatus().getName(), dayData.getGroupRequestType());
+                onItemClickListener.onItemClick(dayData.getRequestId(), dayData.getStatus().getId(), dayData.getGroupRequestType());
             }
         });
 

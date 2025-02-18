@@ -535,6 +535,7 @@ public class CreateRequestActivity extends BaseActivity {
             return 0;
         }
     }
+
     private void showTimePicker(EditText editText) {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);

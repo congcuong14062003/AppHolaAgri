@@ -1,7 +1,7 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_marginBottom="16dp">
 
@@ -13,14 +13,27 @@
         android:layout_marginBottom="16dp"
         android:orientation="vertical">
 
-        <TextView
-            style="@style/TextStyle_14_500"
-            android:id="@+id/tvOvertime"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="10dp"
-            android:text="Thời gian đăng ký làm thêm" />
+            >
+            <TextView
+                style="@style/TextStyle_14_500"
+                android:id="@+id/tvOvertime"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="10dp"
+                android:text="Thời gian đăng ký làm thêm" />
+            <ImageView
+                android:id="@+id/delete_day"
+                android:layout_marginStart="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/delete_break_time_icon"
+                android:layerType="software" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -64,57 +77,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:orientation="vertical">
-        <!--                        <LinearLayout-->
-        <!--                            android:gravity="center_vertical"-->
-        <!--                            android:layout_width="match_parent"-->
-        <!--                            android:layout_height="wrap_content"-->
-        <!--                            android:orientation="horizontal">-->
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/add_break_time_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:layout_marginEnd="10dp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_custom"
+            android:backgroundTint="@color/secondarycolor"
+            android:elevation="0dp"
+            android:textStyle="normal"
+            android:stateListAnimator="@null"
+            android:text="Thêm nghỉ giữa giờ"
+            android:textColor="@color/white" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_weight="1"
+            android:id="@+id/breakTimeRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="16dp" />
 
-        <!--                            <TextView-->
-        <!--                                style="@style/TextStyle_14_500"-->
-        <!--                                android:layout_width="0dp"-->
-        <!--                                android:layout_weight="1"-->
-        <!--                                android:layout_height="wrap_content"-->
-        <!--                                android:text="Nghỉ giữa giờ -&#45;&#45;&#45;&#45;" />-->
-
-        <!--                            &lt;!&ndash; Chọn giờ &ndash;&gt;-->
-        <!--                            <EditText-->
-        <!--                                android:id="@+id/etBreakTimeTimeOvertime"-->
-        <!--                                style="@style/TextStyle_14_500"-->
-        <!--                                android:layout_width="0dp"-->
-        <!--                                android:layout_height="wrap_content"-->
-        <!--                                android:layout_weight="1"-->
-        <!--                                android:background="@drawable/input_infor"-->
-        <!--                                android:clickable="true"-->
-        <!--                                android:drawableEnd="@drawable/icon_lock"-->
-        <!--                                android:focusable="false"-->
-        <!--                                android:hint="Chọn giờ"-->
-        <!--                                android:padding="10dp" />-->
-        <!--                            <ImageView-->
-        <!--                                android:layout_weight="0"-->
-        <!--                                android:id="@+id/delete_break_time"-->
-        <!--                                android:layout_marginStart="10dp"-->
-        <!--                                android:layout_width="wrap_content"-->
-        <!--                                android:layout_height="wrap_content"-->
-        <!--                                android:src="@drawable/delete_break_time_icon"-->
-        <!--                                android:layerType="software" />-->
-        <!--                        </LinearLayout>-->
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/add_break_time_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:background="@drawable/button_custom"
-        android:backgroundTint="@color/secondarycolor"
-        android:elevation="0dp"
-        android:textStyle="normal"
-        android:stateListAnimator="@null"
-        android:text="Thêm nghỉ giữa giờ"
-        android:textColor="@color/white" />
+<!--    <androidx.appcompat.widget.AppCompatButton-->
+<!--        android:id="@+id/add_break_time_btn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingStart="20dp"-->
+<!--        android:paddingEnd="20dp"-->
+<!--        android:textAllCaps="false"-->
+<!--        android:background="@drawable/button_custom"-->
+<!--        android:backgroundTint="@color/secondarycolor"-->
+<!--        android:elevation="0dp"-->
+<!--        android:textStyle="normal"-->
+<!--        android:stateListAnimator="@null"-->
+<!--        android:text="Thêm nghỉ giữa giờ"-->
+<!--        android:textColor="@color/white" />-->
 
     <!-- Dòng kẻ -->
     <ImageView

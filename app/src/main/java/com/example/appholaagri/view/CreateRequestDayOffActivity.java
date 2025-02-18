@@ -1,5 +1,6 @@
 package com.example.appholaagri.view;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -52,24 +54,24 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.IntStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CreateRequestDayOffActivity extends AppCompatActivity {
-    EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
-            edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
-            edt_reason_request_create;
-    TextView txt_type_request, select_method_request, tvThoiGianBatDau, tvThoiGianKetThuc;
-    ImageView backBtnReview, rbMotNgayImage, rbNhieuNgayImage, rbIndividual_create, rbWork_create;
-    // Khởi tạo các LinearLayout và ImageView
-    View overlay_background;
-    EditText etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc;
+    private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau,etGioBatDau, etNgayKetThuc,etGioKetThuc,
+            edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
+    private TextView title_request, txt_type_request_create, select_method_request;
+    private ImageView backBtnReview;
     private RequestDetailData requestDetailData; // Biến toàn cục
-    private ConstraintLayout overlay, overlay_filter_status_container;
+    private Integer GroupRequestType, GroupRequestId, requestId, StatusRequest, selectedMinute = 30;
+
+    // over lay
+    View overlay_background;
+    private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
-    private Integer GroupRequestType,GroupRequestId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,27 +80,42 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_request_day_off);
 
         // ánh xạ
-        txt_type_request = findViewById(R.id.txt_type_request_create);
-        edt_name_request_create = findViewById(R.id.edt_name_request_create);
-        edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
-        edt_part_request_create = findViewById(R.id.edt_part_request_create);
-        rbMotNgayImage = findViewById(R.id.rbMotNgay_create);
-        rbNhieuNgayImage = findViewById(R.id.rbNhieuNgay_create);
-        edt_manager_direct_request_create = findViewById(R.id.edt_manager_direct_request_create);
-        edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
-        edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
+        // nút back
         backBtnReview = findViewById(R.id.backBtnReview_create);
-        edt_reason_request_create = findViewById(R.id.edt_reason_request_create);
+        // tiêu đề
+        title_request = findViewById(R.id.title_request);
+        // loại đề xuất
+        txt_type_request_create = findViewById(R.id.txt_type_request_create);
+        // tên đề xuất
+        edt_name_request_create = findViewById(R.id.edt_name_request_create);
+        // người đề xuất
+        edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
+        // bộ phận
+        edt_part_request_create = findViewById(R.id.edt_part_request_create);
+        // hình thức
         select_method_request = findViewById(R.id.select_method_request);
+        // ngày bắt đầu
+        etNgayBatDau = findViewById(R.id.etNgayBatDau);
+        // giờ bắt đầu
+        etGioBatDau = findViewById(R.id.etGioBatDau);
+        // ngày kết thúc
+        etNgayKetThuc = findViewById(R.id.etNgayKetThuc);
+        // giờ kết thúc
+        etGioKetThuc = findViewById(R.id.etGioKetThuc);
+        // lí do
+        edt_reason_request_create = findViewById(R.id.edt_reason_request_create);
+        // quản ly trực tiếp
+        edt_manager_direct_request_create = findViewById(R.id.edt_manager_direct_request_create);
+        // người duyệt cố định
+        edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
+        // người theo dõi
+        edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
+        // over lay
+        overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         overlay_background = findViewById(R.id.overlay_background);
         overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
-        tvThoiGianBatDau = findViewById(R.id.tvThoiGianBatDau);
-        tvThoiGianKetThuc = findViewById(R.id.tvThoiGianKetThuc);
-        etNgayBatDau = findViewById(R.id.etNgayBatDau);
-        etGioBatDau = findViewById(R.id.etGioBatDau);
-        etNgayKetThuc = findViewById(R.id.etNgayKetThuc);
-        etGioKetThuc = findViewById(R.id.etGioKetThuc);
-        overlayFilterStatus = findViewById(R.id.overlay_filter_status);
+
+
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -107,9 +124,49 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         if (intent != null) {
             GroupRequestId = intent.getIntExtra("GroupRequestId", -1); // Nhận requestId
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
+            StatusRequest = intent.getIntExtra("StatusRequest", -1);
+            requestId = intent.getIntExtra("requestId", -1);
+            Log.d("CreateRequestDayOffActivity", "StatusRequest: " + StatusRequest);
         }
-        if (GroupRequestId != null && token != null) {
-            getInitFormCreateRequest(token, GroupRequestId);
+
+        if(StatusRequest > 2){
+            edt_name_request_create.setEnabled(false);
+            edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+            select_method_request.setEnabled(false);
+            select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+            etNgayBatDau.setEnabled(false);
+            etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+            etGioBatDau.setEnabled(false);
+            etGioBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+            etNgayKetThuc.setEnabled(false);
+            etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+            etGioKetThuc.setEnabled(false);
+            etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+            edt_reason_request_create.setEnabled(false);
+            edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+        }
+        // init
+
+        // Khởi tạo nếu null
+        if (requestDetailData == null) {
+            requestDetailData = new RequestDetailData();
+            requestDetailData.setDuration(30);
+        }
+
+        if (requestId != -1) {
+            title_request.setText("Chi tiết đề xuất");
+            getDetailRequest(requestId, token);
+        } else {
+            if (GroupRequestId != null && token != null) {
+                Log.d("CreateRequestDayOffActivity", "Vào");
+                getInitFormCreateRequest(token, GroupRequestId);
+            }
         }
 
 
@@ -146,17 +203,17 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
                 if (x < containerX || x > containerX + containerWidth || y < containerY || y > containerY + containerHeight) {
                     // Touch is outside the container, so hide the overlay
-                    overlay.setVisibility(View.GONE);
+                    overlayFilterStatus.setVisibility(View.GONE);
                     overlay_background.setVisibility(View.GONE);
                 }
             }
             return true; // Handle the touch event and prevent further propagation
         });
 
+
         // Lấy ngày hiện tại
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        String currentDateStr = sdf.format(calendar.getTime());
+        Calendar currentDate = Calendar.getInstance();
+
 
         // Chọn ngày & giờ bắt đầu
         etNgayBatDau.setOnClickListener(v -> showDatePicker(etNgayBatDau));
@@ -165,11 +222,26 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         // Chọn ngày & giờ kết thúc
         etNgayKetThuc.setOnClickListener(v -> showDatePicker(etNgayKetThuc));
         etGioKetThuc.setOnClickListener(v -> showTimePicker(etGioKetThuc));
+
     }
+
+
 
     // Hàm hiển thị DatePickerDialog
     private void showDatePicker(EditText editText) {
         final Calendar calendar = Calendar.getInstance();
+
+        if (!editText.getText().toString().isEmpty()) {
+            try {
+                Date selectedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        .parse(editText.getText().toString());
+                if (selectedDate != null) {
+                    calendar.setTime(selectedDate);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -216,18 +288,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
         datePickerDialog.show();
     }
-    // Hàm so sánh 2 ngày (dd/MM/yyyy)
-    private int compareDates(String date1, String date2) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        try {
-            Date d1 = sdf.parse(date1);
-            Date d2 = sdf.parse(date2);
-            return d1.compareTo(d2); // Trả về <0 nếu d1 < d2, >0 nếu d1 > d2, =0 nếu bằng nhau
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
+
     private void showTimePicker(EditText editText) {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -273,6 +334,20 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         timePickerDialog.show();
     }
 
+    // Hàm so sánh 2 ngày (dd/MM/yyyy)
+    private int compareDates(String date1, String date2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date d1 = sdf.parse(date1);
+            Date d2 = sdf.parse(date2);
+            return d1.compareTo(d2); // Trả về <0 nếu d1 < d2, >0 nếu d1 > d2, =0 nếu bằng nhau
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
     // Hàm so sánh 2 giờ (HH:mm)
     private int compareTimes(String time1, String time2) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -285,10 +360,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             return 0;
         }
     }
-
-
+    // init data
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
-        Log.d("CreateRequestDayOffActivity", "GroupRequestId: " + GroupRequestId);
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
@@ -320,183 +393,221 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         });
     }
 
+    // nếu có id lấy data chi tiết của nháp và từ chối
+    private void getDetailRequest(int requestId, String token) {
+        // Gọi API
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+        Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
+        call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                try {
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse<RequestDetailData> apiResponse = response.body();
+                        if (apiResponse.getStatus() == 200) {
+                            requestDetailData = apiResponse.getData();
+                            updateUserUI(requestDetailData);
+                        }
+                    } else {
+                        Log.e("RequestDetailActivity", "API response is unsuccessful");
+                        CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                    }
+                } catch (Exception e) {
+                    Log.e("RequestDetailActivity", "Error during response handling: " + e.getMessage());
+                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                String errorMessage = t.getMessage();
+                Log.e("ApiHelper", errorMessage);
+            }
+        });
+    }
+    // cập nhật giao diện
     private void updateUserUI(RequestDetailData requestDetailData) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         String requestDetailDataJson = gson.toJson(requestDetailData);
+        Log.d("CreateRequestDayOffActivity", "requestDetailDataJson: " + requestDetailDataJson);
 
         try {
             if (requestDetailData == null) {
+                Log.e("CreateRequestDayOffActivity", "requestDetailData is null");
                 return;
             }
-            // Hiển thị thông tin cơ bản
-            Log.d("CreateRequestDayOffActivity", "txt_type_request: " + requestDetailData.getRequestGroup().getName());
+            if(requestId != -1) {
+                if(requestDetailData.getReason() != null) {
+                    etGioBatDau.setText(requestDetailData.getStartTime());
+                    etGioKetThuc.setText(requestDetailData.getEndTime());
+                }
+            }
+            // Kiểm tra từng thuộc tính trước khi gọi
+            if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
+                txt_type_request_create.setText(requestDetailData.getRequestGroup().getName());
+            }
 
-            txt_type_request.setText(requestDetailData.getRequestGroup().getName());
-            edt_name_employye_request_create.setText(requestDetailData.getEmployee().getName());
-            edt_part_request_create.setText(requestDetailData.getDepartment().getName());
-            if (requestDetailData.getDirectManager() != null) {
+            if (requestDetailData.getRequestName() != null) {
+                edt_name_request_create.setText(requestDetailData.getRequestName());
+            }
+
+            if (requestDetailData.getRequestMethod() != null && requestDetailData.getRequestMethod().getName() != null) {
+                select_method_request.setText(requestDetailData.getRequestMethod().getName());
+            }
+
+            if (requestDetailData.getEmployee() != null && requestDetailData.getEmployee().getName() != null) {
+                edt_name_employye_request_create.setText(requestDetailData.getEmployee().getName());
+            }
+
+            if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
+                edt_part_request_create.setText(requestDetailData.getDepartment().getName());
+            }
+
+            if (requestDetailData.getStartDate() != null) {
+                etNgayBatDau.setText(requestDetailData.getStartDate());
+            }
+
+            if (requestDetailData.getEndDate() != null) {
+                etNgayKetThuc.setText(requestDetailData.getEndDate());
+            }
+
+
+            if (requestDetailData.getReason() != null) {
+                edt_reason_request_create.setText(requestDetailData.getReason());
+            }
+
+            if (requestDetailData.getDirectManager() != null
+                    && requestDetailData.getDirectManager().getName() != null) {
                 edt_manager_direct_request_create.setText(requestDetailData.getDirectManager().getName());
             } else {
                 edt_manager_direct_request_create.setText("Chưa có quản lý trực tiếp");
             }
 
-            List<Consignee> consigneeList = requestDetailData.getConsignee(); // Giả sử đây là danh sách Consignee
+            // Xử lý danh sách Consignee
+            List<Consignee> consigneeList = requestDetailData.getConsignee();
             if (consigneeList != null && !consigneeList.isEmpty()) {
                 StringBuilder consigneeNames = new StringBuilder();
-
-                // Lặp qua danh sách để lấy tên
                 for (Consignee consignee : consigneeList) {
                     if (consignee != null && consignee.getName() != null) {
-                        consigneeNames.append(consignee.getName()).append(" "); // Nối thêm khoảng trắng sau mỗi tên
+                        consigneeNames.append(consignee.getName()).append(" ");
                     }
                 }
-                // Gán chuỗi kết quả vào TextView
-                edt_fixed_reviewer_request_create.setText(consigneeNames.toString().trim()); // trim() để loại bỏ khoảng trắng dư thừa ở cuối
+                edt_fixed_reviewer_request_create.setText(consigneeNames.toString().trim());
             } else {
-                // Trường hợp danh sách trống hoặc null
-                edt_fixed_reviewer_request_create.setText("Không có người duyệt cố định"); // Thông báo mặc định
+                edt_fixed_reviewer_request_create.setText("Không có người duyệt cố định");
             }
 
-            List<Follower> followerList = requestDetailData.getFollower(); // Giả sử đây là danh sách Consignee
+            // Xử lý danh sách Follower
+            List<Follower> followerList = requestDetailData.getFollower();
             if (followerList != null && !followerList.isEmpty()) {
                 StringBuilder followerNames = new StringBuilder();
-
-                // Lặp qua danh sách để lấy tên
                 for (Follower follower : followerList) {
                     if (follower != null && follower.getName() != null) {
-                        followerNames.append(follower.getName()).append(" "); // Nối thêm khoảng trắng sau mỗi tên
+                        followerNames.append(follower.getName()).append(" ");
                     }
                 }
-                edt_follower_request_create.setText(followerNames.toString().trim()); // trim() để loại bỏ khoảng trắng dư thừa ở cuối
+                edt_follower_request_create.setText(followerNames.toString().trim());
             } else {
-                // Trường hợp danh sách trống hoặc null
-                edt_follower_request_create.setText("Không có người theo dõi"); // Thông báo mặc định
+                edt_follower_request_create.setText("Không có người theo dõi");
             }
-            // Lấy danh sách hình thức từ API
+
+            // Xử lý danh sách RequestMethod
             List<RequestMethod> listMethods = requestDetailData.getListMethod();
             if (listMethods != null && !listMethods.isEmpty()) {
                 RecyclerView recyclerView = findViewById(R.id.recycler_filter_status_create);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                RequestMethodAdapter adapter = new RequestMethodAdapter(listMethods, select_method_request, overlayFilterStatus, overlay_background, GroupRequestType, selectedMethod -> {
-                    requestDetailData.setRequestMethod(selectedMethod);
-                });
 
+                RequestMethodAdapter adapter = new RequestMethodAdapter(
+                        listMethods,
+                        select_method_request,
+                        overlayFilterStatus,
+                        overlay_background,
+                        GroupRequestType,
+                        selectedMethod -> {
+                            requestDetailData.setRequestMethod(selectedMethod);
+                        }
+                );
                 recyclerView.setAdapter(adapter);
-            }
-            Log.d("CreateRequestDayOffActivity", "User selected: " + requestDetailData.getRequestMethod().getName());
 
-
-            LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
-            actionButtonContainer.removeAllViews(); // Xóa các button cũ (nếu có)
-
-            List<ListStatus> listStatus = requestDetailData.getListStatus();
-            if (listStatus != null && !listStatus.isEmpty()) {
-                int totalItems = listStatus.size();
-                for (int i = 0; i < totalItems; i++) {
-                    ListStatus listStatus1 = listStatus.get(i);
-                    AppCompatButton button = new AppCompatButton(this);
-                    button.setText(listStatus1.getName());
-                    button.setTextColor(Color.WHITE);
-
-                    int buttonColor = Color.parseColor(listStatus1.getColor() != null ? listStatus1.getColor() : "#007BFF");
-                    button.setBackgroundTintList(ColorStateList.valueOf(buttonColor));
-                    // Đặt background từ drawable
-                    button.setBackground(ContextCompat.getDrawable(this, R.drawable.button_custom));
-                    // Thiết lập LayoutParams để căn đều
-                    // Nếu có đúng 2 nút thì căn sát mép 2 bên
-                    button.setStateListAnimator(null);
-                    // Thiết lập LayoutParams
-                    LinearLayout.LayoutParams params;
-                    if (totalItems == 2) {
-                        // Nếu có 2 nút, căn sát về hai bên nhưng vẫn có margin
-                        params = new LinearLayout.LayoutParams(
-                                0,  // Chiều rộng chiếm đều không gian
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                1.0f // Chia đều khoảng trống
-                        );
-                        params.setMargins(16, 8, 16, 8); // Thêm margin hai bên
-                    } else {
-                        // Nếu có 3 nút trở lên thì đặt margin bình thường
-                        params = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,  // Chiều rộng tự co giãn theo nội dung
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        );
-                        params.setMargins(8, 8, 8, 8); // Có margin đều hai bên
-                    }
-                    button.setLayoutParams(params);
-                    button.setOnClickListener(v -> {
-                        String nameInput = edt_name_request_create.getText().toString().trim();
-
-//                        if (!nameInput.matches("^[\\p{L}0-9 ]+$")) {
-//                            edt_name_request_create.setError("Chỉ nhập chữ cái có dấu và số!");
-//                            return;
-//                        }
-//
-//                        if (nameInput.length() > 150) {
-//                            edt_name_request_create.setError("Tên không được vượt quá 150 ký tự!");
-//                            return;
-//                        }
-
-                        Log.d("ButtonClick", "Clicked on: " + listStatus1.getName());
-                        handleCreateRequest(requestDetailData, listStatus1);
-                    });
-
-
-                    actionButtonContainer.addView(button);
+                // Nếu có requestId, đặt selectedItem từ API
+                if (requestId != -1 && requestDetailData.getRequestMethod() != null) {
+                    int selectedId = requestDetailData.getRequestMethod().getId();
+                    adapter.setSelectedMethodById(selectedId);
+                    recyclerView.scrollToPosition(
+                            IntStream.range(0, listMethods.size())
+                                    .filter(i -> listMethods.get(i).getId() == selectedId)
+                                    .findFirst()
+                                    .orElse(0)
+                    );
                 }
             } else {
-                Log.e("ButtonList", "No buttons found in API response");
+                Log.e("CreateRequestActivity", "listMethods is null or empty");
+            }
+
+            // Xử lý danh sách ListStatus
+            List<ListStatus> listStatus = requestDetailData.getListStatus();
+            LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
+            actionButtonContainer.removeAllViews();
+            if (listStatus != null && !listStatus.isEmpty()) {
+                for (ListStatus status : listStatus) {
+                    if (status != null && status.getName() != null) {
+                        AppCompatButton button = new AppCompatButton(this);
+                        button.setText(status.getName());
+                        button.setTextColor(Color.WHITE);
+                        button.setPadding(24, 12, 24, 12);
+
+                        String color = (status.getColor() != null) ? status.getColor() : "#007BFF";
+                        button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
+                        button.setBackground(ContextCompat.getDrawable(this, R.drawable.button_custom));
+                        button.setStateListAnimator(null);
+
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                        params.setMargins(4, 8, 4, 8);
+                        button.setLayoutParams(params);
+
+                        button.setOnClickListener(v ->
+                                {
+//                                    if(requestId == -1) {
+                                    handleCreateRequest(requestDetailData, status);
+//                                    }
+                                }
+                        );
+                        actionButtonContainer.addView(button);
+                    }
+                }
+            } else {
+                Log.e("ButtonList", "listStatus is null or empty");
             }
 
         } catch (Exception e) {
-            Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage());
+            Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage(), e);
         }
     }
+
+
+
     // tạo request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         // Lấy dữ liệu từ giao diện nhập vào requestDetailData
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
         requestDetailData.setEndDate(etNgayKetThuc.getText().toString().trim());
-        requestDetailData.setEndTime(etGioKetThuc.getText().toString().trim());
         requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
         requestDetailData.setStartTime(etGioBatDau.getText().toString().trim());
+        requestDetailData.setEndTime(etGioKetThuc.getText().toString().trim());
         requestDetailData.setReason(edt_reason_request_create.getText().toString().trim());
+
         // validate
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
             return;
         }
-            if (requestDetailData.getStartDate().isEmpty() || requestDetailData.getStartTime().isEmpty()) {
-                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian bắt đầu!");
-                return;
-            }
-            if (requestDetailData.getEndDate().isEmpty() || requestDetailData.getEndTime().isEmpty()) {
-                CustomToast.showCustomToast(this, "Vui lòng chọn thời gian kết thúc!");
-                return;
-            }
         if (requestDetailData.getReason().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập lý do!");
             return;
         }
 
-        // Kiểm tra nếu ngày bắt đầu lớn hơn ngày kết thúc
-        if (!requestDetailData.getStartDate().isEmpty() && !requestDetailData.getEndDate().isEmpty()) {
-            if (compareDates(requestDetailData.getStartDate(), requestDetailData.getEndDate()) > 0) {
-                CustomToast.showCustomToast(this, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
-                return;
-            }
-        }
-
-        // Kiểm tra nếu ngày bắt đầu == ngày kết thúc thì phải kiểm tra giờ
-        if (!requestDetailData.getStartDate().isEmpty() && !requestDetailData.getEndDate().isEmpty() &&
-                !requestDetailData.getStartTime().isEmpty() && !requestDetailData.getEndTime().isEmpty()) {
-            if (requestDetailData.getStartDate().equals(requestDetailData.getEndDate())) {
-                if (compareTimes(requestDetailData.getStartTime(), requestDetailData.getEndTime()) > 0) {
-                    CustomToast.showCustomToast(this, "Khi ngày bắt đầu và ngày kết thúc trùng nhau, giờ kết thúc phải lớn hơn giờ bắt đầu!");
-                    return;
-                }
-            }
-        }
 
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
@@ -548,16 +659,13 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
         groupRequestCreateRequest.setType(requestDetailData.getType());
         // Tạo JSON log để kiểm tra dữ liệu
-        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-        String dataObject = gson.toJson(groupRequestCreateRequest);
-        Log.d("CreateRequestDayOffActivity", "data to createeeeee: " + dataObject);
 
-            // đơn xin nghỉ phép
+        if(requestId == -1) {
+            String dataObjects = gson.toJson(groupRequestCreateRequest.getStatus());
             Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                    Log.d("CreateRequest", "Response: " + response);
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
@@ -576,14 +684,43 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                     CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
+        } else {
+            String dataObjects = gson.toJson(groupRequestCreateRequest.getStatus());
+            Log.d("CreateRequestDayOffActivity", "button action chi tiết: " + dataObjects);
+            Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
+            call.enqueue(new Callback<ApiResponse<String>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse<String> apiResponse = response.body();
+                        if (apiResponse.getStatus() == 200) {
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
+                            startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
+                        }
+                    } else {
+                        CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi: " + t.getMessage());
+                }
+            });
+        }
+
     }
 
     public void onBackPressed() {
         super.onBackPressed(); // Quay lại trang trước đó
     }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
         return super.dispatchTouchEvent(event);
     }
+
 }

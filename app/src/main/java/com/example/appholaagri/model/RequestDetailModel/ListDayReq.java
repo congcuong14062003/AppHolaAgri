@@ -7,7 +7,9 @@ public class ListDayReq {
         private String day;
         private String endTime;
         private String startTime;
+        public ListDayReq() {
 
+        }
         public ListDayReq(List<BreakTime> breakTimes, String day, String startTime, String endTime) {
             this.breakTimes = breakTimes;
             this.day = day;

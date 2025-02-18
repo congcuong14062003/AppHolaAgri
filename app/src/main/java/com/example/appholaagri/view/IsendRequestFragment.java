@@ -32,6 +32,7 @@ public class IsendRequestFragment extends BaseFragment {
     private boolean isLastPage = false;
 
     private static final int PAGE_SIZE = 20;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +40,7 @@ public class IsendRequestFragment extends BaseFragment {
             tabId = getArguments().getInt("tab_id", 0); // Lấy ID của tab từ arguments
         }
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -106,37 +108,29 @@ public class IsendRequestFragment extends BaseFragment {
                                 adapter = new RequestListAdapter(data.getData());
                                 adapter.setOnItemClickListener((requestId, StatusRequest, GroupRequest) -> {
                                     Log.d("IsendRequestFragment", "GroupRequest" + GroupRequest);
-                                        if(GroupRequest == 1) {
-                                            // đi muộn về sớm
-                                            if((StatusRequest.equals("Lưu nháp") || StatusRequest.equals("Từ chối"))) {
-                                                Intent intent = new Intent(getContext(), CreateRequestLateEarlyActivity.class);
-                                                intent.putExtra("requestId", requestId);
-                                                intent.putExtra("StatusRequest", StatusRequest);
-                                                intent.putExtra("GroupRequest", GroupRequest);
-                                                startActivity(intent);
-                                            } else {
-                                                Intent intent = new Intent(getContext(), RequestLateEarlyDetail.class);
-                                                intent.putExtra("requestId", requestId);
-                                                intent.putExtra("StatusRequest", StatusRequest);
-                                                intent.putExtra("GroupRequest", GroupRequest);
-                                                startActivity(intent);
-                                            }
-
-                                        } else if (GroupRequest == 2) {
-                                            Intent intent = new Intent(getContext(), RequestDayOffDetail.class);
-                                            intent.putExtra("requestId", requestId);
-                                            intent.putExtra("StatusRequest", StatusRequest);
-                                            intent.putExtra("GroupRequest", GroupRequest);
-                                            startActivity(intent);
-                                        }
-
-
-//                                    Intent intent = new Intent(getContext(), RequestDetailActivity.class);
-//                                    intent.putExtra("requestId", requestId);
-//                                    intent.putExtra("StatusRequest", StatusRequest);
-//                                    intent.putExtra("GroupRequest", GroupRequest);
-//
-//                                    startActivity(intent);
+                                    if (GroupRequest == 1) {
+                                        // đi muộn về sớm
+                                        Intent intent = new Intent(getContext(), CreateRequestLateEarlyActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    } else if (GroupRequest == 2) {
+                                        // xin nghỉ phép
+                                        Intent intent = new Intent(getContext(), CreateRequestDayOffActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (GroupRequest == 3) {
+                                        // xin làm thêm
+                                        Intent intent = new Intent(getContext(), CreateRequestOvertTime.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
                                 });
                                 recyclerView.setAdapter(adapter);
                             } else {
@@ -163,6 +157,7 @@ public class IsendRequestFragment extends BaseFragment {
         }
         fetchRequests(currentPage, tabId); // Gọi lại API với trạng thái mới
     }
+
     public void updateKeySearch(String newKeySearch) {
         Log.d("SendToMeRequestFragment", "Status selected: " + keySearch);
         this.keySearch = newKeySearch; // Cập nhật trạng thái

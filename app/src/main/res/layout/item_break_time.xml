@@ -15,14 +15,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
-            <TextView
-                style="@style/TextStyle_14_500"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Nghỉ giữa giờ -----" />
-
             <!-- Chọn giờ -->
             <EditText
                 android:id="@+id/etBreakTimeTimeOvertime"

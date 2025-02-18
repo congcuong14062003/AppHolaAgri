@@ -1,48 +1,59 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thời gian"
-        android:textSize="16sp"
-        android:textColor="#757575" />
+        android:text="Tháng 01/2025"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"/>
 
-    <LinearLayout
+    <GridView
+        android:id="@+id/gridViewCalendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@drawable/rounded_background"
-        android:padding="8dp"
-        android:layout_marginTop="8dp">
+        android:numColumns="7"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"/>
 
-        <TextView
-            android:id="@+id/dateTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="27/09/2024"
-            android:textSize="18sp"
-            android:textColor="#000000" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thời gian bắt đầu làm"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp"/>
 
-        <TextView
-            android:id="@+id/timeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="--30 phút--"
-            android:textSize="18sp"
-            android:textColor="#000000"
-            android:layout_marginStart="16dp" />
+    <TimePicker
+        android:id="@+id/timePickerStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_lock"
-         />
-    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thời gian kết thúc"
+        android:textSize="18sp"
+        android:layout_marginTop="16dp"/>
+
+    <TimePicker
+        android:id="@+id/timePickerEnd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner"/>
+
+    <Button
+        android:id="@+id/buttonConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xác nhận"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/purple_500"
+        android:textColor="@android:color/white"/>
+
 </LinearLayout>
