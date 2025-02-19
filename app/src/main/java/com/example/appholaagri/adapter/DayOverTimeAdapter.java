@@ -3,7 +3,8 @@ package com.example.appholaagri.adapter;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.util.Log;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +19,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.RequestDetailModel.BreakTime;
 import com.example.appholaagri.model.RequestDetailModel.ListDayReq;
-import com.example.appholaagri.view.CreateRequestOvertTime;
+import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.view.CreateRequestOvertTimeActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.DayViewHolder> {
     private List<ListDayReq> dayReqs;
     private Context context;
-    private CreateRequestOvertTime createRequestOvertTimeActivity;
+    private CreateRequestOvertTimeActivity createRequestOvertTimeActivity;
     private BreakTimeOverTimeAdapter breakTimeAdapter;
-    public DayOverTimeAdapter(List<ListDayReq> dayReqs, Context context, CreateRequestOvertTime activity) {
+    private int statusRequest;
+    public DayOverTimeAdapter(List<ListDayReq> dayReqs, Context context, CreateRequestOvertTimeActivity activity, int statusRequest) {
         this.dayReqs = dayReqs;
         this.context = context;
         this.createRequestOvertTimeActivity = activity;
+        this.statusRequest = statusRequest;
     }
 
     @NonNull
@@ -44,44 +49,74 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
     public void onBindViewHolder(@NonNull DayViewHolder holder, int position) {
         ListDayReq dayReq = dayReqs.get(position);
         holder.etDateOvertime.setText(dayReq.getDay());
-        holder.etTimeOvertime.setText(dayReq.getStartTime());
-
-        // Kiểm tra xem adapter của breakTimeRecycler đã được gán chưa
-        breakTimeAdapter = (BreakTimeOverTimeAdapter) holder.breakTimeRecycler.getAdapter();
-        if (breakTimeAdapter == null) {
-            breakTimeAdapter = new BreakTimeOverTimeAdapter(dayReq.getBreakTimes(), dayReqs, createRequestOvertTimeActivity);
-            holder.breakTimeRecycler.setAdapter(breakTimeAdapter);
+        String startTime1 = dayReq.getStartTime();
+        String endTime1 = dayReq.getEndTime();
+        if (startTime1.isEmpty() || endTime1.isEmpty()) {
+            holder.etTimeOvertime.setText("");  // Giữ nguyên hint
         } else {
-            // Nếu đã có adapter, chỉ cần cập nhật lại dữ liệu
-            breakTimeAdapter.notifyDataSetChanged();
+            holder.etTimeOvertime.setText(startTime1 + " - " + endTime1);
         }
 
-        // Thêm breakTime mới vào list
+
+        // Kiểm tra statusRequest để bật/tắt các trường nhập
+        if( statusRequest > 2) {
+            holder.etDateOvertime.setEnabled(false);
+            holder.etDateOvertime.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+            holder.etTimeOvertime.setEnabled(false);
+            holder.etTimeOvertime.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+            holder.addBreakTimeBtn.setVisibility(View.GONE);
+            holder.delete_day.setVisibility(View.GONE);
+        }
+
+
+
+        // Cập nhật danh sách breakTimes
+        if (dayReq.getBreakTimes() == null) {
+            dayReq.setBreakTimes(new ArrayList<>()); // Tránh null pointer
+        }
+
+        // Đảm bảo RecyclerView có LayoutManager
+        if (holder.breakTimeRecycler.getLayoutManager() == null) {
+            holder.breakTimeRecycler.setLayoutManager(new LinearLayoutManager(context));
+        }
+
+        // Kiểm tra nếu adapter đã tồn tại thì cập nhật dữ liệu, nếu chưa thì khởi tạo mới
+        if (holder.breakTimeRecycler.getAdapter() == null) {
+            BreakTimeOverTimeAdapter breakTimeAdapter = new BreakTimeOverTimeAdapter(dayReq.getBreakTimes(),context, dayReqs, createRequestOvertTimeActivity, statusRequest);
+            holder.breakTimeRecycler.setAdapter(breakTimeAdapter);
+        } else {
+            // Nếu adapter đã tồn tại, chỉ cần cập nhật dữ liệu mới
+            ((BreakTimeOverTimeAdapter) holder.breakTimeRecycler.getAdapter()).updateBreakTimes(dayReq.getBreakTimes());
+        }
+
+        // Xử lý khi ấn nút thêm break time
         holder.addBreakTimeBtn.setOnClickListener(v -> {
             BreakTime newBreakTime = new BreakTime("", "");
             dayReq.getBreakTimes().add(newBreakTime);
 
-            // Cập nhật lại adapter của breakTimeRecycler
-            breakTimeAdapter.notifyItemInserted(dayReq.getBreakTimes().size() - 1);
-
-            // Cập nhật lại toàn bộ adapter của Day
-            notifyDataSetChanged();  // Đảm bảo cập nhật lại danh sách toàn bộ
+            // Cập nhật RecyclerView
+            holder.breakTimeRecycler.getAdapter().notifyItemInserted(dayReq.getBreakTimes().size() - 1);
+            createRequestOvertTimeActivity.updateRequestDetailData();
         });
 
 
-
-        // Xử lý khi ấn nút xóa ngày
-        if (dayReqs.size() > 1) {
-            holder.deleteDayBtn.setVisibility(View.VISIBLE);
-        } else {
-            holder.deleteDayBtn.setVisibility(View.GONE);
+        if(statusRequest <= 2) {
+            // Xử lý khi ấn nút xóa ngày
+            if (dayReqs.size() > 1) {
+                holder.delete_day.setVisibility(View.VISIBLE);
+            } else {
+                holder.delete_day.setVisibility(View.GONE);
+            }
         }
 
+
         // Xử lý khi xóa ngày
-        holder.deleteDayBtn.setOnClickListener(v -> {
+        holder.delete_day.setOnClickListener(v -> {
             dayReqs.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, dayReqs.size());  // Cập nhật lại vị trí các phần tử
+            // Gọi hàm cập nhật dữ liệu sau khi xóa
+            createRequestOvertTimeActivity.updateRequestDetailData();
         });
 
 
@@ -100,20 +135,33 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
 
         // Xử lý khi chọn thời gian
         holder.etTimeOvertime.setOnClickListener(v -> {
-            TimePickerDialog timePickerDialog = new TimePickerDialog(context, (view, hourOfDay, minute) -> {
-                String startTime = String.format("%02d:%02d", hourOfDay, minute);  // Đảm bảo giờ và phút có 2 chữ số
+            TimePickerDialog startTimePickerDialog = new TimePickerDialog(context, (view, startHour, startMinute) -> {
+                String startTime = String.format("%02d:%02d", startHour, startMinute);
                 dayReq.setStartTime(startTime);
-                TimePickerDialog endTimePickerDialog = new TimePickerDialog(context, (view1, hourOfEndDay, minute1) -> {
-                    String endTime = String.format("%02d:%02d", hourOfEndDay, minute1);  // Đảm bảo giờ và phút có 2 chữ số
-                    dayReq.setEndTime(endTime);
-                    String fullTime = startTime + " - " + endTime;
-                    holder.etTimeOvertime.setText(fullTime);
-                    createRequestOvertTimeActivity.updateRequestDetailData();
-                }, 17, 0, true);
+
+                TimePickerDialog endTimePickerDialog = new TimePickerDialog(context, (view1, endHour, endMinute) -> {
+                    String endTime = String.format("%02d:%02d", endHour, endMinute);
+
+                    // Chuyển đổi giờ & phút thành số phút từ đầu ngày
+                    int startTotalMinutes = startHour * 60 + startMinute;
+                    int endTotalMinutes = endHour * 60 + endMinute;
+
+                    if (endTotalMinutes <= startTotalMinutes) {
+                        // Giờ kết thúc không hợp lệ, hiển thị lỗi
+                        CustomToast.showCustomToast(context, "Giờ kết thúc phải lớn hơn giờ bắt đầu!");
+                    } else {
+                        // Cập nhật giờ nếu hợp lệ
+                        dayReq.setEndTime(endTime);
+                        String fullTime = startTime + " - " + endTime;
+                        holder.etTimeOvertime.setText(fullTime);
+                        createRequestOvertTimeActivity.updateRequestDetailData();
+                    }
+                }, startHour + 1, startMinute, true); // Gợi ý giờ kết thúc lớn hơn giờ bắt đầu
                 endTimePickerDialog.show();
             }, 8, 0, true);
-            timePickerDialog.show();
+            startTimePickerDialog.show();
         });
+
     }
 
 
@@ -127,7 +175,7 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
         EditText etDateOvertime, etTimeOvertime;
         RecyclerView breakTimeRecycler;
         AppCompatButton addBreakTimeBtn;
-        ImageView deleteDayBtn;
+        ImageView delete_day;
 
         public DayViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -135,7 +183,7 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
             etTimeOvertime = itemView.findViewById(R.id.etTimeOvertime);
             breakTimeRecycler = itemView.findViewById(R.id.breakTimeRecyclerView);
             addBreakTimeBtn = itemView.findViewById(R.id.add_break_time_btn);
-            deleteDayBtn = itemView.findViewById(R.id.delete_day);
+            delete_day = itemView.findViewById(R.id.delete_day);
             breakTimeRecycler.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
 
         }

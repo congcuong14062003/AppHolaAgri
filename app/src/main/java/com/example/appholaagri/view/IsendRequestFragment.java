@@ -3,7 +3,6 @@ package com.example.appholaagri.view;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -125,7 +124,22 @@ public class IsendRequestFragment extends BaseFragment {
                                     }
                                     else if (GroupRequest == 3) {
                                         // xin làm thêm
-                                        Intent intent = new Intent(getContext(), CreateRequestOvertTime.class);
+                                        Intent intent = new Intent(getContext(), CreateRequestOvertTimeActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (GroupRequest == 4) {
+                                        // mua sắm vật tư
+                                        Intent intent = new Intent(getContext(), CreateRequestBuyNewActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    } else if (GroupRequest == 5) {
+                                        // xin thôi việc
+                                        Intent intent = new Intent(getContext(), CreateRequestResignActivity.class);
                                         intent.putExtra("requestId", requestId);
                                         intent.putExtra("StatusRequest", StatusRequest);
                                         intent.putExtra("GroupRequest", GroupRequest);

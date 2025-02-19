@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_home"
+    android:id="@+id/create_request_container"
     tools:context=".view.CreateRequestLateEarlyActivity">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
@@ -68,6 +69,17 @@
                     android:gravity="center_vertical"
                     android:text="Xin đi muộn/ về sớm"
                     android:textColor="@color/secon_textcolor" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/txt_status_request_detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_rounded_10_no_color"
+                    android:backgroundTint="#FFE9E4"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="Từ chối"
+                    android:textAllCaps="false"
+                    android:textColor="#FF5C39" />
             </LinearLayout>
 
             <!--Quản lý thông tin-->
@@ -103,7 +115,10 @@
                         android:padding="35px"
                         android:hint="Nhập tên đề xuất"
                         android:textColor="@color/textcolor"
-                        android:imeOptions="actionNext" />
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:singleLine="true"
+                        />
                 </LinearLayout>
 
                 <LinearLayout
@@ -569,7 +584,32 @@
                         android:padding="35px"
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#f2f2f2"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
+                    <TextView
+                        android:id="@+id/tvHeader"
+                        style="@style/TextStyle_18_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:gravity="center"
+                        android:text="HÀNH ĐỘNG CHÍNH"
+                        android:textColor="@color/textcolor" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewApprovalLogs"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:padding="8dp"
+                        android:scrollbars="vertical"
+                        />
+                </LinearLayout>
                 <!--                    danh sách nút action-->
                 <LinearLayout
                     android:id="@+id/action_button_container"

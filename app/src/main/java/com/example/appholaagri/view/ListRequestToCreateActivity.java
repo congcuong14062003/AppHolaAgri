@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
-import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
 import com.example.appholaagri.adapter.GroupRequestListAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupRequest;
@@ -21,9 +20,7 @@ import com.example.appholaagri.model.RequestGroupModel.RequestGroupResponse;
 
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
-import com.example.appholaagri.utils.CustomToast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -103,14 +100,23 @@ public class ListRequestToCreateActivity extends BaseActivity {
                                     startActivity(intent);
                                 } else if (GroupRequestType == 3) {
                                     // Đăng ký làm thêm
-                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestOvertTime.class);
+                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestOvertTimeActivity.class);
                                     intent.putExtra("GroupRequestId", GroupRequestId);
                                     intent.putExtra("GroupRequestType", GroupRequestType);
                                     startActivity(intent);
                                 } else if (GroupRequestType == 4) {
                                     // Đăng ký mua sắm vật tư
+                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestBuyNewActivity.class);
+                                    intent.putExtra("GroupRequestId", GroupRequestId);
+                                    intent.putExtra("GroupRequestType", GroupRequestType);
+                                    startActivity(intent);
                                 } else if (GroupRequestType == 5) {
                                     // Đơn xin thôi việc
+                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestResignActivity.class);
+                                    intent.putExtra("GroupRequestId", GroupRequestId);
+                                    intent.putExtra("GroupRequestType", GroupRequestType);
+                                    startActivity(intent);
+
                                 } else if (GroupRequestType == 6) {
                                     // Chuyển thiết bị
                                 } else if (GroupRequestType == 7) {

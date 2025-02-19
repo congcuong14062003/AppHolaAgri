@@ -12,6 +12,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.appholaagri.R;
@@ -31,9 +32,12 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 public class CheckInDailyActivity extends BaseActivity {
-
+    private static final int CAMERA_REQUEST_CODE = 100;
     private RadioGroup radioGroupShift;
     private List<ShiftModel.Shift> workShiftList = new ArrayList<>();
     private int selectedShiftId = -1;
@@ -46,7 +50,15 @@ public class CheckInDailyActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in_daily);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_REQUEST_CODE);
+        }
 
+        // Kiểm tra quyền Camera
+        checkCameraPermission();
         // Initialize views
         radioGroupShift = findViewById(R.id.radioGroupShift);
         barcodeScannerView = findViewById(R.id.barcode_scanner);
@@ -226,19 +238,44 @@ public class CheckInDailyActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        barcodeScannerView.resume();
-        barcodeScannerView.decodeSingle(result -> {
-            if (selectedShiftId == -1) {
-                CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
-            } else if (result != null) {
-                String qrCodeString = result.getText();
-                checkInQrCode(qrCodeString); // Gọi API check-in
-            } else {
-                CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
-            }
-        });
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            barcodeScannerView.resume();
+            barcodeScannerView.decodeSingle(result -> {
+                if (selectedShiftId == -1) {
+                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
+                } else if (result != null) {
+                    checkInQrCode(result.getText());
+                } else {
+                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
+                }
+            });
+        } else {
+            navigateToHome();
+        }
     }
-
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Quyền camera được cấp", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Ứng dụng cần quyền camera để hoạt động", Toast.LENGTH_LONG).show();
+                navigateToHome();
+            }
+        }
+    }
+    private void navigateToHome() {
+        Intent intent = new Intent(CheckInDailyActivity.this, HomeActivity.class);
+        intent.putExtra("navigate_to", "home");
+        startActivity(intent);
+        finish();
+    }
 
 
     @Override

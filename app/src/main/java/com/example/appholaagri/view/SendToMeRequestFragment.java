@@ -101,26 +101,44 @@ public class SendToMeRequestFragment extends BaseFragment {
                             if (adapter == null) {
                                 adapter = new RequestListAdapter(data.getData());
                                 adapter.setOnItemClickListener((requestId, StatusRequest, GroupRequest) -> {
-                                    if(GroupRequest == 1) {
+                                    if (GroupRequest == 1) {
                                         // đi muộn về sớm
-                                        Intent intent = new Intent(getContext(), RequestLateEarlyDetail.class);
+                                        Intent intent = new Intent(getContext(), CreateRequestLateEarlyActivity.class);
                                         intent.putExtra("requestId", requestId);
                                         intent.putExtra("StatusRequest", StatusRequest);
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
                                     } else if (GroupRequest == 2) {
                                         // xin nghỉ phép
-                                        Intent intent = new Intent(getContext(), RequestDayOffDetail.class);
+                                        Intent intent = new Intent(getContext(), CreateRequestDayOffActivity.class);
                                         intent.putExtra("requestId", requestId);
                                         intent.putExtra("StatusRequest", StatusRequest);
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
                                     }
-//                                    Intent intent = new Intent(getContext(), RequestDetailActivity.class);
-//                                    intent.putExtra("requestId", requestId);
-//                                    intent.putExtra("StatusRequest", StatusRequest);
-//                                    intent.putExtra("GroupRequest", GroupRequest);
-//                                    startActivity(intent);
+                                    else if (GroupRequest == 3) {
+                                        // xin làm thêm
+                                        Intent intent = new Intent(getContext(), CreateRequestOvertTimeActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (GroupRequest == 4) {
+                                        // mua sắm vật tư
+                                        Intent intent = new Intent(getContext(), CreateRequestBuyNewActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    } else if (GroupRequest == 5) {
+                                        // xin thôi việc
+                                        Intent intent = new Intent(getContext(), CreateRequestResignActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
                                 });
                                 recyclerView.setAdapter(adapter);
                             } else {

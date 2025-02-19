@@ -27,7 +27,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".view.CreateRequestOvertTime"
+            android:name=".view.CreateRequestResignActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestBuyNewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestOvertTimeActivity"
             android:exported="false" />
         <activity
             android:name=".view.RequestDayOffDetail"

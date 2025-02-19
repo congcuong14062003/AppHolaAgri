@@ -25,6 +25,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -33,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
+import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
@@ -66,7 +68,11 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     private TextView title_request, txt_type_request_create, select_method_request;
     private ImageView backBtnReview;
     private RequestDetailData requestDetailData; // Biến toàn cục
-    private Integer GroupRequestType, GroupRequestId, requestId, StatusRequest, selectedMinute = 30;
+    private Integer GroupRequestType, GroupRequestId, requestId, StatusRequest;
+    private RecyclerView recyclerViewApprovalLogs;
+    private ActionRequestDetailAdapter adapter;
+    private AppCompatButton txt_status_request_detail;
+    private CoordinatorLayout create_request_container;
 
     // over lay
     View overlay_background;
@@ -80,10 +86,15 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_request_day_off);
 
         // ánh xạ
+        // container
+        create_request_container = findViewById(R.id.create_request_container);
         // nút back
         backBtnReview = findViewById(R.id.backBtnReview_create);
         // tiêu đề
         title_request = findViewById(R.id.title_request);
+        // trạng thái
+        txt_status_request_detail = findViewById(R.id.txt_status_request_detail);
+
         // loại đề xuất
         txt_type_request_create = findViewById(R.id.txt_type_request_create);
         // tên đề xuất
@@ -114,6 +125,9 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         overlay_background = findViewById(R.id.overlay_background);
         overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
+
+        recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
+        recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
 
 
 
@@ -160,6 +174,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         }
 
         if (requestId != -1) {
+            create_request_container.setVisibility(View.GONE);
             title_request.setText("Chi tiết đề xuất");
             getDetailRequest(requestId, token);
         } else {
@@ -405,6 +420,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
+                            create_request_container.setVisibility(View.VISIBLE);
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
                         }
@@ -436,12 +452,23 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 Log.e("CreateRequestDayOffActivity", "requestDetailData is null");
                 return;
             }
-            if(requestId != -1) {
-                if(requestDetailData.getReason() != null) {
-                    etGioBatDau.setText(requestDetailData.getStartTime());
-                    etGioKetThuc.setText(requestDetailData.getEndTime());
-                }
+            if (requestDetailData.getStatus() != null) {
+                txt_status_request_detail.setText(requestDetailData.getStatus().getName());
+
+                String colorCode = requestDetailData.getStatus().getColor(); // Lấy mã màu (dạng #cccccc)
+                int color = Color.parseColor(colorCode); // Chuyển mã màu thành int
+
+                // Đặt màu chữ
+                txt_status_request_detail.setTextColor(color);
+
+                // Tạo màu nền nhạt hơn (thêm alpha)
+                int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color)); // Alpha = 50 (~20% độ trong suốt)
+
+                // Đặt màu nền
+                txt_status_request_detail.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
             }
+
+
             // Kiểm tra từng thuộc tính trước khi gọi
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
                 txt_type_request_create.setText(requestDetailData.getRequestGroup().getName());
@@ -470,7 +497,13 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             if (requestDetailData.getEndDate() != null) {
                 etNgayKetThuc.setText(requestDetailData.getEndDate());
             }
+            if(requestDetailData.getStartTime() != null) {
+                etGioBatDau.setText(requestDetailData.getStartTime());
+            }
 
+            if(requestDetailData.getEndTime() != null) {
+                etGioKetThuc.setText(requestDetailData.getEndTime());
+            }
 
             if (requestDetailData.getReason() != null) {
                 edt_reason_request_create.setText(requestDetailData.getReason());
@@ -511,6 +544,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 edt_follower_request_create.setText("Không có người theo dõi");
             }
 
+
             // Xử lý danh sách RequestMethod
             List<RequestMethod> listMethods = requestDetailData.getListMethod();
             if (listMethods != null && !listMethods.isEmpty()) {
@@ -544,6 +578,11 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 Log.e("CreateRequestActivity", "listMethods is null or empty");
             }
 
+            adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
+            recyclerViewApprovalLogs.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
+            // các nút hành động
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);

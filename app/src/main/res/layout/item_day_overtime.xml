@@ -29,9 +29,9 @@
             <ImageView
                 android:id="@+id/delete_day"
                 android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/delete_break_time_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/remove"
                 android:layerType="software" />
         </LinearLayout>
 
@@ -51,6 +51,7 @@
                 android:drawableEnd="@drawable/lich_icon2"
                 android:hint="Chọn ngày"
                 android:focusable="false"
+                android:textColor="@color/textcolor"
                 android:clickable="true"
                 android:padding="10dp" />
 
@@ -66,6 +67,7 @@
                 android:drawableEnd="@drawable/icon_lock"
                 android:hint="Chọn giờ"
                 android:focusable="false"
+                android:textColor="@color/textcolor"
                 android:clickable="true"
                 android:padding="10dp" />
         </LinearLayout>

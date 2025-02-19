@@ -1,7 +1,5 @@
 package com.example.appholaagri.view;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,29 +7,26 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
+import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.BreakTimeOverTimeAdapter;
 import com.example.appholaagri.adapter.DayOverTimeAdapter;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
@@ -50,13 +45,8 @@ import com.example.appholaagri.utils.KeyboardUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -64,7 +54,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestOvertTime extends AppCompatActivity {
+public class CreateRequestOvertTimeActivity extends AppCompatActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau,etGioBatDau, etNgayKetThuc,etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
     private TextView title_request, txt_type_request_create, select_method_request;
@@ -84,6 +74,13 @@ public class CreateRequestOvertTime extends AppCompatActivity {
     private List<ListDayReq> listDayReqs = new ArrayList<>();
     private RecyclerView dayRecyclerView;
     private DayOverTimeAdapter dayOverTimeAdapter;
+    private BreakTimeOverTimeAdapter breakTimeOverTimeAdapter;
+    private AppCompatButton txt_status_request_detail;
+
+    private RecyclerView recyclerViewApprovalLogs;
+    private ActionRequestDetailAdapter adapter;
+    private CoordinatorLayout create_request_container;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,10 +88,16 @@ public class CreateRequestOvertTime extends AppCompatActivity {
         setContentView(R.layout.activity_create_request_overt_time);
 
         // ánh xạ
+        // container
+        create_request_container = findViewById(R.id.create_request_container);
         // nút back
         backBtnReview = findViewById(R.id.backBtnReview_create);
         // tiêu đề
         title_request = findViewById(R.id.title_request);
+
+        // trạng thái
+        txt_status_request_detail = findViewById(R.id.txt_status_request_detail);
+
         // loại đề xuất
         txt_type_request_create = findViewById(R.id.txt_type_request_create);
         // tên đề xuất
@@ -122,7 +125,9 @@ public class CreateRequestOvertTime extends AppCompatActivity {
 
         // recycle view
         dayRecyclerView = findViewById(R.id.dayRecyclerView);
+        recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
 
+        recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -139,14 +144,14 @@ public class CreateRequestOvertTime extends AppCompatActivity {
         if(StatusRequest > 2){
             edt_name_request_create.setEnabled(false);
             edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-            select_method_request.setEnabled(false);
-            select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+            addDayBtn.setVisibility(View.GONE);
             edt_reason_request_create.setEnabled(false);
             edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
         }
         // init
-        dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this);
+        dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this, StatusRequest);
         dayRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         dayRecyclerView.setAdapter(dayOverTimeAdapter);
 
@@ -160,6 +165,7 @@ public class CreateRequestOvertTime extends AppCompatActivity {
         }
 
         if (requestId != -1) {
+            create_request_container.setVisibility(View.GONE);
             title_request.setText("Chi tiết đề xuất");
             getDetailRequest(requestId, token);
         } else {
@@ -217,7 +223,6 @@ public class CreateRequestOvertTime extends AppCompatActivity {
     private void addNewDay() {
         // Thêm một đối tượng mới vào mảng listDayReqs
         listDayReqs.add(new ListDayReq(new ArrayList<>(), "", "", " "));
-        // Cập nhật lại adapter của DayOverTimeAdapter
         // Cập nhật lại adapter của breakTimeRecycler
         dayOverTimeAdapter.notifyItemInserted(listDayReqs.size() - 1);
         // Cập nhật lại toàn bộ adapter của Day
@@ -256,11 +261,11 @@ public class CreateRequestOvertTime extends AppCompatActivity {
                         }
                     } else {
                         Log.e("CreateRequestOvertTime", "API response is unsuccessful");
-                        CustomToast.showCustomToast(CreateRequestOvertTime.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
                     Log.e("CreateRequestOvertTime", "Error during response handling: " + e.getMessage());
-                    CustomToast.showCustomToast(CreateRequestOvertTime.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
@@ -283,16 +288,17 @@ public class CreateRequestOvertTime extends AppCompatActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
+                            create_request_container.setVisibility(View.VISIBLE);
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
                         }
                     } else {
                         Log.e("RequestDetailActivity", "API response is unsuccessful");
-                        CustomToast.showCustomToast(CreateRequestOvertTime.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
                     Log.e("RequestDetailActivity", "Error during response handling: " + e.getMessage());
-                    CustomToast.showCustomToast(CreateRequestOvertTime.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
@@ -314,6 +320,22 @@ public class CreateRequestOvertTime extends AppCompatActivity {
                 Log.e("CreateRequestOvertTime", "requestDetailData is null");
                 return;
             }
+            if (requestDetailData.getStatus() != null) {
+                txt_status_request_detail.setText(requestDetailData.getStatus().getName());
+
+                String colorCode = requestDetailData.getStatus().getColor(); // Lấy mã màu (dạng #cccccc)
+                int color = Color.parseColor(colorCode); // Chuyển mã màu thành int
+
+                // Đặt màu chữ
+                txt_status_request_detail.setTextColor(color);
+
+                // Tạo màu nền nhạt hơn (thêm alpha)
+                int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color)); // Alpha = 50 (~20% độ trong suốt)
+
+                // Đặt màu nền
+                txt_status_request_detail.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
+            }
+
 
             // Kiểm tra từng thuộc tính trước khi gọi
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
@@ -332,37 +354,15 @@ public class CreateRequestOvertTime extends AppCompatActivity {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
             }
 
-//            // Lấy danh sách listDayReqs từ requestDetailData
-        // Giả sử requestDetailData.getListDayReqs() trả về một danh sách
+                // Xóa danh sách cũ để tránh trùng lặp
+                if (requestDetailData.getListDayReqs() != null) {
+                    listDayReqs.clear();
 
-//            List<ListDayReq> listDayReqs = requestDetailData.getListDayReqs();
-//
-//        // Chuyển đổi listDayReqs thành chuỗi JSON (nếu cần thiết)
-//            String datalistDayReqs = gson.toJson(listDayReqs);
-//            Log.d("datalistDayReqs", "datalistDayReqs: " + datalistDayReqs);
-//
-//        // Cập nhật lại danh sách trong adapter
-//            if (dayOverTimeAdapter != null) {
-//                dayOverTimeAdapter.updateData(listDayReqs);  // Giả sử có phương thức updateData trong Adapter
-//            } else {
-//                // Nếu adapter chưa được khởi tạo, tạo mới và gán vào RecyclerView
-//                dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this);
-//                dayRecyclerView.setAdapter(dayOverTimeAdapter);  // Giả sử recyclerView là đối tượng RecyclerView của bạn
-//            }
-
-//
-//            // Kiểm tra xem danh sách có null không, nếu có thì khởi tạo danh sách rỗng
-//            if (listDayReqs == null) {
-//                listDayReqs = new ArrayList<>();
-//            }
-//
-//            // Khởi tạo adapter và gán dữ liệu
-//            dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this);
-//            dayRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//            dayRecyclerView.setAdapter(dayOverTimeAdapter);
-//
-//            // Thông báo adapter cập nhật dữ liệu
-//            dayOverTimeAdapter.notifyDataSetChanged();
+                    // Thêm danh sách ngày từ requestDetailData
+                    listDayReqs.addAll(requestDetailData.getListDayReqs());
+                    // Cập nhật RecyclerView
+                    dayOverTimeAdapter.notifyDataSetChanged();
+                }
 
             if (requestDetailData.getReason() != null) {
                 edt_reason_request_create.setText(requestDetailData.getReason());
@@ -435,7 +435,9 @@ public class CreateRequestOvertTime extends AppCompatActivity {
             } else {
                 Log.e("CreateRequestActivity", "listMethods is null or empty");
             }
-
+            adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
+            recyclerViewApprovalLogs.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
@@ -550,24 +552,24 @@ public class CreateRequestOvertTime extends AppCompatActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestOvertTime.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestOvertTime.this, RequestActivity.class));
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
+                            startActivity(new Intent(CreateRequestOvertTimeActivity.this, RequestActivity.class));
                         } else {
-                            CustomToast.showCustomToast(CreateRequestOvertTime.this, apiResponse.getMessage());
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestOvertTime.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    CustomToast.showCustomToast(CreateRequestOvertTime.this, "Lỗi: " + t.getMessage());
+                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
         } else {
-            String dataObjects = gson.toJson(groupRequestCreateRequest.getStatus());
-            Log.d("CreateRequestOvertTime", "button action chi tiết: " + dataObjects);
+            String dataObjects = gson.toJson(groupRequestCreateRequest);
+            Log.d("CreateRequestOvertTime", "data chỉnh sửa: " + dataObjects);
             Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
@@ -575,19 +577,19 @@ public class CreateRequestOvertTime extends AppCompatActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestOvertTime.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestOvertTime.this, RequestActivity.class));
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
+                            startActivity(new Intent(CreateRequestOvertTimeActivity.this, RequestActivity.class));
                         } else {
-                            CustomToast.showCustomToast(CreateRequestOvertTime.this, apiResponse.getMessage());
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestOvertTime.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    CustomToast.showCustomToast(CreateRequestOvertTime.this, "Lỗi: " + t.getMessage());
+                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
         }
