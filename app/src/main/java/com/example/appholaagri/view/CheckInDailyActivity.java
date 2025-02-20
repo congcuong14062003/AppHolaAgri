@@ -1,18 +1,30 @@
 package com.example.appholaagri.view;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.appholaagri.R;
@@ -22,6 +34,9 @@ import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.KeyboardUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.journeyapps.barcodescanner.BarcodeView;
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -34,6 +49,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import android.Manifest;
 import android.content.pm.PackageManager;
+
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 public class CheckInDailyActivity extends BaseActivity {
@@ -45,17 +62,11 @@ public class CheckInDailyActivity extends BaseActivity {
     ImageView close_scanner;
     private DecoratedBarcodeView barcodeScannerView;  // Change to DecoratedBarcodeView
     private CaptureManager captureManager;
-
+    private int reasonType = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in_daily);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    CAMERA_REQUEST_CODE);
-        }
 
         // Kiểm tra quyền Camera
         checkCameraPermission();
@@ -85,18 +96,7 @@ public class CheckInDailyActivity extends BaseActivity {
         captureManager.initializeFromIntent(getIntent(), savedInstanceState);
         captureManager.decode();
 
-        barcodeScannerView.decodeSingle(result -> {
-            if (selectedShiftId == -1) {  // Kiểm tra xem ca đã được chọn chưa
-                CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
-            } else {
-                if (result != null) {
-                    String qrCodeString = result.getText();
-                    checkInQrCode(qrCodeString);
-                } else {
-                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
-                }
-            }
-        });
+        decodeAndProcessQRCode();
     }
     public void onBackPressed() {
         // Tìm ra HomeActivity và chuyển hướng về SettingFragment
@@ -141,6 +141,8 @@ public class CheckInDailyActivity extends BaseActivity {
             radioButton.setId(shift.getWorkShiftId());
             radioButton.setTextColor(getResources().getColor(android.R.color.white));
             radioButton.setTextSize(16);
+            radioButton.setButtonTintList(ContextCompat.getColorStateList(this, R.color.radio_button_selector));
+            radioButton.setTextColor(ContextCompat.getColorStateList(this, R.color.radio_button_selector));
             radioGroupShift.addView(radioButton);
         }
 
@@ -160,28 +162,16 @@ public class CheckInDailyActivity extends BaseActivity {
                     radioButton.setButtonTintList(ColorStateList.valueOf(getResources().getColor(R.color.radio_button_default)));
                 }
             }
-
-            // Gọi lại decodeSingle() sau khi chọn ca
-            barcodeScannerView.decodeSingle(result -> {
-                if (selectedShiftId == -1) {
-                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
-                } else if (result != null) {
-                    String qrCodeString = result.getText();
-                    checkInQrCode(qrCodeString); // Gọi API check-in
-                } else {
-                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
-                }
-            });
+            decodeAndProcessQRCode();
         });
 
 
     }
 
-    private void checkInQrCode(String qrCodeString) {
+    private void checkInQrCode(String qrCodeString, String reason, int reasonType) {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         int isConfirmed = 0; // Đã xác nhận
         String qrContent = qrCodeString; // QR content ví dụ
-
         // Tìm Shift dựa trên selectedShiftId
         ShiftModel.Shift selectedShift = null;
         for (ShiftModel.Shift shift : workShiftList) {
@@ -199,7 +189,10 @@ public class CheckInDailyActivity extends BaseActivity {
             Log.d("CheckInDailyActivity: ", "shiftType" + shiftType);
             Log.d("CheckInDailyActivity: ", "workShiftId" + workShiftId);
             // Tạo đối tượng CheckInQrCodeRequest
-            CheckInQrCodeRequest checkInQrCodeRequest = new CheckInQrCodeRequest(deviceId, isConfirmed, qrContent, shiftType, workShiftId);
+            CheckInQrCodeRequest checkInQrCodeRequest = new CheckInQrCodeRequest(deviceId, isConfirmed, qrContent, reason, reasonType, shiftType, workShiftId);
+            Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+            String requestDetailDataJson = gson.toJson(checkInQrCodeRequest);
+            Log.d("aaaaa", "bbb: " + requestDetailDataJson);
 
             // Lấy token từ SharedPreferences
             SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
@@ -235,41 +228,154 @@ public class CheckInDailyActivity extends BaseActivity {
             CustomToast.showCustomToast(CheckInDailyActivity.this, "Ca làm việc không hợp lệ");
         }
     }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            barcodeScannerView.resume();
-            barcodeScannerView.decodeSingle(result -> {
-                if (selectedShiftId == -1) {
-                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
-                } else if (result != null) {
-                    checkInQrCode(result.getText());
-                } else {
-                    CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
+
+
+    // nhập lí do
+    private void showReasonDialog(String qrCodeString) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_check_in_reason, null);
+        builder.setView(dialogView);
+
+        EditText etReason;
+        ImageView rbIndividual_create, rbWork_create;
+        AppCompatButton btn_cancel, btn_confirm;
+
+
+        etReason = dialogView.findViewById(R.id.etReason);
+        rbIndividual_create = dialogView.findViewById(R.id.rbIndividual_create);
+        rbWork_create = dialogView.findViewById(R.id.rbWork_create);
+        btn_cancel = dialogView.findViewById(R.id.btn_cancel);
+        btn_confirm = dialogView.findViewById(R.id.btn_confirm);
+
+
+        AlertDialog dialog = builder.create();
+
+        // Làm nền của dialog trong suốt
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+//        rbIndividual_create.setBackgroundResource(R.drawable.checked_radio);
+        // Đặt sự kiện click cho "lí do cá nhân"
+        rbIndividual_create.setOnClickListener(v -> {
+            rbIndividual_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
+            rbWork_create.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
+            reasonType = 1;
+        });
+        // Đặt sự kiện click cho "lí do công việc"
+        rbWork_create.setOnClickListener(v -> {
+            rbWork_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
+            rbIndividual_create.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
+            reasonType = 2;
+        });
+        btn_confirm.setOnClickListener(view -> {
+            String reason = etReason.getText().toString().trim();
+            if (reason.isEmpty()) {
+                CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng nhập lý do");
+            } else {
+                dialog.dismiss();
+                checkInQrCode(qrCodeString, reason, reasonType);
+            }
+        });
+
+        etReason.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
                 }
-            });
-        } else {
-            navigateToHome();
+            }
+        });
+
+        dialogView.setOnTouchListener((v, event) -> {
+            hideKeyboard(v);
+            return false;
+        });
+        findViewById(android.R.id.content).setOnTouchListener((v, event) -> {
+            hideKeyboard(v);
+            return false;
+        });
+
+        btn_cancel.setOnClickListener(view -> {
+            dialog.dismiss();
+//            if (selectedShiftId != -1) { // Nếu vẫn đang chọn ca thì quét lại QR
+//                barcodeScannerView.decodeSingle(result -> {
+//                    if (selectedShiftId == -1) {
+//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
+//                    } else if (result != null) {
+//                        showReasonDialog(result.getText()); // Hiển thị Dialog thay vì gọi API trực tiếp
+//                    } else {
+//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
+//                    }
+//                });
+//            }
+            decodeAndProcessQRCode();
+        });
+        // Khi Dialog bị ẩn, tự động quét QR lại
+        dialog.setOnDismissListener(dialogInterface -> {
+//            if (selectedShiftId != -1) {
+//                barcodeScannerView.decodeSingle(result -> {
+//                    if (selectedShiftId == -1) {
+//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
+//                    } else if (result != null) {
+//                        showReasonDialog(result.getText());
+//                    } else {
+//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
+//                    }
+//                });
+//            }
+            decodeAndProcessQRCode();
+        });
+
+        dialog.show();
+    }
+
+
+    // quét qr
+    private void decodeAndProcessQRCode() {
+        barcodeScannerView.decodeSingle(result -> {
+            if (selectedShiftId == -1) {
+                CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
+            } else if (result != null) {
+                showReasonDialog(result.getText());
+            } else {
+                CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
+            }
+        });
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (view != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            // Nếu chưa có quyền, yêu cầu cấp quyền
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
         }
     }
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Quyền camera được cấp", Toast.LENGTH_SHORT).show();
+                barcodeScannerView.resume();
+                decodeAndProcessQRCode();
             } else {
-                Toast.makeText(this, "Ứng dụng cần quyền camera để hoạt động", Toast.LENGTH_LONG).show();
-                navigateToHome();
+                // Không hiển thị AlertDialog, chỉ thông báo từ hệ thống
+                Toast.makeText(this, "Ứng dụng cần quyền Camera để hoạt động", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
     private void navigateToHome() {
         Intent intent = new Intent(CheckInDailyActivity.this, HomeActivity.class);
         intent.putExtra("navigate_to", "home");
@@ -277,6 +383,16 @@ public class CheckInDailyActivity extends BaseActivity {
         finish();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            barcodeScannerView.resume();
+            decodeAndProcessQRCode();
+        } else {
+            checkCameraPermission();
+        }
+    }
 
     @Override
     protected void onPause() {

@@ -25,7 +25,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.1013"
             app:srcCompat="@drawable/back_btn" />
-
         <TextView
             android:id="@+id/title_request"
             style="@style/TextStyle_16_600"
@@ -98,6 +97,7 @@
                         style="@style/TextStyle_14_500"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/secon_textcolor"
                         android:layout_marginStart="10dp"
                         android:text="Tên đề xuất" />
 
@@ -132,6 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
+                        android:textColor="@color/secon_textcolor"
                         android:text="Người đề xuất" />
 
                     <EditText
@@ -159,6 +160,7 @@
                     <TextView
                         style="@style/TextStyle_14_500"
                         android:layout_width="wrap_content"
+                        android:textColor="@color/secon_textcolor"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text="Bộ phận" />
@@ -189,6 +191,7 @@
                         style="@style/TextStyle_14_500"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/secon_textcolor"
                         android:layout_marginStart="10dp"
                         android:text="Hình thức" />
 
@@ -232,6 +235,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
+                        android:textColor="@color/secon_textcolor"
                         android:text="Mốc thời gian" />
 
                     <LinearLayout
@@ -255,7 +259,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:layout_marginEnd="10dp"
-                                android:src="@drawable/unchecked_radio" />
+                                android:src="@drawable/no_check_radio_create" />
 
                             <TextView
                                 style="@style/TextStyle_14_500"
@@ -277,7 +281,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="10dp"
-                                android:src="@drawable/unchecked_radio" />
+                                android:src="@drawable/no_check_radio_create" />
 
                             <TextView
                                 style="@style/TextStyle_14_500"
@@ -301,6 +305,7 @@
                         style="@style/TextStyle_14_500"
                         android:id="@+id/tvThoiGianBatDau"
                         android:layout_width="wrap_content"
+                        android:textColor="@color/secon_textcolor"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:layout_marginStart="10dp"
@@ -357,6 +362,7 @@
                         android:layout_height="wrap_content"
                         style="@style/TextStyle_14_500"
                         android:layout_marginStart="10dp"
+                        android:textColor="@color/secon_textcolor"
                         android:layout_marginBottom="8dp"
                         android:text="Thời gian kết thúc" />
 
@@ -409,6 +415,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         style="@style/TextStyle_14_500"
+                        android:textColor="@color/secon_textcolor"
                         android:text="Chọn lý do" />
 
                     <LinearLayout
@@ -433,7 +440,7 @@
                                 android:layout_marginStart="10dp"
                                 style="@style/TextStyle_14_500"
                                 android:layout_marginEnd="10dp"
-                                android:src="@drawable/unchecked_radio" />
+                                android:src="@drawable/no_check_radio_create" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -455,7 +462,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="10dp"
-                                android:src="@drawable/unchecked_radio" />
+                                android:src="@drawable/no_check_radio_create" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -477,6 +484,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
+                        android:textColor="@color/textcolor"
                         android:text="Lí do" />
 
                     <EditText
@@ -506,7 +514,7 @@
 
                     <TextView
                         style="@style/TextStyle_14_500"
-
+                        android:textColor="@color/secon_textcolor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -538,6 +546,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/TextStyle_14_500"
+                        android:textColor="@color/secon_textcolor"
+
                         android:layout_marginStart="10dp"
                         android:text="Người duyệt cố định" />
 
@@ -564,6 +574,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textColor="@color/secon_textcolor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -585,6 +596,7 @@
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/layout_action_history_request"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#f2f2f2"

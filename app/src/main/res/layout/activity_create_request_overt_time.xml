@@ -95,6 +95,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textColor="@color/secon_textcolor"
                         style="@style/TextStyle_14_500"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -129,6 +130,7 @@
 
                     <TextView
                         style="@style/TextStyle_14_500"
+                        android:textColor="@color/secon_textcolor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -161,6 +163,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
+                        android:textColor="@color/secon_textcolor"
                         android:text="Bộ phận" />
 
                     <EditText
@@ -216,6 +219,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textColor="@color/secon_textcolor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -248,6 +252,7 @@
 
                     <TextView
                         style="@style/TextStyle_14_500"
+                        android:textColor="@color/secon_textcolor"
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -277,6 +282,8 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textColor="@color/secon_textcolor"
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/TextStyle_14_500"
@@ -306,6 +313,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textColor="@color/secon_textcolor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -327,6 +335,7 @@
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/layout_action_history_request"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#f2f2f2"

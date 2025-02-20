@@ -9,21 +9,30 @@
     android:focusableInTouchMode="true"
     android:clickable="true"
     tools:context=".view.MainActivity">
+    <ImageView
+        android:id="@+id/logo_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/logo"
+        android:layout_marginTop="100dp"
+
+        />
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
         app:cardBackgroundColor="@color/secondarycolor"
         app:cardCornerRadius="60dp"
         app:cardElevation="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.0739"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/logo_login"
+        app:layout_constraintStart_toStartOf="@id/logo_login"
+        app:layout_constraintTop_toTopOf="@id/logo_login"
         app:layout_constraintWidth_percent="0.16">
         <ImageView
             android:id="@+id/avatar_icon"
@@ -126,7 +135,7 @@
         android:id="@+id/login_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/button_custom"
         android:text="Đăng nhập"
         android:textColor="@android:color/white"

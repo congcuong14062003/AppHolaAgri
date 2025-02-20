@@ -15,6 +15,6 @@
     <color name="secondarycolor">#1CAE80</color>
     <color name="translucent_blue">#800000FF</color>
     <color name="radio_button_default">#FFFFFF</color> <!-- White for default -->
-    <color name="radio_button_selected">#FFA100</color> <!-- Yellow for selected -->
+    <color name="radio_button_selected">@color/secondarycolor</color> <!-- Yellow for selected -->
 
 </resources>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@drawable/bg_rounded"
+        android:layout_width="match_parent"
+        android:backgroundTint="#F0F0F0"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextStyle_14_400"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="VUI LÒNG"
+                android:textColor="@color/textcolor" />
+
+            <TextView
+                style="@style/TextStyle_16_600"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="CHỌN LÝ DO ĐI MUỘN/VỀ SỚM"
+                android:textColor="@color/textcolor" />
+        </LinearLayout>
+
+        <!--                chọn lý do-->
+        <LinearLayout
+            android:id="@+id/select_reason_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical"
+            android:visibility="visible">
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/rbIndividual_create_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/rbIndividual_create"
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/checked_radio" />
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lý do cá nhân"
+                        android:textColor="@color/textcolor" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rbWork_create_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/rbWork_create"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/no_check_radio_create" />
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lý do công việc"
+                        android:textColor="@color/textcolor" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/etReason"
+            style="@style/TextStyle_14_500"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/bg_rounded_color_stroke"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="top|start"
+            android:hint="Mô tả chi tiết (*)"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:minLines="10"
+            android:padding="16dp"
+            android:scrollbars="vertical"
+            android:textColor="@color/textcolor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel"
+                style="@style/TextStyle_14_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/button_custom"
+                android:backgroundTint="#909897"
+                android:elevation="0dp"
+                android:stateListAnimator="@null"
+                android:text="Hủy"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_confirm"
+                style="@style/TextStyle_14_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_custom"
+                android:backgroundTint="@color/secondarycolor"
+                android:stateListAnimator="@null"
+                android:text="Xác nhận"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+

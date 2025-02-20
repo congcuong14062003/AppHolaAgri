@@ -80,6 +80,7 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
     private RecyclerView recyclerViewApprovalLogs;
     private ActionRequestDetailAdapter adapter;
     private CoordinatorLayout create_request_container;
+    private LinearLayout layout_action_history_request;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +129,7 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
 
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
+        layout_action_history_request = findViewById(R.id.layout_action_history_request);
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -151,6 +153,8 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
 
         }
         // init
+        layout_action_history_request = findViewById(R.id.layout_action_history_request);
+
         dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this, StatusRequest);
         dayRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         dayRecyclerView.setAdapter(dayOverTimeAdapter);
@@ -438,6 +442,10 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+
+            if(requestDetailData.getApprovalLogs() != null ) {
+                layout_action_history_request.setVisibility(View.VISIBLE);
+            }
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);

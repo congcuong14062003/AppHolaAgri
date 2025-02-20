@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_home"
     tools:context=".view.CheckInDailyActivity">
 
+    <!-- QR Scanner Section (Chiếm phần trên) -->
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_home"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5">
 
         <!-- Camera view / QR scanner -->
         <com.journeyapps.barcodescanner.DecoratedBarcodeView
@@ -27,8 +25,8 @@
         <ImageView
             android:id="@+id/close_scanner"
             android:layout_width="wrap_content"
-            android:padding="20dp"
             android:layout_height="wrap_content"
+            android:padding="10dp"
             android:layout_alignParentEnd="true"
             android:contentDescription="Close scanner"
             android:src="@drawable/x_back" />
@@ -38,32 +36,35 @@
             android:id="@+id/scan_instruction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/qr_frame"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="100dp"
             android:text="Căn chỉnh mã QR vào khung hình để quét!"
             android:textColor="@android:color/white"
             android:textSize="16sp" />
-
         <!-- Khung quét QR -->
         <RelativeLayout
             android:id="@+id/qr_frame"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="100dp"
             android:background="@drawable/qr_scanner_background" />
 
+        <!-- Danh sách chọn ca chấm công nằm trên QR Scanner -->
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:id="@+id/shift_selection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical"
             android:layout_alignParentBottom="true"
-            android:orientation="vertical">
+            android:gravity="center">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
                 style="@style/TextStyle_16_500"
                 android:text="VUI LÒNG"
                 android:textColor="@android:color/white" />
@@ -71,9 +72,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_marginTop="4dp"
                 android:text="CHỌN CA CHẤM CÔNG"
+                android:layout_marginBottom="10dp"
                 style="@style/TextStyle_18_600"
                 android:textColor="@android:color/white" />
 
@@ -82,22 +83,22 @@
                 android:id="@+id/radioGroupShift"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/black"
-                android:padding="20dp"
-                android:layout_margin="20dp"
                 android:layout_width="match_parent"
+                android:padding="16dp"
                 android:layout_height="wrap_content">
 
                 <RadioButton
                     android:id="@+id/shift_s"
                     style="@style/CustomRadioButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/white"
-                    android:buttonTint="@color/radio_button_default"
+                    android:buttonTint="@color/radio_button_selector"
                     android:text="Thứ 6, 03/10/2024    Ca S (06:30 - 11:30)"
-                    android:textColor="@color/radio_button_default" />
+                    android:textColor="@color/radio_button_selector" />
+
             </RadioGroup>
         </LinearLayout>
+
     </RelativeLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

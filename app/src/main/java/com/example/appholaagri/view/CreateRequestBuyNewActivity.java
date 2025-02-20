@@ -74,6 +74,7 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
+    private LinearLayout layout_action_history_request;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +114,8 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
         edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
         // người theo dõi
         edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
+        layout_action_history_request = findViewById(R.id.layout_action_history_request);
+
         // over lay
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         overlay_background = findViewById(R.id.overlay_background);
@@ -154,6 +157,7 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
 
         }
         // init
+        layout_action_history_request.setVisibility(View.GONE);
 
         // Khởi tạo nếu null
         if (requestDetailData == null) {
@@ -532,6 +536,9 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+            if(requestDetailData.getApprovalLogs() != null ) {
+                layout_action_history_request.setVisibility(View.VISIBLE);
+            }
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);

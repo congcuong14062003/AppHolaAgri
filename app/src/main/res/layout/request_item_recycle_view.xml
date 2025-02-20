@@ -29,7 +29,7 @@
                 android:layout_height="60dp"
                 android:src="@drawable/avatar"
                 android:scaleType="centerCrop"
-                android:background="@drawable/bg_circle" />
+                />
 
             <!-- Biểu tượng checked -->
 <!--            <ImageView-->

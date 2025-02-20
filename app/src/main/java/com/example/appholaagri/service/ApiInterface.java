@@ -92,7 +92,7 @@ public interface ApiInterface {
     @POST("check-in/list-attend")
     Call<ApiResponse<List<TimeKeepingManageData>>> timeKeeingManageData(@Header("Authorization") String token, @Body TimeKeepingManageRequest timeKeepingManageRequest);
 
-    // danh sách tổng hợp côn
+    // danh sách tổng hợp công
     @POST("work-summary/get-list")
     Call<ApiResponse<SalaryTableData>> salaryTableData(@Header("Authorization") String token, @Body SalaryTableRequest salaryTableRequest);
 

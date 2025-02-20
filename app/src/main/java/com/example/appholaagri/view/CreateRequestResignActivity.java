@@ -70,7 +70,8 @@ public class CreateRequestResignActivity extends AppCompatActivity {
     // over lay
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
-    ConstraintLayout overlayFilterStatus;
+    private ConstraintLayout overlayFilterStatus;
+    private LinearLayout layout_action_history_request;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,12 +115,15 @@ public class CreateRequestResignActivity extends AppCompatActivity {
         edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
         // người theo dõi
         edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
+
+        layout_action_history_request = findViewById(R.id.layout_action_history_request);
         // over lay
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         overlay_background = findViewById(R.id.overlay_background);
         overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
+
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -130,7 +134,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
-            Log.d("CreateRequestBuyNewActivity", "StatusRequest: " + StatusRequest);
+            Log.d("CreateRequestResignActivity", "StatusRequest: " + StatusRequest);
         }
 
         if (StatusRequest > 2) {
@@ -157,6 +161,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
 
         }
         // init
+        layout_action_history_request.setVisibility(View.GONE);
 
         // Khởi tạo nếu null
         if (requestDetailData == null) {
@@ -170,7 +175,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
             getDetailRequest(requestId, token);
         } else {
             if (GroupRequestId != null && token != null) {
-                Log.d("CreateRequestBuyNewActivity", "Vào");
+                Log.d("CreateRequestResignActivity", "Vào");
                 getInitFormCreateRequest(token, GroupRequestId);
             }
         }
@@ -370,11 +375,11 @@ public class CreateRequestResignActivity extends AppCompatActivity {
                             updateUserUI(requestDetailData);
                         }
                     } else {
-                        Log.e("CreateRequestBuyNewActivity", "API response is unsuccessful");
+                        Log.e("CreateRequestResignActivity", "API response is unsuccessful");
                         CustomToast.showCustomToast(CreateRequestResignActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("CreateRequestBuyNewActivity", "Error during response handling: " + e.getMessage());
+                    Log.e("CreateRequestResignActivity", "Error during response handling: " + e.getMessage());
                     CustomToast.showCustomToast(CreateRequestResignActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
@@ -404,11 +409,11 @@ public class CreateRequestResignActivity extends AppCompatActivity {
                             updateUserUI(requestDetailData);
                         }
                     } else {
-                        Log.e("RequestDetailActivity", "API response is unsuccessful");
+                        Log.e("CreateRequestResignActivity", "API response is unsuccessful");
                         CustomToast.showCustomToast(CreateRequestResignActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("RequestDetailActivity", "Error during response handling: " + e.getMessage());
+                    Log.e("CreateRequestResignActivity", "Error during response handling: " + e.getMessage());
                     CustomToast.showCustomToast(CreateRequestResignActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
@@ -424,12 +429,12 @@ public class CreateRequestResignActivity extends AppCompatActivity {
     // cập nhật giao diện
     private void updateUserUI(RequestDetailData requestDetailData) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-        String requestDetailDataJson = gson.toJson(requestDetailData.getDuration());
-        Log.d("CreateRequestBuyNewActivity", "requestDetailDataJsonnnnnnnnnnnnnnn: " + requestDetailDataJson);
+        String requestDetailDataJson = gson.toJson(requestDetailData);
+        Log.d("CreateRequestResignActivity", "requestDetailDataJsonnnnnnnnnnnnnnn: " + requestDetailDataJson);
 
         try {
             if (requestDetailData == null) {
-                Log.e("CreateRequestBuyNewActivity", "requestDetailData is null");
+                Log.e("CreateRequestResignActivity", "requestDetailData is null");
                 return;
             }
 
@@ -527,6 +532,9 @@ public class CreateRequestResignActivity extends AppCompatActivity {
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+            if(requestDetailData.getApprovalLogs() != null ) {
+                layout_action_history_request.setVisibility(View.VISIBLE);
+            }
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
@@ -656,7 +664,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
 
         if (requestId == -1) {
             String dataObjects = gson.toJson(groupRequestCreateRequest);
-            Log.d("CreateRequestBuyNewActivity", "data thêm mới: " + dataObjects);
+            Log.d("CreateRequestResignActivity", "data thêm mới: " + dataObjects);
             Call<ApiResponse<String>> call = apiInterface.buyNewCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
@@ -681,7 +689,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
             });
         } else {
             String dataObjects = gson.toJson(groupRequestCreateRequest);
-            Log.d("CreateRequestBuyNewActivity", "data chỉnh sửa: " + dataObjects);
+            Log.d("CreateRequestResignActivity", "data chỉnh sửa: " + dataObjects);
 
             Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {

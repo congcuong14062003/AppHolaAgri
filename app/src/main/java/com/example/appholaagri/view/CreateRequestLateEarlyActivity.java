@@ -80,6 +80,7 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
+    private LinearLayout layout_action_history_request;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +136,7 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         overlay_background = findViewById(R.id.overlay_background);
         overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
+        layout_action_history_request = findViewById(R.id.layout_action_history_request);
 
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
 
@@ -166,6 +168,11 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
             etDurationLateEarly.setEnabled(false);
             etDurationLateEarly.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
+            rbMotNgay_create.setBackgroundResource(R.drawable.unchecked_radio);
+            rbNhieuNgay_create.setBackgroundResource(R.drawable.unchecked_radio);
+            rbIndividual_create.setBackgroundResource(R.drawable.unchecked_radio);
+            rbWork_create.setBackgroundResource(R.drawable.unchecked_radio);
+
             rbIndividual_create.setEnabled(false);
             rbWork_create.setEnabled(false);
             edt_reason_request_create.setEnabled(false);
@@ -177,6 +184,8 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
         rbMotNgay_create.setImageResource(R.drawable.checked_radio);
         rbIndividual_create.setImageResource(R.drawable.checked_radio);
         txt_status_request_detail.setVisibility(View.GONE);
+        layout_action_history_request.setVisibility(View.GONE);
+
         // Khởi tạo nếu null
         if (requestDetailData == null) {
             requestDetailData = new RequestDetailData();
@@ -255,7 +264,7 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
 
         rbNhieuNgay_create.setOnClickListener(v -> {
             rbNhieuNgay_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbMotNgay_create.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
+            rbMotNgay_create.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
             tvThoiGianKetThuc_layout.setVisibility(View.VISIBLE);
             requestDetailData.setDateType(1);
             // Xử lý thêm logic cho lựa chọn "Nhiều ngày"
@@ -265,7 +274,7 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
 
         rbMotNgay_create.setOnClickListener(v -> {
             rbMotNgay_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbNhieuNgay_create.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
+            rbNhieuNgay_create.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
             tvThoiGianKetThuc_layout.setVisibility(View.GONE);
             etNgayKetThuc.setText("");
             requestDetailData.setDateType(0);
@@ -276,13 +285,13 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
         // Đặt sự kiện click cho "lí do cá nhân"
         rbIndividual_create.setOnClickListener(v -> {
             rbIndividual_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbWork_create.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
+            rbWork_create.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
             requestDetailData.setType(1);
         });
         // Đặt sự kiện click cho "lí do công việc"
         rbWork_create.setOnClickListener(v -> {
             rbWork_create.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
-            rbIndividual_create.setImageResource(R.drawable.unchecked_radio); // Đặt trạng thái "không được chọn"
+            rbIndividual_create.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
             requestDetailData.setType(2);
         });
 
@@ -561,19 +570,19 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
 
             if (requestDetailData.getDateType() == 1) {
                 rbNhieuNgay_create.setImageResource(R.drawable.checked_radio);
-                rbMotNgay_create.setImageResource(R.drawable.unchecked_radio);
+                rbMotNgay_create.setImageResource(R.drawable.no_check_radio_create);
                 tvThoiGianKetThuc_layout.setVisibility(View.VISIBLE);
             } else {
                 rbMotNgay_create.setImageResource(R.drawable.checked_radio);
-                rbNhieuNgay_create.setImageResource(R.drawable.unchecked_radio);
+                rbNhieuNgay_create.setImageResource(R.drawable.no_check_radio_create);
             }
 
             if (requestDetailData.getType() == 2) {
                 rbWork_create.setImageResource(R.drawable.checked_radio);
-                rbIndividual_create.setImageResource(R.drawable.unchecked_radio);
+                rbIndividual_create.setImageResource(R.drawable.no_check_radio_create);
             } else {
                 rbIndividual_create.setImageResource(R.drawable.checked_radio);
-                rbWork_create.setImageResource(R.drawable.unchecked_radio);
+                rbWork_create.setImageResource(R.drawable.no_check_radio_create);
             }
 
 
@@ -664,7 +673,9 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-
+            if(requestDetailData.getApprovalLogs() != null ) {
+                layout_action_history_request.setVisibility(View.VISIBLE);
+            }
             // các nút hành động
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();

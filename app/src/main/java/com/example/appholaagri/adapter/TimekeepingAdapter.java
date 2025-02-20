@@ -1,5 +1,9 @@
 package com.example.appholaagri.adapter;
 
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,14 +65,18 @@ public class TimekeepingAdapter extends RecyclerView.Adapter<TimekeepingAdapter.
             if (shift.getCheckinTime() != null) {
                 holder.checkinTime.setText(shift.getCheckinTime());
             } else {
-                holder.checkinTime.setText("--:--"); // Không có dữ liệu
+                SpannableString checkInText = new SpannableString("--:--");
+                checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                holder.checkinTime.setText(checkInText);
             }
 
             // Hiển thị giờ ra (nếu có)
             if (shift.getCheckoutTime() != null) {
                 holder.checkoutTime.setText(shift.getCheckoutTime());
             } else {
-                holder.checkoutTime.setText("--:--"); // Không có dữ liệu
+                SpannableString checkInText = new SpannableString("--:--");
+                checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                holder.checkoutTime.setText(checkInText);
             }
         } else {
             // Không có ca làm việc trong ngày
@@ -76,6 +84,14 @@ public class TimekeepingAdapter extends RecyclerView.Adapter<TimekeepingAdapter.
             holder.period.setText("");
             holder.checkinTime.setText("--:--");
             holder.checkoutTime.setText("--:--");
+            SpannableString checkInText = new SpannableString("--:--");
+            checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            holder.checkinTime.setText(checkInText);
+
+
+            SpannableString checkOutText = new SpannableString("--:--");
+            checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            holder.checkoutTime.setText(checkOutText);
         }
     }
 

@@ -78,6 +78,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
+    private LinearLayout layout_action_history_request;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +126,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         overlay_background = findViewById(R.id.overlay_background);
         overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
+        layout_action_history_request = findViewById(R.id.layout_action_history_request);
 
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
@@ -166,6 +168,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
         }
         // init
+        layout_action_history_request.setVisibility(View.GONE);
 
         // Khởi tạo nếu null
         if (requestDetailData == null) {
@@ -581,7 +584,9 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-
+            if(requestDetailData.getApprovalLogs() != null ) {
+                layout_action_history_request.setVisibility(View.VISIBLE);
+            }
             // các nút hành động
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();
