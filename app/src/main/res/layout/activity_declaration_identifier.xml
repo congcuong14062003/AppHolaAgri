@@ -6,8 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.SalaryTableActivity"
-    android:background="@drawable/bg_home"
+    tools:context=".view.DeclarationIdentifierActivity"
     >
 
     <!-- Toolbar -->
@@ -25,7 +24,7 @@
                 android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bảng công - lương"
+                android:text="KHAI BÁO - ĐỊNH DANH"
                 android:textAllCaps="true"
                 style="@style/TextStyle_16_600"
                 android:textColor="@color/black"

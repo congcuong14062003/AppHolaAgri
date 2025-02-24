@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,6 +64,7 @@ public class CheckInDailyActivity extends BaseActivity {
     private DecoratedBarcodeView barcodeScannerView;  // Change to DecoratedBarcodeView
     private CaptureManager captureManager;
     private int reasonType = 1;
+    private String txt_reason_error;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,7 +170,7 @@ public class CheckInDailyActivity extends BaseActivity {
 
     }
 
-    private void checkInQrCode(String qrCodeString, String reason, int reasonType) {
+    private void checkInQrCode(String qrCodeString, String reason, Integer reasonType) {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         int isConfirmed = 0; // Đã xác nhận
         String qrContent = qrCodeString; // QR content ví dụ
@@ -190,6 +192,7 @@ public class CheckInDailyActivity extends BaseActivity {
             Log.d("CheckInDailyActivity: ", "workShiftId" + workShiftId);
             // Tạo đối tượng CheckInQrCodeRequest
             CheckInQrCodeRequest checkInQrCodeRequest = new CheckInQrCodeRequest(deviceId, isConfirmed, qrContent, reason, reasonType, shiftType, workShiftId);
+
             Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
             String requestDetailDataJson = gson.toJson(checkInQrCodeRequest);
             Log.d("aaaaa", "bbb: " + requestDetailDataJson);
@@ -209,8 +212,11 @@ public class CheckInDailyActivity extends BaseActivity {
                                 // Đăng ký thành công
                                     CustomToast.showCustomToast(CheckInDailyActivity.this,  apiResponse.getMessage());
                                     onBackPressed();
-                            } else {
+                            }
+                            else {
                                 // Xử lý nếu có lỗi từ API
+                                txt_reason_error = apiResponse.getMessage();
+                                showReasonDialog(qrContent);
                                 CustomToast.showCustomToast(CheckInDailyActivity.this, "Lỗi check-in: " + apiResponse.getMessage());
                             }
                         } else {
@@ -232,7 +238,6 @@ public class CheckInDailyActivity extends BaseActivity {
 
     // nhập lí do
     private void showReasonDialog(String qrCodeString) {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_check_in_reason, null);
@@ -241,14 +246,15 @@ public class CheckInDailyActivity extends BaseActivity {
         EditText etReason;
         ImageView rbIndividual_create, rbWork_create;
         AppCompatButton btn_cancel, btn_confirm;
-
+        TextView title_reason;
 
         etReason = dialogView.findViewById(R.id.etReason);
+        title_reason = dialogView.findViewById(R.id.title_reason);
         rbIndividual_create = dialogView.findViewById(R.id.rbIndividual_create);
         rbWork_create = dialogView.findViewById(R.id.rbWork_create);
         btn_cancel = dialogView.findViewById(R.id.btn_cancel);
         btn_confirm = dialogView.findViewById(R.id.btn_confirm);
-
+        title_reason.setText(txt_reason_error);
 
         AlertDialog dialog = builder.create();
 
@@ -300,32 +306,10 @@ public class CheckInDailyActivity extends BaseActivity {
 
         btn_cancel.setOnClickListener(view -> {
             dialog.dismiss();
-//            if (selectedShiftId != -1) { // Nếu vẫn đang chọn ca thì quét lại QR
-//                barcodeScannerView.decodeSingle(result -> {
-//                    if (selectedShiftId == -1) {
-//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
-//                    } else if (result != null) {
-//                        showReasonDialog(result.getText()); // Hiển thị Dialog thay vì gọi API trực tiếp
-//                    } else {
-//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
-//                    }
-//                });
-//            }
             decodeAndProcessQRCode();
         });
         // Khi Dialog bị ẩn, tự động quét QR lại
         dialog.setOnDismissListener(dialogInterface -> {
-//            if (selectedShiftId != -1) {
-//                barcodeScannerView.decodeSingle(result -> {
-//                    if (selectedShiftId == -1) {
-//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
-//                    } else if (result != null) {
-//                        showReasonDialog(result.getText());
-//                    } else {
-//                        CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
-//                    }
-//                });
-//            }
             decodeAndProcessQRCode();
         });
 
@@ -339,7 +323,8 @@ public class CheckInDailyActivity extends BaseActivity {
             if (selectedShiftId == -1) {
                 CustomToast.showCustomToast(CheckInDailyActivity.this, "Vui lòng chọn ca trước khi quét QR");
             } else if (result != null) {
-                showReasonDialog(result.getText());
+                checkInQrCode(result.getText(), "", null);
+//                showReasonDialog(result.getText());
             } else {
                 CustomToast.showCustomToast(CheckInDailyActivity.this, "Quét QR thất bại");
             }

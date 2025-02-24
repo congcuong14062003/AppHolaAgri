@@ -22,7 +22,31 @@
         android:indeterminate="true"
         android:paddingLeft="8dp"
         android:paddingRight="8dp" />
+    <!-- TextView và ImageView hiển thị khi không có dữ liệu -->
+    <LinearLayout
+        android:id="@+id/emptyStateLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
 
+        <ImageView
+            android:id="@+id/emptyIcon"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/khong_lich_cham_cong" />
+
+        <TextView
+            android:id="@+id/emptyMessage"
+            style="@style/TextStyle_16_400"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Chưa có lịch chấm công"
+            android:textColor="@color/secon_textcolor" />
+    </LinearLayout>
     </LinearLayout>
 
 

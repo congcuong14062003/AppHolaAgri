@@ -10,6 +10,7 @@
 
     <color name="maincolor">#FFA100</color>
     <color name="textcolor">#28262B</color>
+    <color name="red_error">#EB5A5A</color>
     <color name="secon_textcolor">#484848</color>
     <color name="text_icon_color">#747783</color>
     <color name="secondarycolor">#1CAE80</color>

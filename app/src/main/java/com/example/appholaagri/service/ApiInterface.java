@@ -5,9 +5,12 @@ import com.example.appholaagri.model.ChangePassModel.ChangePassRequest;
 import com.example.appholaagri.model.CheckInInitFormData.CheckInInitFormData;
 import com.example.appholaagri.model.CheckInQrCodeModel.CheckInQrCodeRequest;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
+import com.example.appholaagri.model.ColAndRowNumberModel.ColAndRowNumberResponse;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
+import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
+import com.example.appholaagri.model.PlantingDateModel.PlantingDateResponse;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateResponse;
@@ -144,7 +147,7 @@ public interface ApiInterface {
 
     // đơn xin đi muộn về sớm
     @POST("request/late-early")
-   Call<ApiResponse<String>> lateEarlyCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
+    Call<ApiResponse<String>> lateEarlyCreateRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
 
     // đơn xin thôi việc
 
@@ -155,4 +158,32 @@ public interface ApiInterface {
     @POST("request/modify")
     Call<ApiResponse<String>> modifyRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
 
+
+
+    // định danh
+    // init form
+    @GET("plant-app/init-form")
+    Call<ApiResponse<PlanAppInitFormResponse>> planInitForm(@Header("Authorization") String token);
+
+    // init form date
+    @GET("plant-app/init-form-date")
+    Call<ApiResponse<PlantingDateResponse>> planInitFormDate(
+            @Header("Authorization") String token,
+            @Query("idCropVarieties") int idCropVarieties,
+            @Query("idCultivationArea") int idCultivationArea,
+            @Query("idPlantation") int idPlantation);
+
+    // row form plant
+    @GET("plant-app/row-form")
+    Call<ApiResponse<List<ColAndRowNumberResponse>>> planRowFormFormDate(
+            @Header("Authorization") String token,
+            @Query("idCultivationArea") int idCultivationArea,
+            @Query("qrCode") String qrCode);
+    // column form plant
+    @GET("plant-app/column-form")
+    Call<ApiResponse<List<ColAndRowNumberResponse>>> planColumnFormFormDate(
+            @Header("Authorization") String token,
+            @Query("idCultivationArea") int idCultivationArea,
+            @Query("qrCode") String qrCode,
+            @Query("rowIn") int rowIn);
 }

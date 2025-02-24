@@ -9,17 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.RequestModel.RequestListData;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TimekeepingAdapter extends RecyclerView.Adapter<TimekeepingAdapter.ViewHolder> {
 
     private List<TimekeepingStatisticsData.DayData> dayDataList;
+    private List<TimekeepingStatisticsData.Shift> shiftList;
 
     public TimekeepingAdapter(List<TimekeepingStatisticsData.DayData> dayDataList) {
         this.dayDataList = dayDataList;
@@ -51,48 +54,16 @@ public class TimekeepingAdapter extends RecyclerView.Adapter<TimekeepingAdapter.
 
         // Hiển thị ngày
         holder.dayTextView.setText(dayData.getDay());
-
-        // Lấy danh sách các ca làm việc trong ngày
-        if (dayData.getShiftRes() != null && !dayData.getShiftRes().isEmpty()) {
-            // Lấy ca làm việc đầu tiên (nếu có)
-            TimekeepingStatisticsData.Shift shift = dayData.getShiftRes().get(0);
-
-            // Hiển thị mã ca và thời gian
-            holder.shiftCode.setText(shift.getShiftCode());
-            holder.period.setText("(" + shift.getPeriod() + ")");
-
-            // Hiển thị giờ vào (nếu có)
-            if (shift.getCheckinTime() != null) {
-                holder.checkinTime.setText(shift.getCheckinTime());
-            } else {
-                SpannableString checkInText = new SpannableString("--:--");
-                checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                holder.checkinTime.setText(checkInText);
-            }
-
-            // Hiển thị giờ ra (nếu có)
-            if (shift.getCheckoutTime() != null) {
-                holder.checkoutTime.setText(shift.getCheckoutTime());
-            } else {
-                SpannableString checkInText = new SpannableString("--:--");
-                checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                holder.checkoutTime.setText(checkInText);
-            }
-        } else {
-            // Không có ca làm việc trong ngày
-            holder.shiftCode.setText("Không có ca");
-            holder.period.setText("");
-            holder.checkinTime.setText("--:--");
-            holder.checkoutTime.setText("--:--");
-            SpannableString checkInText = new SpannableString("--:--");
-            checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            holder.checkinTime.setText(checkInText);
-
-
-            SpannableString checkOutText = new SpannableString("--:--");
-            checkInText.setSpan(new ForegroundColorSpan(Color.parseColor("#ea5b5d")), 0, checkInText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            holder.checkoutTime.setText(checkOutText);
+        // Đảm bảo shiftRes không null
+        List<TimekeepingStatisticsData.Shift> shiftList = dayData.getShiftRes();
+        if (shiftList == null) {
+            shiftList = new ArrayList<>(); // Tránh null bằng danh sách trống
         }
+
+        ShiftTimekeepingAdapter shiftTimekeepingAdapter = new ShiftTimekeepingAdapter(shiftList);
+        holder.listShiftRecyclerView.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
+        holder.listShiftRecyclerView.setAdapter(shiftTimekeepingAdapter);
+
     }
 
 
@@ -104,18 +75,12 @@ public class TimekeepingAdapter extends RecyclerView.Adapter<TimekeepingAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView dayTextView;
-        public TextView shiftCode;
-        public TextView period;
-        public TextView checkinTime;
-        public TextView checkoutTime;
+        public RecyclerView listShiftRecyclerView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             dayTextView = itemView.findViewById(R.id.dayTextView);
-            shiftCode = itemView.findViewById(R.id.shiftCode);
-            period = itemView.findViewById(R.id.period);
-            checkinTime = itemView.findViewById(R.id.checkinTime);
-            checkoutTime = itemView.findViewById(R.id.checkoutTime);
+            listShiftRecyclerView = itemView.findViewById(R.id.list_shift);
         }
     }
 }

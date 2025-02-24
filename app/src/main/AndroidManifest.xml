@@ -6,6 +6,7 @@
         android:name="android.hardware.camera"
         android:importantForAutofill="no"
         android:required="false" />
+
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -31,6 +32,12 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".view.QRScannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.DeclarationIdentifierActivity"
+            android:exported="false" />
         <activity
             android:name=".view.CreateRequestResignActivity"
             android:exported="false" />

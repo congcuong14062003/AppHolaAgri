@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.example.appholaagri.R;
@@ -32,6 +33,7 @@ public class DatePickerFragment extends BaseFragment {
     private boolean isLastPage = false;
     private String currentDate = "";
     private static final int PAGE_SIZE = 20;
+    private LinearLayout emptyStateLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +43,8 @@ public class DatePickerFragment extends BaseFragment {
         recyclerView = view.findViewById(R.id.recyclerViewMonth);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         progressBar = view.findViewById(R.id.progressBar);
+        emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
+
         // Gọi API lần đầu
         fetchTimekeepingData(currentDate, currentPage);
 
@@ -88,10 +92,10 @@ public class DatePickerFragment extends BaseFragment {
                         if (data.getData().isEmpty()) {
                             isLastPage = true;
                             if (adapter == null || adapter.getItemCount() == 0) {
-//                                emptyStateLayout.setVisibility(View.VISIBLE);
+                                emptyStateLayout.setVisibility(View.VISIBLE);
                             }
                         } else {
-//                            emptyStateLayout.setVisibility(View.GONE);
+                            emptyStateLayout.setVisibility(View.GONE);
                             if (adapter == null) {
                                 adapter = new TimekeepingAdapter(data.getData());
 

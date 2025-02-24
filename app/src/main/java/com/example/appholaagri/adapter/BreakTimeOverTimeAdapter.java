@@ -98,6 +98,7 @@ public class BreakTimeOverTimeAdapter extends RecyclerView.Adapter<BreakTimeOver
             breakTimes.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, breakTimes.size());
+            notifyDataSetChanged();
             createRequestOvertTimeActivity.updateRequestDetailData();
         });
     }

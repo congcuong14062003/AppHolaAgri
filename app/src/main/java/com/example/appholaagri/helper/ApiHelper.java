@@ -12,6 +12,8 @@ import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStati
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,7 +89,9 @@ public class ApiHelper {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
-
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String requestDetailDataJson = gson.toJson(request);
+        Log.d("aaa", "bbb: " + requestDetailDataJson);
         Call<ApiResponse<TimekeepingStatisticsData>> call = apiInterface.timekeepingStatistics(token, request);
         call.enqueue(new Callback<ApiResponse<TimekeepingStatisticsData>>() {
             @Override

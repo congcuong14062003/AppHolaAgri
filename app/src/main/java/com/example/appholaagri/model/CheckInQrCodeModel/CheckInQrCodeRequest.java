@@ -6,13 +6,13 @@ public class CheckInQrCodeRequest {
     private int isConfirmed;
     private String qrContent;
     private String reason;
-    private int reasonType;
+    private Integer reasonType;
     private int shiftType;
     private int workShiftId;
 
 
     // Constructor
-    public CheckInQrCodeRequest(String deviceId, int isConfirmed, String qrContent, String reason, int reasonType, int shiftType, int workShiftId) {
+    public CheckInQrCodeRequest(String deviceId, int isConfirmed, String qrContent, String reason, Integer reasonType, int shiftType, int workShiftId) {
         this.deviceId = deviceId;
         this.isConfirmed = isConfirmed;
         this.qrContent = qrContent;
@@ -55,11 +55,11 @@ public class CheckInQrCodeRequest {
         this.reason = reason;
     }
 
-    public int getReasonType() {
+    public Integer getReasonType() {
         return reasonType;
     }
 
-    public void setReasonType(int reasonType) {
+    public void setReasonType(Integer reasonType) {
         this.reasonType = reasonType;
     }
 

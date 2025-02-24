@@ -23,7 +23,7 @@ import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
 public class HomeFragment extends BaseFragment {
-    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container;
+    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container, dinhdanh_container;
     private TextView userName, userInfo;
     private ImageView avtUser;
     private ConstraintLayout container_home;
@@ -35,6 +35,7 @@ public class HomeFragment extends BaseFragment {
         thongkechamcong_container = view.findViewById(R.id.thongkechamcong_container);
         bangcongluong_container = view.findViewById(R.id.bangcongluong_container);
         yeucau_dexuat_container = view.findViewById(R.id.yeucau_dexuat_container);
+        dinhdanh_container = view.findViewById(R.id.dinhdanh_container);
         userName = view.findViewById(R.id.user_name);
         userInfo = view.findViewById(R.id.user_info);
         avtUser = view.findViewById(R.id.avtUser);
@@ -52,6 +53,11 @@ public class HomeFragment extends BaseFragment {
         });
         yeucau_dexuat_container.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), RequestActivity.class);
+            startActivity(intent);
+        });
+
+        dinhdanh_container.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), DeclarationIdentifierActivity.class);
             startActivity(intent);
         });
         // Get token from SharedPreferences

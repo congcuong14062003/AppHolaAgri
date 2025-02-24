@@ -115,6 +115,7 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
             dayReqs.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, dayReqs.size());  // Cập nhật lại vị trí các phần tử
+            notifyDataSetChanged();
             // Gọi hàm cập nhật dữ liệu sau khi xóa
             createRequestOvertTimeActivity.updateRequestDetailData();
         });

@@ -1,5 +1,6 @@
 package com.example.appholaagri.view;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -8,12 +9,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -431,11 +435,11 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
                             updateUserUI(requestDetailData);
                         }
                     } else {
-                        Log.e("CreateRequestDayOffActivity", "API response is unsuccessful");
+                        Log.e("CreateRequestLateEarlyActivity", "API response is unsuccessful");
                         CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("CreateRequestDayOffActivity", "Error during response handling: " + e.getMessage());
+                    Log.e("CreateRequestLateEarlyActivity", "Error during response handling: " + e.getMessage());
                     CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
@@ -673,7 +677,7 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-            if(requestDetailData.getApprovalLogs() != null ) {
+            if(requestDetailData.getApprovalLogs() != null && requestDetailData.getApprovalLogs().size() > 0) {
                 layout_action_history_request.setVisibility(View.VISIBLE);
             }
             // các nút hành động
@@ -797,20 +801,16 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
         groupRequestCreateRequest.setType(requestDetailData.getType());
         // Tạo JSON log để kiểm tra dữ liệu
 
-        if(requestId == -1) {
-            String dataObjects = gson.toJson(groupRequestCreateRequest.getStatus());
-            Log.d("CreateRequestDayOffActivity", "button action thêm mới: " + dataObjects);
-            Call<ApiResponse<String>> call = apiInterface.lateEarlyCreateRequest(token, groupRequestCreateRequest);
+        if (requestId == -1) {
+            Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
+                        CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                             startActivity(new Intent(CreateRequestLateEarlyActivity.this, RequestActivity.class));
-                        } else {
-                            CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi kết nối, vui lòng thử lại.");
@@ -823,32 +823,108 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
                 }
             });
         } else {
-            String dataObjects = gson.toJson(groupRequestCreateRequest.getStatus());
-            Log.d("CreateRequestDayOffActivity", "button action chi tiết: " + dataObjects);
-            Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
-            call.enqueue(new Callback<ApiResponse<String>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        ApiResponse<String> apiResponse = response.body();
-                        if (apiResponse.getStatus() == 200) {
-                            CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestLateEarlyActivity.this, RequestActivity.class));
-                        } else {
-                            CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
-                        }
-                    } else {
-                        CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi kết nối, vui lòng thử lại.");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi: " + t.getMessage());
-                }
-            });
+            if (groupRequestCreateRequest.getStatus().getId() == 2) {
+                showRejectReasonDialog(apiInterface, token, requestDetailData, groupRequestCreateRequest);
+            } else {
+                sendModifyRequest(apiInterface, token, groupRequestCreateRequest);
+            }
         }
 
+    }
+    private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData, GroupRequestCreateRequest groupRequestCreateRequest) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_reject_reason, null);
+        builder.setView(dialogView);
+
+        EditText etReason = dialogView.findViewById(R.id.etReason);
+        AppCompatButton btn_cancel = dialogView.findViewById(R.id.btn_cancel);
+        AppCompatButton btn_confirm = dialogView.findViewById(R.id.btn_confirm);
+
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        // Thiết lập ban đầu: vô hiệu hóa nút xác nhận
+        btn_confirm.setEnabled(false);
+        btn_confirm.setTextColor(ContextCompat.getColor(this, R.color.secondarycolor));
+        btn_confirm.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e8f7f2")));
+
+        // Lắng nghe thay đổi nội dung nhập
+        etReason.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                boolean isEmpty = s.toString().trim().isEmpty();
+                btn_confirm.setEnabled(!isEmpty);
+                btn_confirm.setTextColor(ContextCompat.getColor(dialogView.getContext(), isEmpty ? R.color.secondarycolor : R.color.white));
+                btn_confirm.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(dialogView.getContext(), isEmpty ? R.color.white : R.color.secondarycolor)));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Xử lý khi nhấn nút xác nhận
+        btn_confirm.setOnClickListener(view -> {
+            String reason = etReason.getText().toString().trim();
+            if (!reason.isEmpty()) {
+                requestDetailData.setRejectReason(reason);
+                groupRequestCreateRequest.setRejectReason(reason);
+                sendModifyRequest(apiInterface, token, groupRequestCreateRequest);
+                dialog.dismiss();
+            } else {
+                CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Vui lòng nhập lý do");
+            }
+        });
+
+        // Ẩn bàn phím khi chạm ngoài EditText
+        dialogView.setOnTouchListener((v, event) -> {
+            hideKeyboard(v);
+            return false;
+        });
+
+        findViewById(android.R.id.content).setOnTouchListener((v, event) -> {
+            hideKeyboard(v);
+            return false;
+        });
+
+        btn_cancel.setOnClickListener(view -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void sendModifyRequest(ApiInterface apiInterface, String token, GroupRequestCreateRequest groupRequestCreateRequest) {
+        Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
+        call.enqueue(new Callback<ApiResponse<String>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<String> apiResponse = response.body();
+                    CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
+                    if (apiResponse.getStatus() == 200) {
+                        startActivity(new Intent(CreateRequestLateEarlyActivity.this, RequestActivity.class));
+                    }
+                } else {
+                    CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi: " + t.getMessage());
+            }
+        });
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (view != null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public void onBackPressed() {
