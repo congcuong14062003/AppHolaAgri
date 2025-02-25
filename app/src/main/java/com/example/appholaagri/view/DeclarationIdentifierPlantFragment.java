@@ -24,22 +24,28 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.viewmodel.CreationExtras;
+
 import android.content.SharedPreferences;
 
 import android.Manifest;
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.ColAndRowNumberModel.ColAndRowNumberResponse;
+import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantRequest;
+import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantResponse;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
 import com.example.appholaagri.model.PlantingDateModel.PlantingDateResponse;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.service.ResendRequestCallback;
 import com.example.appholaagri.utils.CustomToast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,7 +57,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DeclarationIdentifierPlantFragment extends BaseFragment {
+public class DeclarationIdentifierPlantFragment extends BaseFragment implements ResendRequestCallback {
     private Spinner spinnerPlantation;
     private List<PlanAppInitFormResponse.Plantation> plantationList;
     private ArrayAdapter<String> adapter;
@@ -72,6 +78,15 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
     private int selectedAreaId = -1;
     private int selectedCropVarietyId = -1;
     private int selectedPlantingDate = -1;
+    private String selectedPlantingDateName;
+
+    private static final int REQUEST_CODE_RESEND = 1001;
+
+    private String token;
+    private String qrContent;
+    private int selectedRow = -1;
+    private int selectedCol = -1;
+
 
     // ngày trồng
     private Spinner spinnerPlantingDate;
@@ -82,6 +97,7 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
 
     private AppCompatButton next_btn;
     private static final int CAMERA_PERMISSION_CODE = 100;
+    ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,6 +118,8 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
         spinnerPlantationArea.setAdapter(areaAdapter);
 
 
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
+        token = sharedPreferences.getString("auth_token", null);
 
         // Khởi tạo Adapter cho Loại Cây
         planTypeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, planType);
@@ -179,6 +197,7 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
                 if (position > 0) { // Bỏ qua item mặc định
                     PlantingDateResponse.DateModel selectedPlantingDay = plantingDate.get(position - 1);
                     selectedPlantingDate = selectedPlantingDay.getId(); // Lưu ID
+                    selectedPlantingDateName = selectedPlantingDay.getName();
                     Log.d("SpinnerSelection", "Selected Plantation ID: " + selectedPlantingDate);
                 } else {
                     selectedPlantingDate = -1; // Reset ID khi chọn lại mặc định
@@ -253,12 +272,7 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
 
 
     private void getInitFormPlan() {
-        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
-        String token = sharedPreferences.getString("auth_token", null);
-
         Call<ApiResponse<PlanAppInitFormResponse>> call = apiInterface.planInitForm(token);
-
         call.enqueue(new Callback<ApiResponse<PlanAppInitFormResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<PlanAppInitFormResponse>> call, Response<ApiResponse<PlanAppInitFormResponse>> response) {
@@ -286,21 +300,12 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
     }
 
     private void getInitFormPlanDate(int idCropVarieties,int idCultivationArea,int idPlantation) {
-        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
-        String token = sharedPreferences.getString("auth_token", null);
-
         Call<ApiResponse<PlantingDateResponse>> call = apiInterface.planInitFormDate(token, idCropVarieties, idCultivationArea, idPlantation);
-
         call.enqueue(new Callback<ApiResponse<PlantingDateResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<PlantingDateResponse>> call, Response<ApiResponse<PlantingDateResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<PlantingDateResponse> apiResponse = response.body();
-                    // Chuyển đổi đối tượng thành JSON để debug
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                    String jsonResponse = gson.toJson(apiResponse);
-                    Log.d("API Response", "data ngay trong: " + jsonResponse);
                     if (apiResponse.getStatus() == 200) {
                         if (apiResponse.getData() != null && apiResponse.getData().getDateList() != null) {
                             plantingDate = apiResponse.getData().getDateList();
@@ -325,6 +330,7 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
             }
         });
     }
+
     private void updateSpinnerData() {
         plantationNames.clear();
         plantationNames.add("--Chọn đồn điền--"); // Thêm item mặc định
@@ -336,6 +342,7 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
         }
         adapter.notifyDataSetChanged();
     }
+
     private void updatePlantationTypeSpinner() {
         planType.clear(); // Xóa dữ liệu cũ
         planType.add("--Chọn loại cây--"); // Thêm item mặc định
@@ -383,15 +390,19 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200 && resultCode == Activity.RESULT_OK && data != null) {
-            String qrContent = data.getStringExtra("QR_RESULT");
-            Log.d("QRScanner", "Dữ liệu QR: " + qrContent);
-            CustomToast.showCustomToast(getContext(), "QR Code: " + qrContent);
+            qrContent = data.getStringExtra("QR_RESULT");
             // Thực hiện hành động tiếp theo với dữ liệu QR (gửi API, cập nhật UI,...)
             if(qrContent != null) {
                 showSelectRowColumnDialog(qrContent);
             }
         }
+        if (requestCode == REQUEST_CODE_RESEND && resultCode == Activity.RESULT_OK) {
+            // Gọi lại API khi người dùng nhấn "Gửi lại"
+            handleIdentificationPlant(token, selectedRow, selectedCol, qrContent);
+        }
+
     }
+
     private void showSelectRowColumnDialog(String qrContent) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getLayoutInflater();
@@ -404,52 +415,34 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
         npRow.setWrapSelectorWheel(true);
         npColumn.setWrapSelectorWheel(true);
 
-        Log.d("cuong", "selectedAreaId: " + selectedAreaId);
-        Log.d("cuong", "qrContent: " + qrContent);
-
-        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
-        String token = sharedPreferences.getString("auth_token", null);
-
-        // Gọi API lấy danh sách hàng
         Call<ApiResponse<List<ColAndRowNumberResponse>>> callRow = apiInterface.planRowFormFormDate(token, selectedAreaId, qrContent);
         callRow.enqueue(new Callback<ApiResponse<List<ColAndRowNumberResponse>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<ColAndRowNumberResponse>>> call, Response<ApiResponse<List<ColAndRowNumberResponse>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<List<ColAndRowNumberResponse>> apiResponse = response.body();
-                    List<ColAndRowNumberResponse> rowData = apiResponse.getData();
+                    List<ColAndRowNumberResponse> rowData = response.body().getData();
 
                     if (rowData != null && !rowData.isEmpty()) {
                         int[] rowIds = new int[rowData.size()];
+                        String[] idStrings = new String[rowData.size()];
+
                         for (int i = 0; i < rowData.size(); i++) {
                             rowIds[i] = rowData.get(i).getId();
+                            idStrings[i] = String.valueOf(rowIds[i]);
                         }
 
                         npRow.setMinValue(0);
                         npRow.setMaxValue(rowData.size() - 1);
-
-                        String[] idStrings = new String[rowData.size()];
-                        for (int i = 0; i < rowData.size(); i++) {
-                            idStrings[i] = String.valueOf(rowIds[i]);
-                        }
                         npRow.setDisplayedValues(idStrings);
+                        npRow.setValue(0); // Chọn mặc định
 
-                        // Chọn ID mặc định của hàng đầu tiên để gọi danh sách cột
                         int defaultRowId = rowIds[0];
-                        fetchColumnData(apiInterface, token, defaultRowId, npColumn, qrContent);
+                        fetchColumnData(token, defaultRowId, npColumn, qrContent);
 
-                        // Khi thay đổi hàng, gọi lại API lấy cột
                         npRow.setOnValueChangedListener((picker, oldVal, newVal) -> {
-                            int selectedRowId = rowIds[newVal];
-                            Log.d("NumberPicker", "Chọn hàng ID: " + selectedRowId);
-                            fetchColumnData(apiInterface, token, selectedRowId, npColumn, qrContent);
+                            fetchColumnData(token, rowIds[newVal], npColumn, qrContent);
                         });
-                    } else {
-                        Log.e("API Error", "Danh sách hàng trống");
                     }
-                } else {
-                    Log.e("API Error", "API call failed or response body is null");
                 }
             }
 
@@ -463,27 +456,16 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         btnConfirm.setOnClickListener(v -> {
-            int selectedRowIndex = npRow.getValue();
-            int selectedColumnIndex = npColumn.getValue();
-            Log.d("RowColumn", "Hàng ID đã chọn: " + selectedRowIndex + ", Cột ID đã chọn: " + selectedColumnIndex);
+            selectedRow = Integer.parseInt(npRow.getDisplayedValues()[npRow.getValue()]);
+            selectedCol = Integer.parseInt(npColumn.getDisplayedValues()[npColumn.getValue()]);
+            handleIdentificationPlant(token, selectedRow, selectedCol, qrContent);
             dialog.dismiss();
         });
 
         dialog.show();
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            window.setGravity(Gravity.BOTTOM);
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        }
     }
-    private void fetchColumnData(ApiInterface apiInterface, String token, int rowId, NumberPicker npColumn, String qrContent) {
 
-//        Log.d("cuong1", "selectedAreaId: " + selectedAreaId);
-//        Log.d("cuong1", "qrContent: " + qrContent);
-//        Log.d("cuong1", "rowId: " + rowId);
-        Log.d("cuong1", "re-render: " + rowId);
-
+    private void fetchColumnData(String token, int rowId, NumberPicker npColumn, String qrContent) {
         Call<ApiResponse<List<ColAndRowNumberResponse>>> callColumn = apiInterface.planColumnFormFormDate(token, selectedAreaId, qrContent, rowId);
         callColumn.enqueue(new Callback<ApiResponse<List<ColAndRowNumberResponse>>>() {
             @Override
@@ -492,24 +474,35 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
                     ApiResponse<List<ColAndRowNumberResponse>> apiResponse = response.body();
                     List<ColAndRowNumberResponse> columnData = apiResponse.getData();
 
+                    // Reset NumberPicker để tránh lỗi chỉ mục
+                    npColumn.setDisplayedValues(null);
+                    npColumn.setMinValue(0);
+                    npColumn.setMaxValue(0);
+
                     if (columnData != null && !columnData.isEmpty()) {
-                        int[] columnIds = new int[columnData.size()];
-                        for (int i = 0; i < columnData.size(); i++) {
+                        int columnSize = columnData.size();
+                        int[] columnIds = new int[columnSize];
+
+                        for (int i = 0; i < columnSize; i++) {
                             columnIds[i] = columnData.get(i).getId();
                         }
 
                         npColumn.setMinValue(0);
-                        npColumn.setMaxValue(columnData.size() - 1);
+                        npColumn.setMaxValue(columnSize - 1);
 
-                        String[] columnStrings = new String[columnData.size()];
-                        for (int i = 0; i < columnData.size(); i++) {
+                        String[] columnStrings = new String[columnSize];
+                        for (int i = 0; i < columnSize; i++) {
                             columnStrings[i] = String.valueOf(columnIds[i]);
                         }
+
                         npColumn.setDisplayedValues(columnStrings);
 
                         Log.d("API Column", "Đã cập nhật danh sách cột theo hàng ID: " + rowId);
                     } else {
                         Log.e("API Error", "Danh sách cột trống");
+
+                        // Khi không có dữ liệu, đặt giá trị an toàn
+                        npColumn.setDisplayedValues(new String[]{"Không có dữ liệu"});
                     }
                 } else {
                     Log.e("API Error", "API call failed or response body is null");
@@ -523,4 +516,136 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment {
         });
     }
 
+
+    private void handleIdentificationPlant(String token, int selectedRow, int selectedCol, String qrContent) {
+        // Tạo đối tượng DateSelected
+        IdentificationPlantRequest.DateSelected dateSelected = new IdentificationPlantRequest.DateSelected(selectedPlantingDate, selectedPlantingDateName);
+        // Khởi tạo request với dữ liệu
+        IdentificationPlantRequest identificationPlantRequest = new IdentificationPlantRequest(
+                selectedCol,         // columnIn
+                dateSelected,        // dateSelected
+                selectedCropVarietyId, // idCropVarieties
+                selectedAreaId,       // idCultivationArea
+                selectedPlantationId, // idPlantation
+                0,                   // isConfirmed (1: đã xác nhận, 0: chưa xác nhận)
+                qrContent,           // qrCode
+                selectedRow          // rowIn
+        );
+
+        Call<ApiResponse<IdentificationPlantResponse>> call = apiInterface.identificationPlant(token, identificationPlantRequest);
+        call.enqueue(new Callback<ApiResponse<IdentificationPlantResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<IdentificationPlantResponse>> call, Response<ApiResponse<IdentificationPlantResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<IdentificationPlantResponse> apiResponse = response.body();
+
+                    // Debug log response
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("DeclarationIdentifierPlantFragment", "data xác định cây: " + jsonResponse);
+                    Log.d("DeclarationIdentifierPlantFragment", "selectedCol: " + selectedCol);
+                    Log.d("DeclarationIdentifierPlantFragment", "dateSelected: " + dateSelected);
+                    Log.d("DeclarationIdentifierPlantFragment", "selectedCropVarietyId: " + selectedCropVarietyId);
+                    Log.d("DeclarationIdentifierPlantFragment", "selectedAreaId: " + selectedAreaId);
+                    Log.d("DeclarationIdentifierPlantFragment", "selectedPlantationId: " + selectedPlantationId);
+                    Log.d("DeclarationIdentifierPlantFragment", "qrContent: " + qrContent);
+                    Log.d("DeclarationIdentifierPlantFragment", "selectedRow: " + selectedRow);
+
+                    if (apiResponse.getStatus() == 200) {
+                        navigateToSuccessActivity();
+                    } else if (apiResponse.getStatus() == 606) {
+                        showConfirmationPopup(token, selectedRow, selectedCol, qrContent, apiResponse.getMessage());
+                    } else {
+                        CustomToast.showCustomToast(getContext(), "Lỗi: " + apiResponse.getMessage());
+
+                        navigateToErrorActivity();
+                    }
+                } else {
+                    CustomToast.showCustomToast(getContext(), "Lỗi kết nối, vui lòng thử lại.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<IdentificationPlantResponse>> call, Throwable t) {
+                CustomToast.showCustomToast(getContext(), "Lỗi: " + t.getMessage());
+            }
+        });
+    }
+
+    // Chuyển sang màn hình thành công
+    private void navigateToSuccessActivity() {
+        Intent intent = new Intent(getContext(), SendSuccessData.class);
+        startActivity(intent);
+    }
+
+
+
+    // Hiển thị popup xác nhận khi nhận status 606
+    private void showConfirmationPopup(String token, int selectedRow, int selectedCol, String qrContent, String message) {
+        Log.d("DeclarationIdentifierPlantFragment", "Dữ liệu thông tin selectedRow: " + selectedRow);
+        Log.d("DeclarationIdentifierPlantFragment", "Dữ liệu thông tin selectedCol: " + selectedCol);
+        Log.d("DeclarationIdentifierPlantFragment", "Dữ liệu thông tin qrContent: " + qrContent);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Xác nhận cập nhật");
+        builder.setMessage(message);
+
+        builder.setPositiveButton("Xác nhận", (dialog, which) -> {
+            // Gọi lại API với isConfirmed = 1
+            IdentificationPlantRequest.DateSelected dateSelected = new IdentificationPlantRequest.DateSelected(selectedPlantingDate, selectedPlantingDateName);
+            IdentificationPlantRequest identificationPlantRequest = new IdentificationPlantRequest(
+                    selectedCol,
+                    dateSelected,
+                    selectedCropVarietyId,
+                    selectedAreaId,
+                    selectedPlantationId,
+                    1,  // isConfirmed = 1
+                    qrContent,
+                    selectedRow
+            );
+
+            Call<ApiResponse<IdentificationPlantResponse>> call = apiInterface.identificationPlant(token, identificationPlantRequest);
+            call.enqueue(new Callback<ApiResponse<IdentificationPlantResponse>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<IdentificationPlantResponse>> call, Response<ApiResponse<IdentificationPlantResponse>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        ApiResponse<IdentificationPlantResponse> apiResponse = response.body();
+                        if (apiResponse.getStatus() == 200) {
+                            navigateToSuccessActivity();
+                        } else {
+                            CustomToast.showCustomToast(getContext(), "Lỗi: " + apiResponse.getMessage());
+                            navigateToErrorActivity();
+                        }
+                    } else {
+                        CustomToast.showCustomToast(getContext(), "Lỗi kết nối, vui lòng thử lại.");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<IdentificationPlantResponse>> call, Throwable t) {
+                    CustomToast.showCustomToast(getContext(), "Lỗi: " + t.getMessage());
+                }
+            });
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void navigateToErrorActivity() {
+        Intent intent = new Intent(getContext(), SendFailedData.class);
+        startActivityForResult(intent, REQUEST_CODE_RESEND);
+    }
+
+
+    @Override
+    public void onResendRequest() {
+
+    }
+
+    @NonNull
+    @Override
+    public CreationExtras getDefaultViewModelCreationExtras() {
+        return super.getDefaultViewModelCreationExtras();
+    }
 }

@@ -1,14 +1,350 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/init_identify_plan_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.DeclarationIdentifierSensorFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!--                Tài sản-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Tài sản" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Spinner
+                        android:id="@+id/spinnerSensorAsset"
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="15dp"
+                        android:background="@drawable/input_infor"
+                        android:paddingStart="10dp"
+                        android:textColor="@color/textcolor" />
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="5dp"
+                        android:src="@drawable/dropdown_icon" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!--                đồn điền-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Đồn điền" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Spinner
+                        android:id="@+id/spinnerSensorPlantation"
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="15dp"
+                        android:background="@drawable/input_infor"
+                        android:paddingStart="10dp"
+                        android:textColor="@color/textcolor" />
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="5dp"
+                        android:src="@drawable/dropdown_icon" />
+                </FrameLayout>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/container_permanent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+<!--                vị trí đặt-->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/placement"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                    <LinearLayout
+                        android:gravity="center"
+                        android:layout_marginBottom="15dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        >
+                        <TextView
+                            android:text="Vị trí đặt"
+                            android:layout_marginEnd="5dp"
+                            android:textColor="@color/secondarycolor"
+                            style="@style/TextStyle_16_500"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                        />
+                        <!-- Dòng kẻ -->
+                        <ImageView
+                            android:layout_margin="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp"
+                            android:backgroundTint="@color/secondarycolor"
+                            android:src="@drawable/dashed_line"
+                            android:layerType="software" />
+                    </LinearLayout>
+                    <!--               điểm quan trắc-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="Điểm quan trắc" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <Spinner
+                                android:id="@+id/spinnerMonitoringPoint"
+                                style="@style/TextStyle_14_500"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="15dp"
+                                android:background="@drawable/input_infor"
+                                android:paddingStart="10dp"
+                                android:textColor="@color/textcolor" />
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_gravity="end|center_vertical"
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginBottom="5dp"
+                                android:src="@drawable/dropdown_icon" />
+                        </FrameLayout>
+                    </LinearLayout>
+                    <!--               khu vực -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="khu vực" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <Spinner
+                                android:id="@+id/spinnerArea"
+                                style="@style/TextStyle_14_500"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginBottom="15dp"
+                                android:background="@drawable/input_infor"
+                                android:paddingStart="10dp"
+                                android:textColor="@color/textcolor" />
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_gravity="end|center_vertical"
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginBottom="5dp"
+                                android:src="@drawable/dropdown_icon" />
+                        </FrameLayout>
+                    </LinearLayout>
+
+
+                    <!--               khu vực -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="Hàng - cột" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal">
+                                <Spinner
+                                    android:layout_weight="1"
+                                    style="@style/TextStyle_14_500"
+                                    android:layout_width="0dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="15dp"
+                                    android:background="@drawable/rounded_background"
+                                    android:paddingStart="10dp"
+                                    android:textColor="@color/textcolor" />
+                                <Spinner
+                                    android:layout_weight="1"
+                                    style="@style/TextStyle_14_500"
+                                    android:layout_width="0dp"
+                                    android:layout_marginStart="5dp"
+                                    android:layout_height="40dp"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="15dp"
+                                    android:background="@drawable/rounded_background_right"
+                                    android:paddingStart="10dp"
+                                    android:textColor="@color/textcolor" />
+                            </LinearLayout>
+                        </FrameLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+<!--                vị trí đo-->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/measurementLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                    <LinearLayout
+                        android:gravity="center"
+                        android:layout_marginBottom="15dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        >
+                        <TextView
+                            android:text="Vị trí đo"
+                            android:layout_marginEnd="5dp"
+                            android:textColor="@color/secondarycolor"
+                            style="@style/TextStyle_16_500"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            />
+                        <!-- Dòng kẻ -->
+                        <ImageView
+                            android:layout_margin="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp"
+                            android:backgroundTint="@color/secondarycolor"
+                            android:src="@drawable/dashed_line"
+                            android:layerType="software" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        >
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/measurementLocationRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/item_measurement_location"
+                            android:layout_marginBottom="16dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <!--                Notice-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextStyle_14_600"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Lưu ý:"
+                    android:textColor="@color/textcolor" />
+
+                <TextView
+                    style="@style/TextStyle_14_400"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vui lòng kiểm tra kỹ thông tin trước khi gửi khai
+báo thông tin lên hệ thống."
+                    android:textColor="@color/textcolor" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/next_btn"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/button_custom"
+                    android:backgroundTint="#e8f7f2"
+                    android:elevation="0dp"
+                    android:enabled="false"
+                    android:stateListAnimator="@null"
+                    android:text="Tiếp theo"
+                    android:textColor="@color/secondarycolor" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

@@ -33,6 +33,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.SendFailedData"
+            android:exported="false" />
+        <activity
+            android:name=".view.SendSuccessData"
+            android:exported="false" />
+        <activity
             android:name=".view.QRScannerActivity"
             android:exported="false" />
         <activity

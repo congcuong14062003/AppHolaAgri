@@ -7,6 +7,8 @@ import com.example.appholaagri.model.CheckInQrCodeModel.CheckInQrCodeRequest;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ColAndRowNumberModel.ColAndRowNumberResponse;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
+import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantRequest;
+import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantResponse;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
@@ -28,6 +30,8 @@ import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailDat
 import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailRequest;
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
+import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormRequest;
+import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormResponse;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageData;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageRequest;
@@ -186,4 +190,10 @@ public interface ApiInterface {
             @Query("idCultivationArea") int idCultivationArea,
             @Query("qrCode") String qrCode,
             @Query("rowIn") int rowIn);
+    // định danh cây trồng
+    @POST("plant-app/identification-plant")
+    Call<ApiResponse<IdentificationPlantResponse>> identificationPlant(@Header("Authorization") String token, @Body IdentificationPlantRequest identificationPlantRequest);
+    // init form
+    @GET("sensor-app/init-form")
+    Call<ApiResponse<SensorAppInitFormResponse>> sensorInitForm(@Header("Authorization") String token, @Query("qrCode") String qrCode);
 }
