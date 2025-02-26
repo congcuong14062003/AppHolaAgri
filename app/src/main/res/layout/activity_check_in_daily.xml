@@ -26,7 +26,8 @@
             android:id="@+id/close_scanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="30dp"
             android:layout_alignParentEnd="true"
             android:contentDescription="Close scanner"
             android:src="@drawable/x_back" />
@@ -37,7 +38,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="100dp"
+            android:layout_above="@id/qr_frame"
+            android:layout_marginBottom="20dp"
             android:text="Căn chỉnh mã QR vào khung hình để quét!"
             android:textColor="@android:color/white"
             android:textSize="16sp" />

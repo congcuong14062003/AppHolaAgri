@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
+import com.example.appholaagri.model.IdentificationSensorModel.IdentificationSensorRequest;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.List;
 
 public class MeasurementLocationAdapter extends RecyclerView.Adapter<MeasurementLocationAdapter.ViewHolder> {
 
-    private List<PlanAppInitFormResponse.Plantation> plantationList;
+    private List<IdentificationSensorRequest.MonitoringDetail> monitoringDetails;
     private OnItemClickListener listener;
     private int selectedPosition = -1;
 
@@ -26,40 +28,35 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
         void onItemClick(String name);
     }
 
-    public MeasurementLocationAdapter(List<PlanAppInitFormResponse.Plantation> plantationList, OnItemClickListener listener) {
-        this.plantationList = plantationList;
+    public MeasurementLocationAdapter(List<IdentificationSensorRequest.MonitoringDetail> monitoringDetails, OnItemClickListener listener) {
+        this.monitoringDetails = monitoringDetails;
         this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_plantation, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_measurement_location, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        PlanAppInitFormResponse.Plantation plantation = plantationList.get(position);
-        holder.textView.setText(plantation.getName());
-
-        if (position == selectedPosition) {
-            holder.textView.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.maincolor));
-//            holder.textView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.maincolor)); // Màu nền khi chọn
+        IdentificationSensorRequest.MonitoringDetail monitoringDetail = monitoringDetails.get(position);
+        holder.delete_measurement.setVisibility(View.GONE);
+        // Xử lý khi ấn nút xóa ngày
+        if (monitoringDetails.size() > 1) {
+            holder.delete_measurement.setVisibility(View.VISIBLE);
         } else {
-            holder.textView.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.textcolor));
-//            holder.textView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.transparent)); // Màu nền mặc định
+            holder.delete_measurement.setVisibility(View.GONE);
         }
-
-        holder.itemView.setOnClickListener(v -> {
-            int previousPosition = selectedPosition;  // Lưu lại vị trí trước đó
-            selectedPosition = position;
-
-            // Chỉ cập nhật lại 2 item thay vì toàn bộ danh sách để tối ưu hiệu suất
-            notifyItemChanged(previousPosition);
-            notifyItemChanged(selectedPosition);
-
-            listener.onItemClick(plantation.getName());
+        // Xử lý khi xóa ngày
+        holder.delete_measurement.setOnClickListener(v -> {
+            monitoringDetails.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, monitoringDetails.size());  // Cập nhật lại vị trí các phần tử
+            notifyDataSetChanged();
+            // Gọi hàm cập nhật dữ liệu sau khi xóa
 
         });
     }
@@ -67,15 +64,15 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
 
     @Override
     public int getItemCount() {
-        return plantationList.size();
+        return monitoringDetails.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        ImageView delete_measurement;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.textViewPlantation);
+            delete_measurement = itemView.findViewById(R.id.delete_measurement);
         }
     }
 }

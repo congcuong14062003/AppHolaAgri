@@ -558,9 +558,10 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
         groupRequestCreateRequest.setRequestName(requestDetailData.getRequestName());
         groupRequestCreateRequest.setType(requestDetailData.getType());
         // Tạo JSON log để kiểm tra dữ liệu
-
+        String jsonResponse = gson.toJson(groupRequestCreateRequest);
+        Log.d("CreateRequestOvertTimeActivity", "data thêm mới" + jsonResponse);
         if (requestId == -1) {
-            Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
+            Call<ApiResponse<String>> call = apiInterface.overTimeCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
@@ -568,7 +569,10 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
                         ApiResponse<String> apiResponse = response.body();
                         CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                             startActivity(new Intent(CreateRequestOvertTimeActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");

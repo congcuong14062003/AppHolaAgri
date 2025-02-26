@@ -1,30 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginBottom="10dp"
+    android:layout_height="wrap_content">
         <!--               khu vực -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Chọn khu vực" />
+                >
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Chọn khu vực" />
+                <ImageView
+                    android:id="@+id/delete_measurement"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/remove"
+                    android:layerType="software" />
+            </LinearLayout>
+
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <Spinner
-                    android:id="@+id/spinnerMonitoringPoint"
+                    android:id="@+id/spinnerArea"
                     style="@style/TextStyle_14_500"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -65,6 +74,7 @@
                     android:orientation="horizontal">
 
                     <Spinner
+                        android:id="@+id/spinnerRowFrom"
                         style="@style/TextStyle_14_500"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
@@ -76,6 +86,7 @@
                         android:textColor="@color/textcolor" />
 
                     <Spinner
+                        android:id="@+id/spinnerRowTo"
                         style="@style/TextStyle_14_500"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
@@ -112,6 +123,7 @@
                     android:orientation="horizontal">
 
                     <Spinner
+                        android:id="@+id/spinnerColumnFrom"
                         style="@style/TextStyle_14_500"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
@@ -123,6 +135,7 @@
                         android:textColor="@color/textcolor" />
 
                     <Spinner
+                        android:id="@+id/spinnerColumnTo"
                         style="@style/TextStyle_14_500"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
@@ -136,5 +149,13 @@
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
-    </LinearLayout>
+
+        <!-- Dòng kẻ -->
+        <ImageView
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:backgroundTint="@color/secondarycolor"
+            android:src="@drawable/dashed_line"
+            android:layerType="software" />
 </LinearLayout>

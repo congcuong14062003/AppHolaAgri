@@ -9,6 +9,8 @@ import com.example.appholaagri.model.ColAndRowNumberModel.ColAndRowNumberRespons
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantRequest;
 import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantResponse;
+import com.example.appholaagri.model.IdentificationSensorModel.IdentificationSensorRequest;
+import com.example.appholaagri.model.IdentificationSensorModel.IdentificationSensorResponse;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
@@ -193,7 +195,12 @@ public interface ApiInterface {
     // định danh cây trồng
     @POST("plant-app/identification-plant")
     Call<ApiResponse<IdentificationPlantResponse>> identificationPlant(@Header("Authorization") String token, @Body IdentificationPlantRequest identificationPlantRequest);
+
     // init form
     @GET("sensor-app/init-form")
     Call<ApiResponse<SensorAppInitFormResponse>> sensorInitForm(@Header("Authorization") String token, @Query("qrCode") String qrCode);
+
+    // định danh cảm biến
+    @POST("sensor-app/identification-sensor")
+    Call<ApiResponse<IdentificationSensorResponse>> identificationSensor(@Header("Authorization") String token, @Body IdentificationSensorRequest identificationSensorRequest);
 }

@@ -711,8 +711,6 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         groupRequestCreateRequest.setStartDate(requestDetailData.getStartDate());
         groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
         groupRequestCreateRequest.setType(requestDetailData.getType());
-        // Tạo JSON log để kiểm tra dữ liệu
-
         if (requestId == -1) {
             Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
@@ -723,6 +721,9 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                         CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
                             startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
+
                         }
                     } else {
                         CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");

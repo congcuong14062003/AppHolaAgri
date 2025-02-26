@@ -800,17 +800,22 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
         groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
         groupRequestCreateRequest.setType(requestDetailData.getType());
         // Tạo JSON log để kiểm tra dữ liệu
-
+        // Tạo JSON log để kiểm tra dữ liệu
+        String jsonResponse = gson.toJson(groupRequestCreateRequest);
+        Log.d("CreateRequestLateActivity", "data thêm mới" + jsonResponse);
         if (requestId == -1) {
-            Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
+            Log.d("CreateRequestLateActivity", "vào ");
+            Call<ApiResponse<String>> call = apiInterface.lateEarlyCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
-                        CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
+                            CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                             startActivity(new Intent(CreateRequestLateEarlyActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi kết nối, vui lòng thử lại.");
@@ -823,6 +828,8 @@ public class CreateRequestLateEarlyActivity extends AppCompatActivity {
                 }
             });
         } else {
+            Log.d("CreateRequestLateActivity", "vào 2" + jsonResponse);
+
             if (groupRequestCreateRequest.getStatus().getId() == 2) {
                 showRejectReasonDialog(apiInterface, token, requestDetailData, groupRequestCreateRequest);
             } else {

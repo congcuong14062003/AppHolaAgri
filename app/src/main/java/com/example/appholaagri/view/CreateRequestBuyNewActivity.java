@@ -663,7 +663,7 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
         // Tạo JSON log để kiểm tra dữ liệu
 
         if (requestId == -1) {
-            Call<ApiResponse<String>> call = apiInterface.dayOffCreateRequest(token, groupRequestCreateRequest);
+            Call<ApiResponse<String>> call = apiInterface.buyNewCreateRequest(token, groupRequestCreateRequest);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
@@ -671,7 +671,10 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
                         ApiResponse<String> apiResponse = response.body();
                         CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
+                            CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
                             startActivity(new Intent(CreateRequestBuyNewActivity.this, RequestActivity.class));
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi kết nối, vui lòng thử lại.");

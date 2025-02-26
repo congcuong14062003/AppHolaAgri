@@ -6,7 +6,7 @@ public class SensorAppInitFormResponse {
     private int isQrAvailable;
     private List<Plantation> plantationList;
     private List<Asset> assetList;
-    private Object objectSelected;
+    private ObjectSelected objectSelected;
 
     public int getIsQrAvailable() {
         return isQrAvailable;
@@ -32,11 +32,11 @@ public class SensorAppInitFormResponse {
         this.assetList = assetList;
     }
 
-    public Object getObjectSelected() {
+    public ObjectSelected getObjectSelected() {
         return objectSelected;
     }
 
-    public void setObjectSelected(Object objectSelected) {
+    public void ObjectSelected(ObjectSelected objectSelected) {
         this.objectSelected = objectSelected;
     }
 
@@ -306,5 +306,33 @@ public class SensorAppInitFormResponse {
             this.isFixed = isFixed;
         }
     }
+    public  static class ObjectSelected {
+        private int monitoringSelected;
+        private int areaSelected;
+        private int plantationSelected;
 
+        public int getMonitoringSelected() {
+            return monitoringSelected;
+        }
+
+        public void setMonitoringSelected(int monitoringSelected) {
+            this.monitoringSelected = monitoringSelected;
+        }
+
+        public int getAreaSelected() {
+            return areaSelected;
+        }
+
+        public void setAreaSelected(int areaSelected) {
+            this.areaSelected = areaSelected;
+        }
+
+        public int getPlantationSelected() {
+            return plantationSelected;
+        }
+
+        public void setPlantationSelected(int plantationSelected) {
+            this.plantationSelected = plantationSelected;
+        }
+    }
 }
