@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_map"
+        android:icon="@drawable/map_icon"
+        android:title="Sơ đồ" />
+    <item
+        android:id="@+id/nav_plant"
+        android:icon="@drawable/plant_icon"
+        android:title="Cây trồng" />
+    <item
+        android:id="@+id/nav_sensor"
+        android:icon="@drawable/sensor_icon"
+        android:title="Cảm biến" />
+</menu>

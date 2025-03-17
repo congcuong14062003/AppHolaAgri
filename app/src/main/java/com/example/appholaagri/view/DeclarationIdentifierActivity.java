@@ -31,7 +31,8 @@ public class DeclarationIdentifierActivity extends AppCompatActivity {
         viewPagerSalary = findViewById(R.id.viewPagerSalary);
         backBtnReview = findViewById(R.id.backBtnReview);
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+//            onBackPressed();
+            finish();
         });
         // Thiết lập Adapter cho ViewPager
         declarationIdentifierAdapterTabList = new DeclarationIdentifierAdapterTabList(this);
@@ -48,12 +49,12 @@ public class DeclarationIdentifierActivity extends AppCompatActivity {
         }).attach();
 
     }
-    public void onBackPressed() {
-        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
-        super.onBackPressed();
-        Intent intent = new Intent(DeclarationIdentifierActivity.this, HomeActivity.class);
-        intent.putExtra("navigate_to", "home");
-        startActivity(intent);
-        finish();  // Kết thúc Activity này
-    }
+//    public void onBackPressed() {
+//        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
+//        super.onBackPressed();
+//        Intent intent = new Intent(DeclarationIdentifierActivity.this, HomeActivity.class);
+//        intent.putExtra("navigate_to", "home");
+//        startActivity(intent);
+//        finish();  // Kết thúc Activity này
+//    }
 }

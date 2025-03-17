@@ -107,7 +107,6 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment implements 
         spinnerPlantationArea = view.findViewById(R.id.spinnerPlantationArea);
         spinnerPlantationType = view.findViewById(R.id.spinnerTypePlan);
         spinnerPlantingDate = view.findViewById(R.id.spinnerPlantingDay);
-        init_identify_plan_container = view.findViewById(R.id.init_identify_plan_container);
         next_btn = view.findViewById(R.id.next_btn);
         // Khởi tạo Adapter cho Đồn Điền
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, plantationNames);
@@ -210,8 +209,6 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment implements 
             public void onNothingSelected(AdapterView<?> parent) {}
         });
         // Gọi API lấy dữ liệu
-        init_identify_plan_container.setVisibility(View.GONE);
-
         next_btn.setOnClickListener(view1 -> checkCameraPermission());
         getInitFormPlan();
         return view;
@@ -283,7 +280,6 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment implements 
                         plantationType = apiResponse.getData().getCropVarietiesList();
                         updateSpinnerData();
                         updatePlantationTypeSpinner();
-                        init_identify_plan_container.setVisibility(View.VISIBLE);
                     } else {
                         CustomToast.showCustomToast(getContext(), apiResponse.getMessage());
                     }
@@ -557,8 +553,6 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment implements 
                         showConfirmationPopup(token, selectedRow, selectedCol, qrContent, apiResponse.getMessage());
                     } else {
                         CustomToast.showCustomToast(getContext(), "Lỗi: " + apiResponse.getMessage());
-
-                        navigateToErrorActivity();
                     }
                 } else {
                     CustomToast.showCustomToast(getContext(), "Lỗi kết nối, vui lòng thử lại.");

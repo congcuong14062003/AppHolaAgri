@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.appholaagri.R;
 import com.example.appholaagri.service.ResendRequestCallback;
 
-public class SendFailedData extends AppCompatActivity {
+public class SendFailedData extends BaseActivity {
     private ResendRequestCallback callback;
 
     public void setResendRequestCallback(ResendRequestCallback callback) {

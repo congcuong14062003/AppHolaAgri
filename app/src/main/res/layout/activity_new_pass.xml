@@ -42,13 +42,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardView" />
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/new_pass_input_layout"
         style="@style/MyTextInputLayoutStyle"
+        android:id="@+id/new_pass_input_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         app:endIconMode="password_toggle"
         app:endIconTint="@color/white"
+        app:boxBackgroundMode="none"
         app:counterEnabled="false"
         app:errorEnabled="true"
         app:hintTextColor="@color/white"
@@ -67,12 +68,24 @@
             android:drawablePadding="5dp"
             />
     </com.google.android.material.textfield.TextInputLayout>
+    <LinearLayout
+        android:layout_marginTop="-25dp"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/white"
+        app:layout_constraintWidth_percent="0.7867"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/new_pass_input_layout"
+        ></LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/confirm_pass_input_layout"
         android:layout_margin="10dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:endIconMode="password_toggle"
+        app:boxBackgroundMode="none"
         app:endIconTint="@color/white"
         app:counterEnabled="false"
         app:errorEnabled="true"
@@ -96,6 +109,16 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <LinearLayout
+        android:layout_marginTop="-25dp"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/white"
+        app:layout_constraintWidth_percent="0.7867"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirm_pass_input_layout"
+        ></LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/change_pass_button"

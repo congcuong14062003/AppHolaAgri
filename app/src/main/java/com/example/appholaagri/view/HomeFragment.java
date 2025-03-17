@@ -23,7 +23,7 @@ import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
 public class HomeFragment extends BaseFragment {
-    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container, dinhdanh_container;
+    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container, dinhdanh_container, manager_plant;
     private TextView userName, userInfo;
     private ImageView avtUser;
     private ConstraintLayout container_home;
@@ -36,12 +36,12 @@ public class HomeFragment extends BaseFragment {
         bangcongluong_container = view.findViewById(R.id.bangcongluong_container);
         yeucau_dexuat_container = view.findViewById(R.id.yeucau_dexuat_container);
         dinhdanh_container = view.findViewById(R.id.dinhdanh_container);
+        manager_plant = view.findViewById(R.id.manager_plant);
         userName = view.findViewById(R.id.user_name);
         userInfo = view.findViewById(R.id.user_info);
         avtUser = view.findViewById(R.id.avtUser);
         container_home = view.findViewById(R.id.container_home);
 
-        container_home.setVisibility(View.GONE); // Hide layout initially
         // sự kiện click
         thongkechamcong_container.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), TimekeepingStatisticsActivity.class);
@@ -60,6 +60,10 @@ public class HomeFragment extends BaseFragment {
             Intent intent = new Intent(getContext(), DeclarationIdentifierActivity.class);
             startActivity(intent);
         });
+        manager_plant.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), ListPlantationActivity.class);
+            startActivity(intent);
+        });
         // Get token from SharedPreferences
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
@@ -75,7 +79,6 @@ public class HomeFragment extends BaseFragment {
             @Override
             public void onSuccess(UserData userData) {
                 updateUserUI(userData);
-                container_home.setVisibility(View.VISIBLE); // Hiển thị layout sau khi dữ liệu sẵn sàng
             }
 
             @Override

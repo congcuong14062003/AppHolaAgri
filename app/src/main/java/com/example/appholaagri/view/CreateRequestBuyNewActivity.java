@@ -2,6 +2,8 @@ package com.example.appholaagri.view;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,7 +68,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestBuyNewActivity extends AppCompatActivity {
+public class CreateRequestBuyNewActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
     private TextView title_request, txt_type_request_create;
@@ -75,7 +79,7 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
     private ActionRequestDetailAdapter adapter;
     private AppCompatButton txt_status_request_detail;
     private CoordinatorLayout create_request_container;
-
+    private Dialog loadingDialog;
     // over lay
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
@@ -87,7 +91,8 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_buy_new);
-// ánh xạ
+
+        // ánh xạ
         // container
         create_request_container = findViewById(R.id.create_request_container);
         // nút back
@@ -587,10 +592,33 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
             Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage(), e);
         }
     }
+    // Hiển thị loading
+    private void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = new Dialog(this);
+            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            loadingDialog.setContentView(R.layout.dialog_loading);
+            loadingDialog.setCancelable(false);
 
+            if (loadingDialog.getWindow() != null) {
+                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+        }
+        loadingDialog.show();
+    }
+
+    // Ẩn loading
+    private void hideLoading() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
 
     // tạo request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
+        // Hiển thị loading
+        showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         // Lấy dữ liệu từ giao diện nhập vào requestDetailData
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
@@ -603,10 +631,12 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
         // validate
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
+            hideLoading(); // Ẩn loading khi hoàn thành
             return;
         }
         if (requestDetailData.getReason().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập lý do!");
+            hideLoading(); // Ẩn loading khi hoàn thành
             return;
         }
 
@@ -667,6 +697,7 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                    hideLoading(); // Ẩn loading khi hoàn thành
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
@@ -683,6 +714,7 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                    hideLoading(); // Ẩn loading khi hoàn thành
                     CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
@@ -762,10 +794,13 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
     }
 
     private void sendModifyRequest(ApiInterface apiInterface, String token, GroupRequestCreateRequest groupRequestCreateRequest) {
+        // Hiển thị loading
+        showLoading();
         Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                hideLoading(); // Ẩn loading khi hoàn thành
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
@@ -779,6 +814,7 @@ public class CreateRequestBuyNewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                hideLoading(); // Ẩn loading khi hoàn thành
                 CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi: " + t.getMessage());
             }
         });

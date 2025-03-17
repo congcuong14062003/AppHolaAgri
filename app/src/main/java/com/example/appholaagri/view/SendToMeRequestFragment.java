@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +31,7 @@ public class SendToMeRequestFragment extends BaseFragment {
     private int currentPage = 1;
     private boolean isLoading = false;
     private boolean isLastPage = false;
-
+    private SwipeRefreshLayout swipeRefreshLayout;
     private static final int PAGE_SIZE = 20;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,9 +46,20 @@ public class SendToMeRequestFragment extends BaseFragment {
         recyclerView = view.findViewById(R.id.recyclerSendToMeRequest);
         progressBar = view.findViewById(R.id.progressBar);
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
-
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        // Xử lý sự kiện kéo để làm mới
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            currentPage = 1;
+            isLastPage = false;
+            if (adapter != null) {
+                adapter.clearData();
+            }
+            fetchRequests(currentPage, tabId);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+        // Gọi API ban đầu
+        fetchRequests(currentPage, tabId);
         // Gọi API ban đầu
         fetchRequests(currentPage, tabId);
 

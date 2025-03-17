@@ -6,14 +6,22 @@ import com.example.appholaagri.model.CheckInInitFormData.CheckInInitFormData;
 import com.example.appholaagri.model.CheckInQrCodeModel.CheckInQrCodeRequest;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ColAndRowNumberModel.ColAndRowNumberResponse;
+import com.example.appholaagri.model.FluctuationSoilModel.FluctuationSoilRequest;
+import com.example.appholaagri.model.FluctuationSoilModel.FluctuationSoilResponse;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
 import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantRequest;
 import com.example.appholaagri.model.IdentificationPlantModel.IdentificationPlantResponse;
 import com.example.appholaagri.model.IdentificationSensorModel.IdentificationSensorRequest;
 import com.example.appholaagri.model.IdentificationSensorModel.IdentificationSensorResponse;
+import com.example.appholaagri.model.ListPlantModel.ListPlantResponse;
+import com.example.appholaagri.model.ListSensorModel.ListSensorRequest;
+import com.example.appholaagri.model.ListSensorModel.ListSensorResponse;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
+import com.example.appholaagri.model.PlantDetailModel.PlantDetailResponse;
+import com.example.appholaagri.model.PlantationListModel.PlantationListRequest;
+import com.example.appholaagri.model.PlantationListModel.PlantationListResponse;
 import com.example.appholaagri.model.PlantingDateModel.PlantingDateResponse;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
@@ -35,6 +43,7 @@ import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
 import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormRequest;
 import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormResponse;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
+import com.example.appholaagri.model.SoilDetailModel.SoilDetailRespose;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageData;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageRequest;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
@@ -202,5 +211,36 @@ public interface ApiInterface {
 
     // định danh cảm biến
     @POST("sensor-app/identification-sensor")
-    Call<ApiResponse<IdentificationSensorResponse>> identificationSensor(@Header("Authorization") String token, @Body IdentificationSensorRequest identificationSensorRequest);
+    Call<ApiResponse<IdentificationSensorResponse>> identificationSensor(@Header("Authorization") String token, @Body IdentificationSensorRequest identificationSensorRequest);    // định danh cảm biến
+
+    // danh sách đồn điền
+    @POST("plantation/list")
+    Call<ApiResponse<PlantationListResponse>> listPlantation(@Header("Authorization") String token, @Body PlantationListRequest plantationListRequest);
+
+    // danh sách cảm biến
+    @POST("monitoring-app/list")
+    Call<ApiResponse<ListSensorResponse>> listSensor(@Header("Authorization") String token, @Body ListSensorRequest listSensorRequest);
+
+
+    // danh sách cây trồng
+    @POST("plant-app/list-plant")
+    Call<ApiResponse<ListPlantResponse>> listPlant(@Header("Authorization") String token, @Body ListSensorRequest listSensorRequest);
+
+
+    // danh sách cây trồng
+    @GET("plant-app/detail-plant")
+    Call<ApiResponse<PlantDetailResponse>> detailPlant(@Header("Authorization") String token, @Query("id") int id);
+    //
+
+    @GET("soil-information/detail-soil")
+    Call<ApiResponse<SoilDetailRespose>> detailSoil(
+            @Header("Authorization") String token,
+            @Query("idPlant") Integer idPlant,
+            @Query("idMonitoring") Integer idMonitoring
+    );
+
+
+    //
+    @POST("soil-information/fluctuation-soil")
+    Call<ApiResponse<FluctuationSoilResponse>> fluctuationSoil(@Header("Authorization") String token, @Body FluctuationSoilRequest fluctuationSoilRequest);
 }

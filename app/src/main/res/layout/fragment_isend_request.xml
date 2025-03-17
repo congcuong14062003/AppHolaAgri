@@ -7,14 +7,20 @@
     android:orientation="vertical"
     android:gravity="center"
     tools:context=".view.IsendRequestFragment"
-    android:padding="16dp"
-    >
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerIsendRequest"
+    android:padding="16dp">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        />
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerIsendRequest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -22,7 +28,8 @@
         android:layout_gravity="center_horizontal"
         android:indeterminate="true"
         android:paddingLeft="8dp"
-        android:paddingRight="8dp" />
+        android:paddingRight="8dp"/>
+
     <!-- TextView và ImageView hiển thị khi không có dữ liệu -->
     <LinearLayout
         android:id="@+id/emptyStateLayout"
@@ -37,7 +44,7 @@
             android:id="@+id/emptyIcon"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:src="@drawable/no_list" />
+            android:src="@drawable/no_list"/>
 
         <TextView
             android:id="@+id/emptyMessage"
@@ -46,8 +53,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:text="Không có danh sách"
-            android:textColor="@color/secon_textcolor" />
+            android:textColor="@color/secon_textcolor"/>
     </LinearLayout>
 </LinearLayout>
-
-

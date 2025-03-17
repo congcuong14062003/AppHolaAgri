@@ -59,7 +59,8 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
         timekeepingStatisticsAdapterTabList = new TimekeepingStatisticsAdapterTabList(this);
         viewPager.setAdapter(timekeepingStatisticsAdapterTabList);
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+//            onBackPressed();
+            finish();
         });
 //        quanlychamcong_btn.setOnClickListener(view -> {
 //            Intent intent = new Intent(TimekeepingStatisticsActivity.this, TimekeepingManagementActivity.class);
@@ -202,12 +203,12 @@ public class TimekeepingStatisticsActivity extends AppCompatActivity {
             }
         });
     }
-    public void onBackPressed() {
-        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
-        super.onBackPressed();
-        Intent intent = new Intent(TimekeepingStatisticsActivity.this, HomeActivity.class);
-        intent.putExtra("navigate_to", "home"); // Thêm thông tin để xác định chuyển hướng đến SettingFragment
-        startActivity(intent);
-        finish();  // Kết thúc Activity này
-    }
+//    public void onBackPressed() {
+//        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
+//        super.onBackPressed();
+//        Intent intent = new Intent(TimekeepingStatisticsActivity.this, HomeActivity.class);
+//        intent.putExtra("navigate_to", "home"); // Thêm thông tin để xác định chuyển hướng đến SettingFragment
+//        startActivity(intent);
+//        finish();  // Kết thúc Activity này
+//    }
 }

@@ -17,5 +17,6 @@
     <color name="translucent_blue">#800000FF</color>
     <color name="radio_button_default">#FFFFFF</color> <!-- White for default -->
     <color name="radio_button_selected">@color/secondarycolor</color> <!-- Yellow for selected -->
+    <color name="bottom_bar_border">#FF0000</color> <!-- Màu đỏ, bạn có thể đổi -->
 
 </resources>

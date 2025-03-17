@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <LinearLayout
+        android:layout_marginBottom="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_rounded_10"
+        android:padding="20dp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/plant_date"
+                style="@style/TextStyle_16_600"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="09:30 29/11/2024"
+                android:textColor="@color/textcolor"
+                />
+        </LinearLayout>
+
+        <!-- Dòng kẻ -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layerType="software"
+            android:src="@drawable/dashed_line" />
+
+        <LinearLayout
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle_14_400"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Công viêc: "
+                android:textColor="@color/textcolor"
+                />
+            <TextView
+                android:id="@+id/plan_work"
+                android:gravity="end"
+                style="@style/TextStyle_14_600"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SRMT - Sầu riêng Monthong"
+                android:textColor="@color/textcolor"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle_14_400"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Người thực hiện: "
+                android:textColor="@color/textcolor"
+                />
+            <TextView
+                android:id="@+id/plant_implementer"
+                android:gravity="end"
+                style="@style/TextStyle_14_600"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Vườn A sầu riêng Long Thành"
+                android:textColor="@color/textcolor"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle_14_400"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tổ đội: "
+                android:textColor="@color/textcolor"
+                />
+            <TextView
+                android:gravity="end"
+                android:id="@+id/planting_team"
+                style="@style/TextStyle_14_600"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đợt 1 - 12/05/2023"
+                android:textColor="@color/textcolor"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle_14_400"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nôi dung: "
+                android:textColor="@color/textcolor"
+                />
+            <TextView
+                android:gravity="end"
+                style="@style/TextStyle_14_600"
+                android:id="@+id/plant_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2 năm tuổi"
+                android:textColor="@color/textcolor"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

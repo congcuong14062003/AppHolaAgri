@@ -2,6 +2,7 @@ package com.example.appholaagri.service;
 
 import android.content.Context;
 
+import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -13,6 +14,9 @@ public class ApiClient {
     public static Retrofit getClient(Context context) {
         if (retrofit == null) {
             OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(60, TimeUnit.SECONDS)  // Tăng thời gian chờ kết nối
+                    .readTimeout(60, TimeUnit.SECONDS)     // Tăng thời gian chờ đọc dữ liệu
+                    .writeTimeout(60, TimeUnit.SECONDS)    // Tăng thời gian chờ ghi dữ liệu
                     .addInterceptor(new AuthInterceptor(context))
                     .build();
 

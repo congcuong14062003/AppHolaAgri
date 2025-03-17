@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.QRScannerSensor">
+    <!-- QR Scanner Section (Chiếm phần trên) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5">
+
+        <!-- Camera view / QR scanner -->
+        <com.journeyapps.barcodescanner.DecoratedBarcodeView
+            android:id="@+id/barcode_scanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black" />
+
+        <!-- Close button (X) -->
+        <ImageView
+            android:id="@+id/close_scanner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="30dp"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="Close scanner"
+            android:src="@drawable/x_back" />
+
+        <!-- Text hướng dẫn -->
+        <TextView
+            android:id="@+id/scan_instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/qr_frame"
+            android:layout_marginBottom="20dp"
+            android:text="Căn chỉnh mã QR vào khung hình để quét!"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <!-- Khung quét QR -->
+        <RelativeLayout
+            android:id="@+id/qr_frame"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="100dp"
+            android:background="@drawable/qr_scanner_background" />
+
+    </RelativeLayout>
+</LinearLayout>

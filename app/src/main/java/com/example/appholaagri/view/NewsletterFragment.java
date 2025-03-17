@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.example.appholaagri.R;
 
 
-public class NewsletterFragment extends Fragment {
+public class NewsletterFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

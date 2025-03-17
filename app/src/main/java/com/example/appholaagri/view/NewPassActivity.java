@@ -54,7 +54,7 @@ public class NewPassActivity extends BaseActivity {
         change_pass_button = findViewById(R.id.change_pass_button);
         back_btn = findViewById(R.id.back_btn);
         back_btn.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
         change_pass_button.setOnClickListener(view -> {
             String newPassword = newPassInput.getText().toString().trim();

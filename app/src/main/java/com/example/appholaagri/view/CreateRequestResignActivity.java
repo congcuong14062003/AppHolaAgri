@@ -2,6 +2,8 @@ package com.example.appholaagri.view;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,7 +66,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestResignActivity extends AppCompatActivity {
+public class CreateRequestResignActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
     private TextView title_request, txt_type_request_create, edt_number_of_day_notices;
@@ -78,6 +82,8 @@ public class CreateRequestResignActivity extends AppCompatActivity {
     private ConstraintLayout overlay_filter_status_container;
     private ConstraintLayout overlayFilterStatus;
     private LinearLayout layout_action_history_request;
+    private Dialog loadingDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -307,34 +313,6 @@ public class CreateRequestResignActivity extends AppCompatActivity {
                     String selectedTime = String.format("%02d:%02d", hourOfDay, minute1);
                     editText.setText(selectedTime);
 
-                    // Nếu chọn giờ kết thúc, kiểm tra giờ bắt đầu
-//                    if (editText.getId() == R.id.etGioKetThuc) {
-//                        String startDate = etNgayBatDau.getText().toString();
-//                        String endDate = etNgayKetThuc.getText().toString();
-//                        String startTime = etGioBatDau.getText().toString();
-//
-//                        if (!startDate.isEmpty() && startDate.equals(endDate) && !startTime.isEmpty()) {
-//                            if (compareTimes(selectedTime, startTime) < 0) {
-//                                CustomToast.showCustomToast(this, "Giờ kết thúc không thể nhỏ hơn giờ bắt đầu!");
-//
-//                                editText.setText(""); // Xóa nếu không hợp lệ
-//                            }
-//                        }
-//                    }
-//
-//                    // Nếu chọn giờ bắt đầu, kiểm tra giờ kết thúc
-//                    if (editText.getId() == R.id.etGioBatDau) {
-//                        String startDate = etNgayBatDau.getText().toString();
-//                        String endDate = etNgayKetThuc.getText().toString();
-//                        String endTime = etGioKetThuc.getText().toString();
-//
-//                        if (!startDate.isEmpty() && startDate.equals(endDate) && !endTime.isEmpty()) {
-//                            if (compareTimes(selectedTime, endTime) > 0) {
-//                                CustomToast.showCustomToast(this, "Giờ bắt đầu không thể lớn hơn giờ kết thúc!");
-//                                editText.setText(""); // Xóa nếu không hợp lệ
-//                            }
-//                        }
-//                    }
                 },
                 hour, minute, true);
 
@@ -585,9 +563,33 @@ public class CreateRequestResignActivity extends AppCompatActivity {
         }
     }
 
+    // Hiển thị loading
+    private void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = new Dialog(this);
+            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            loadingDialog.setContentView(R.layout.dialog_loading);
+            loadingDialog.setCancelable(false);
+
+            if (loadingDialog.getWindow() != null) {
+                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+        }
+        loadingDialog.show();
+    }
+
+    // Ẩn loading
+    private void hideLoading() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
 
     // tạo request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
+        // Hiển thị loading
+        showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         // Lấy dữ liệu từ giao diện nhập vào requestDetailData
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
@@ -676,6 +678,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                    hideLoading(); // Ẩn loading khi hoàn thành
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         CustomToast.showCustomToast(CreateRequestResignActivity.this, apiResponse.getMessage());
@@ -692,6 +695,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                    hideLoading(); // Ẩn loading khi hoàn thành
                     CustomToast.showCustomToast(CreateRequestResignActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
@@ -771,6 +775,8 @@ public class CreateRequestResignActivity extends AppCompatActivity {
     }
 
     private void sendModifyRequest(ApiInterface apiInterface, String token, GroupRequestCreateRequest groupRequestCreateRequest) {
+        // Hiển thị loading
+        showLoading();
         Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
@@ -788,6 +794,7 @@ public class CreateRequestResignActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                hideLoading(); // Ẩn loading khi hoàn thành
                 CustomToast.showCustomToast(CreateRequestResignActivity.this, "Lỗi: " + t.getMessage());
             }
         });

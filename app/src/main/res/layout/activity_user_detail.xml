@@ -5,8 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main"
     tools:context=".view.UserDetailActivity"
     android:background="@drawable/bg_home"
+    app:statusBarBackground="@drawable/bg_home"
     >
     <!-- AppBarLayout chứa phần tiêu đề và nút back -->
     <androidx.appcompat.widget.Toolbar
@@ -139,46 +141,60 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="20dp">
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_marginStart="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Số điện thoại"
-                        />
-                    <TextView
-                        android:id="@+id/txtPhone"
-                        android:background="@drawable/input_infor"
+                    <LinearLayout
+                        android:id="@+id/user_telephone_layout"
                         android:layout_width="match_parent"
-                        android:padding="35px"
-                        android:layout_marginTop="5dp"
-                        android:backgroundTint="#dee0df"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="0977177380"
-                        android:layout_marginBottom="15dp"
-                        style="@style/TextStyle_14_500"
-                        android:textColor="@color/textcolor"
-                        android:gravity="center_vertical" />
-                    <TextView
-                        android:layout_marginStart="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Email"
-                        />
-                    <TextView
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/txtEmail"
-                        android:background="@drawable/input_infor"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            style="@style/TextStyle_14_500"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="Số điện thoại" />
+                        <TextView
+                            android:id="@+id/txtPhone"
+                            android:background="@drawable/input_infor"
+                            android:layout_width="match_parent"
+                            android:padding="35px"
+                            android:layout_marginTop="5dp"
+                            android:backgroundTint="#dee0df"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="0977177380"
+                            android:layout_marginBottom="15dp"
+                            style="@style/TextStyle_14_500"
+                            android:textColor="@color/textcolor"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/user_email_layout"
                         android:layout_width="match_parent"
-                        android:padding="35px"
-                        android:backgroundTint="#dee0df"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="quanlv@imediatech.com.vn"
-                        style="@style/TextStyle_14_500"
-                        android:textColor="@color/textcolor"
-                        android:gravity="center_vertical" />
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:layout_marginStart="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Email"
+                            />
+                        <TextView
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/txtEmail"
+                            android:background="@drawable/input_infor"
+                            android:layout_width="match_parent"
+                            android:padding="35px"
+                            android:backgroundTint="#dee0df"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="quanlv@imediatech.com.vn"
+                            style="@style/TextStyle_14_500"
+                            android:textColor="@color/textcolor"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+
 
                 </LinearLayout>
             </LinearLayout>
@@ -213,88 +229,117 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="20dp">
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_marginStart="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ngày sinh"
-                        />
-                    <TextView
-                        android:id="@+id/txtBirthDay"
-                        android:background="@drawable/input_infor"
+                    <LinearLayout
+                        android:id="@+id/user_birthday_layout"
                         android:layout_width="match_parent"
-                        android:padding="35px"
-                        android:layout_marginTop="5dp"
-                        android:backgroundTint="#dee0df"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="0977177380"
-                        android:layout_marginBottom="15dp"
-                        style="@style/TextStyle_14_500"
-                        android:textColor="@color/textcolor"
-                        android:gravity="center_vertical" />
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_marginStart="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CCCD - Ngày cấp"
-                        />
-                    <TextView
-                        android:id="@+id/txtIdentityCode"
-                        android:background="@drawable/input_infor"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            style="@style/TextStyle_14_500"
+                            android:layout_marginStart="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ngày sinh"
+                            />
+                        <TextView
+                            android:id="@+id/txtBirthDay"
+                            android:background="@drawable/input_infor"
+                            android:layout_width="match_parent"
+                            android:padding="35px"
+                            android:layout_marginTop="5dp"
+                            android:backgroundTint="#dee0df"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="0977177380"
+                            android:layout_marginBottom="15dp"
+                            style="@style/TextStyle_14_500"
+                            android:textColor="@color/textcolor"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/user_identify_layout"
                         android:layout_width="match_parent"
-                        android:padding="35px"
-                        android:layout_marginTop="5dp"
-                        android:backgroundTint="#dee0df"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="0977177380"
-                        android:layout_marginBottom="15dp"
-                        style="@style/TextStyle_14_500"
-                        android:textColor="@color/textcolor"
-                        android:gravity="center_vertical" />
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_marginStart="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mã số thuế"
-                        />
-                    <TextView
-                        android:id="@+id/txtTaxCode"
-                        android:background="@drawable/input_infor"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            style="@style/TextStyle_14_500"
+                            android:layout_marginStart="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CCCD - Ngày cấp"
+                            />
+                        <TextView
+                            android:id="@+id/txtIdentityCode"
+                            android:background="@drawable/input_infor"
+                            android:layout_width="match_parent"
+                            android:padding="35px"
+                            android:layout_marginTop="5dp"
+                            android:backgroundTint="#dee0df"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="0977177380"
+                            android:layout_marginBottom="15dp"
+                            style="@style/TextStyle_14_500"
+                            android:textColor="@color/textcolor"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:padding="35px"
-                        android:layout_marginTop="5dp"
-                        android:backgroundTint="#dee0df"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="0977177380"
-                        android:layout_marginBottom="15dp"
-                        style="@style/TextStyle_14_500"
-                        android:textColor="@color/textcolor"
-                        android:gravity="center_vertical" />
-                    <TextView
-                        android:layout_marginStart="10dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Địa chỉ"
-                        />
-                    <TextView
-                        android:id="@+id/txtAddress"
-                        android:layout_marginTop="5dp"
-                        android:background="@drawable/input_infor"
+                        android:orientation="vertical"
+                        android:id="@+id/user_taxcode_layout"
+                        >
+                        <TextView
+                            style="@style/TextStyle_14_500"
+                            android:layout_marginStart="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mã số thuế"
+                            />
+                        <TextView
+                            android:id="@+id/txtTaxCode"
+                            android:background="@drawable/input_infor"
+                            android:layout_width="match_parent"
+                            android:padding="35px"
+                            android:layout_marginTop="5dp"
+                            android:backgroundTint="#dee0df"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="0977177380"
+                            android:layout_marginBottom="15dp"
+                            style="@style/TextStyle_14_500"
+                            android:textColor="@color/textcolor"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/user_address_layout"
                         android:layout_width="match_parent"
-                        android:padding="35px"
-                        android:backgroundTint="#dee0df"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="quanlv@imediatech.com.vn"
-                        style="@style/TextStyle_14_500"
-                        android:textColor="@color/textcolor"
-                        android:gravity="center_vertical" />
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:layout_marginStart="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Địa chỉ"
+                            />
+                        <TextView
+                            android:id="@+id/txtAddress"
+                            android:layout_marginTop="5dp"
+                            android:background="@drawable/input_infor"
+                            android:layout_width="match_parent"
+                            android:padding="35px"
+                            android:backgroundTint="#dee0df"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="quanlv@imediatech.com.vn"
+                            style="@style/TextStyle_14_500"
+                            android:textColor="@color/textcolor"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+
 
                 </LinearLayout>
             </LinearLayout>

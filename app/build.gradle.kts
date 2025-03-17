@@ -69,6 +69,10 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.3.0-alpha06")
     // RecyclerView for listing attendance
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation ("com.github.PhilJay:MPAndroidChart:3.1.0")
+    implementation ("com.google.android.flexbox:flexbox:3.0.0")
+    // chart
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -82,6 +86,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.swiperefreshlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

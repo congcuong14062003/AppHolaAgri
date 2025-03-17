@@ -20,10 +20,13 @@ public class SendSuccessData extends BaseActivity {
         continue_reporting_btn = findViewById(R.id.continue_reporting_btn);
         back_home_btn = findViewById(R.id.back_home_btn);
 
-        // Kiểm tra null để tránh crash
-        if (continue_reporting_btn != null) {
-            continue_reporting_btn.setOnClickListener(view -> finish());
-        }
+        continue_reporting_btn.setOnClickListener(view -> {
+            Intent intent = new Intent();
+            intent.putExtra("reload_fragment", true); // Gửi tín hiệu reload
+            setResult(RESULT_OK, intent);
+            finish(); // Đóng Activity
+        });
+
         back_home_btn.setOnClickListener(view -> {
             onBackPressed();
         });

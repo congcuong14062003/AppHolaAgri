@@ -5,6 +5,11 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
+import com.example.appholaagri.model.ListPlantModel.ListPlantResponse;
+import com.example.appholaagri.model.ListSensorModel.ListSensorRequest;
+import com.example.appholaagri.model.ListSensorModel.ListSensorResponse;
+import com.example.appholaagri.model.PlantationListModel.PlantationListRequest;
+import com.example.appholaagri.model.PlantationListModel.PlantationListResponse;
 import com.example.appholaagri.model.RequestModel.RequestListData;
 import com.example.appholaagri.model.RequestModel.RequestListRequest;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
@@ -19,6 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 public class ApiHelper {
     public static void fetchRequestListData(Context context,
@@ -55,11 +61,13 @@ public class ApiHelper {
                         String errorMessage = apiResponse.getMessage();
                         onError.accept(errorMessage);
                         CustomToast.showCustomToast(context, errorMessage);
+
                     }
                 } else {
                     String errorMessage = "API response failed or is null";
                     onError.accept(errorMessage);
                     Log.e("ApiHelper", errorMessage);
+                    CustomToast.showCustomToast(context, errorMessage);
                 }
             }
 
@@ -104,11 +112,13 @@ public class ApiHelper {
                         String errorMessage = apiResponse.getMessage();
                         onError.accept(errorMessage);
                         Log.e("ApiHelper", errorMessage);
+                        CustomToast.showCustomToast(context, errorMessage);
                     }
                 } else {
                     String errorMessage = "API response failed or is null";
                     onError.accept(errorMessage);
                     Log.e("ApiHelper", errorMessage);
+                    CustomToast.showCustomToast(context, errorMessage);
                 }
             }
 
@@ -120,4 +130,137 @@ public class ApiHelper {
             }
         });
     }
+
+    public static void fetchListPlantation(Context context,
+                                                  int page,
+                                                  Consumer<PlantationListResponse> onSuccess,
+                                                  Consumer<String> onError) {
+        ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
+
+        // Tạo request object
+         PlantationListRequest request = new PlantationListRequest();
+                request.setIdCompany(Arrays.asList(-1));
+                request.setKeySearch("");
+                request.setPage(1);
+                request.setSize(20);
+                request.setStatus(Arrays.asList(-1));
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+
+        Call<ApiResponse<PlantationListResponse>> call = apiInterface.listPlantation(token, request);
+        call.enqueue(new Callback<ApiResponse<PlantationListResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<PlantationListResponse>> call, Response<ApiResponse<PlantationListResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<PlantationListResponse> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        onSuccess.accept(apiResponse.getData());
+                    } else {
+                        String errorMessage = apiResponse.getMessage();
+                        onError.accept(errorMessage);
+                        CustomToast.showCustomToast(context, errorMessage);
+                        Log.e("ApiHelper", errorMessage);
+                    }
+                } else {
+                    String errorMessage = "API response failed or is null";
+                    onError.accept(errorMessage);
+                    Log.e("ApiHelper", errorMessage);
+                    CustomToast.showCustomToast(context, errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<PlantationListResponse>> call, Throwable t) {
+                String errorMessage = t.getMessage();
+                onError.accept(errorMessage);
+                Log.e("ApiHelper", errorMessage);
+            }
+        });
+    }
+    public static <T> void fetchListSensor(Context context,
+                                           int page,
+                                           T idPlantation,  // Có thể là Integer hoặc List<Integer>
+                                           String keySearch,
+                                           Consumer<ListSensorResponse> onSuccess,
+                                           Consumer<String> onError) {
+        ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
+
+        // Tạo request object sử dụng Generic
+        ListSensorRequest<T> request = new ListSensorRequest<>(idPlantation, keySearch, page, 20);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+
+        Call<ApiResponse<ListSensorResponse>> call = apiInterface.listSensor(token, request);
+        call.enqueue(new Callback<ApiResponse<ListSensorResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ListSensorResponse>> call, Response<ApiResponse<ListSensorResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<ListSensorResponse> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        onSuccess.accept(apiResponse.getData());
+                    } else {
+                        String errorMessage = apiResponse.getMessage();
+                        onError.accept(errorMessage);
+                        Log.e("ApiHelper", errorMessage);
+                    }
+                } else {
+                    String errorMessage = "API response failed or is null";
+                    onError.accept(errorMessage);
+                    Log.e("ApiHelper", errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ListSensorResponse>> call, Throwable t) {
+                String errorMessage = t.getMessage();
+                onError.accept(errorMessage);
+                Log.e("ApiHelper", errorMessage);
+            }
+        });
+    }
+
+    public static <T> void fetchListPlant(Context context,
+                                           int page,
+                                           T idPlantation,  // Có thể là Integer hoặc List<Integer>
+                                           String keySearch,
+                                           Consumer<ListPlantResponse> onSuccess,
+                                           Consumer<String> onError) {
+        ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
+
+        // Tạo request object sử dụng Generic
+        ListSensorRequest<T> request = new ListSensorRequest<>(idPlantation, keySearch, page, 20);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+
+        Call<ApiResponse<ListPlantResponse>> call = apiInterface.listPlant(token, request);
+        call.enqueue(new Callback<ApiResponse<ListPlantResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ListPlantResponse>> call, Response<ApiResponse<ListPlantResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<ListPlantResponse> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        onSuccess.accept(apiResponse.getData());
+                    } else {
+                        String errorMessage = apiResponse.getMessage();
+                        onError.accept(errorMessage);
+                        Log.e("ApiHelper", errorMessage);
+                    }
+                } else {
+                    String errorMessage = "API response failed or is null";
+                    onError.accept(errorMessage);
+                    Log.e("ApiHelper", errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ListPlantResponse>> call, Throwable t) {
+                String errorMessage = t.getMessage();
+                onError.accept(errorMessage);
+                Log.e("ApiHelper", errorMessage);
+            }
+        });
+    }
+
 }

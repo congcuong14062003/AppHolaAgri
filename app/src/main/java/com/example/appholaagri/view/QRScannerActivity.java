@@ -1,22 +1,16 @@
 package com.example.appholaagri.view;
 import com.example.appholaagri.R;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
-
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
-public class QRScannerActivity extends AppCompatActivity {
+
+public class QRScannerActivity extends BaseActivity {
     private DecoratedBarcodeView barcodeScanner;
     private ImageView closeScanner;
     @Override

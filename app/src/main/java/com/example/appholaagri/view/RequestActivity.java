@@ -193,7 +193,7 @@ public class RequestActivity extends AppCompatActivity {
         // Thiết lập Adapter cho ViewPager
         viewPager.setAdapter(requestAdapterTabList);
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
 
         // Theo dõi sự kiện chuyển tab
@@ -344,13 +344,13 @@ public class RequestActivity extends AppCompatActivity {
     }
 
 
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(RequestActivity.this, HomeActivity.class);
-        intent.putExtra("navigate_to", "home"); // Thêm thông tin để xác định chuyển hướng đến SettingFragment
-        startActivity(intent);
-        finish();
-    }
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        Intent intent = new Intent(RequestActivity.this, HomeActivity.class);
+//        intent.putExtra("navigate_to", "home"); // Thêm thông tin để xác định chuyển hướng đến SettingFragment
+//        startActivity(intent);
+//        finish();
+//    }
 
     public void ChangeStatusList() {
 

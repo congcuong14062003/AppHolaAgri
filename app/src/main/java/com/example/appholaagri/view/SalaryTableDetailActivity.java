@@ -41,7 +41,11 @@ public class SalaryTableDetailActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_salary_table_detail);
-
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
         txt_cong_chuan = findViewById(R.id.txt_cong_chuan);
         txt_tong_cong = findViewById(R.id.txt_tong_cong);
         txt_ngay_phep_con_lai = findViewById(R.id.txt_ngay_phep_con_lai);

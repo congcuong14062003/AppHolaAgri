@@ -87,6 +87,11 @@ public class SensorAppInitFormResponse {
         private int totalColumn;
         private List<Monitoring> monitoring;
 
+        public Area(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
         public int getId() {
             return id;
         }

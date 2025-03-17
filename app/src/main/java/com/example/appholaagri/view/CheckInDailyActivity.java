@@ -54,6 +54,10 @@ import android.content.pm.PackageManager;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class CheckInDailyActivity extends BaseActivity {
     private static final int CAMERA_REQUEST_CODE = 100;
     private RadioGroup radioGroupShift;
@@ -69,7 +73,11 @@ public class CheckInDailyActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in_daily);
-
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
         // Kiểm tra quyền Camera
         checkCameraPermission();
         // Initialize views

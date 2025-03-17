@@ -46,7 +46,7 @@ public class SettingFragment extends BaseFragment {
         avtUser = view.findViewById(R.id.avtUser);
         txtStaffName = view.findViewById(R.id.txtStaffName);
         txtStaffCode = view.findViewById(R.id.txtStaffCode);
-        contentLayout.setVisibility(View.GONE); // Hide layout initially
+//        contentLayout.setVisibility(View.GONE); // Hide layout initially
 
         // Find Manage Info button
         btnManageInfo = view.findViewById(R.id.btnManageInfo);
@@ -82,7 +82,7 @@ public class SettingFragment extends BaseFragment {
             @Override
             public void onSuccess(UserData userData) {
                 updateUserUI(userData);
-                contentLayout.setVisibility(View.VISIBLE); // Hiển thị layout sau khi dữ liệu sẵn sàng
+//                contentLayout.setVisibility(View.VISIBLE); // Hiển thị layout sau khi dữ liệu sẵn sàng
             }
 
             @Override
@@ -121,7 +121,7 @@ public class SettingFragment extends BaseFragment {
                 txtStaffName.setText("Tên không có sẵn");
                 txtStaffCode.setText("Mã nhân viên không có sẵn");
             }
-            contentLayout.setVisibility(View.VISIBLE); // Show layout after data is updated
+//            contentLayout.setVisibility(View.VISIBLE); // Show layout after data is updated
         } catch (Exception e) {
             CustomToast.showCustomToast(requireContext(),  "Lỗi khi cập nhật giao diện.");
         }

@@ -1,6 +1,8 @@
 package com.example.appholaagri.view;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -60,7 +64,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestOvertTimeActivity extends AppCompatActivity {
+public class CreateRequestOvertTimeActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau,etGioBatDau, etNgayKetThuc,etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
     private TextView title_request, txt_type_request_create, select_method_request;
@@ -87,6 +91,7 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
     private ActionRequestDetailAdapter adapter;
     private CoordinatorLayout create_request_container;
     private LinearLayout layout_action_history_request;
+    private Dialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -495,8 +500,33 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
             Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage(), e);
         }
     }
+    // Hiển thị loading
+    private void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = new Dialog(this);
+            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            loadingDialog.setContentView(R.layout.dialog_loading);
+            loadingDialog.setCancelable(false);
+
+            if (loadingDialog.getWindow() != null) {
+                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+        }
+        loadingDialog.show();
+    }
+
+    // Ẩn loading
+    private void hideLoading() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
+
     // tạo request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
+        // Hiển thị loading
+        showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         // Lấy dữ liệu từ giao diện nhập vào requestDetailData
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
@@ -565,6 +595,7 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                    hideLoading(); // Ẩn loading khi hoàn thành
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
@@ -581,6 +612,7 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                    hideLoading(); // Ẩn loading khi hoàn thành
                     CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
@@ -660,6 +692,8 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
     }
 
     private void sendModifyRequest(ApiInterface apiInterface, String token, GroupRequestCreateRequest groupRequestCreateRequest) {
+        // Hiển thị loading
+        showLoading();
         Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
@@ -677,6 +711,7 @@ public class CreateRequestOvertTimeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                hideLoading(); // Ẩn loading khi hoàn thành
                 CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi: " + t.getMessage());
             }
         });

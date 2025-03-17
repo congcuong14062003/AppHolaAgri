@@ -53,7 +53,7 @@ public class ForgotPasswordActivity extends BaseActivity {
         errorMessage  = findViewById(R.id.error_message); // ID của TextView chứa thông báo lỗi
         phone_input_layout = findViewById(R.id.phone_input_layout);
         btnBackLogin.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
         nextBtn.setOnClickListener(view -> {
             String phoneNumber = phoneInput.getText().toString().trim();
