@@ -27,16 +27,15 @@ public class DeclarationIdentifierActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_declaration_identifier);
+
         tabLayoutSalary = findViewById(R.id.tabLayoutSalary);
         viewPagerSalary = findViewById(R.id.viewPagerSalary);
         backBtnReview = findViewById(R.id.backBtnReview);
-        backBtnReview.setOnClickListener(view -> {
-//            onBackPressed();
-            finish();
-        });
+
         // Thiết lập Adapter cho ViewPager
         declarationIdentifierAdapterTabList = new DeclarationIdentifierAdapterTabList(this);
         viewPagerSalary.setAdapter(declarationIdentifierAdapterTabList);
+
         new TabLayoutMediator(tabLayoutSalary, viewPagerSalary, (tab, position) -> {
             switch (position) {
                 case 0:
@@ -48,13 +47,14 @@ public class DeclarationIdentifierActivity extends AppCompatActivity {
             }
         }).attach();
 
+        // Nhận tab_index và set lại ViewPager
+        int tabIndex = getIntent().getIntExtra("tab_index", 0);
+        viewPagerSalary.setCurrentItem(tabIndex);
+
+        backBtnReview.setOnClickListener(view -> finish());
     }
-//    public void onBackPressed() {
-//        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
-//        super.onBackPressed();
-//        Intent intent = new Intent(DeclarationIdentifierActivity.this, HomeActivity.class);
-//        intent.putExtra("navigate_to", "home");
-//        startActivity(intent);
-//        finish();  // Kết thúc Activity này
-//    }
+    public int getCurrentTabIndex() {
+        return viewPagerSalary.getCurrentItem(); // Lấy tab hiện tại
+    }
+
 }

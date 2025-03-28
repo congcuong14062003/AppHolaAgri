@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +27,11 @@ public class QRScannerSensor extends BaseActivity {
         setContentView(R.layout.activity_qrscanner_sensor);
         barcodeScanner = findViewById(R.id.barcode_scanner);
         closeScanner = findViewById(R.id.close_scanner);
-
+        TextView scan_instruction = findViewById(R.id.scan_instruction);
+        String instruction = getIntent().getStringExtra("SCAN_INSTRUCTION");
+        if (instruction != null) {
+            scan_instruction.setText(instruction);
+        }
         // Bắt đầu quét QR
         barcodeScanner.decodeContinuous(new BarcodeCallback() {
             @Override

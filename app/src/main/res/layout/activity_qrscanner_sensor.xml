@@ -34,15 +34,25 @@
 
         <!-- Text hướng dẫn -->
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/scan_instruction"
+            android:layout_marginBottom="20dp"
+            android:text="Vui lòng"
+            android:textColor="@android:color/white"
+            style="@style/TextStyle_16_500" />
+        <TextView
             android:id="@+id/scan_instruction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_above="@id/qr_frame"
+            android:textAllCaps="true"
             android:layout_marginBottom="20dp"
             android:text="Căn chỉnh mã QR vào khung hình để quét!"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            style="@style/TextStyle_16_500" />
 
         <!-- Khung quét QR -->
         <RelativeLayout

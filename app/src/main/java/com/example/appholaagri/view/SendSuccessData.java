@@ -20,13 +20,17 @@ public class SendSuccessData extends BaseActivity {
         continue_reporting_btn = findViewById(R.id.continue_reporting_btn);
         back_home_btn = findViewById(R.id.back_home_btn);
 
-        continue_reporting_btn.setOnClickListener(view -> {
-            Intent intent = new Intent();
-            intent.putExtra("reload_fragment", true); // Gửi tín hiệu reload
-            setResult(RESULT_OK, intent);
-            finish(); // Đóng Activity
-        });
+        // Nhận tab_index từ Intent
+        int tabIndex = getIntent().getIntExtra("tab_index", 0); // Mặc định là 0 nếu không có gì
 
+        continue_reporting_btn.setOnClickListener(view -> {
+            // Truyền tab_index ngược lại cho DeclarationIdentifierActivity
+            Intent intent = new Intent(SendSuccessData.this, DeclarationIdentifierActivity.class);
+            intent.putExtra("tab_index", tabIndex); // Sử dụng tab đã nhận được
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // Đóng SendSuccessData
+        });
         back_home_btn.setOnClickListener(view -> {
             onBackPressed();
         });

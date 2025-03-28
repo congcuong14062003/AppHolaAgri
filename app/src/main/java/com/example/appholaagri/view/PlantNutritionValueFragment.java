@@ -41,6 +41,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,7 @@ public class PlantNutritionValueFragment extends BaseFragment {
             plantId = getArguments().getInt("plantId", -1);
             callChartData(plantId);
         }
+        Log.d("test", "Vào giá trị dd");
 
         setupChart();
         setupChartDark();
@@ -114,9 +116,11 @@ public class PlantNutritionValueFragment extends BaseFragment {
             public void onValueSelected(Entry e, Highlight h) {
                 int index = (int) e.getX(); // byGroup bắt đầu từ 1
 
-                // 🔹 Kiểm tra index hợp lệ trước khi truy cập danh sách
-                if (index < 1 || index > xLabels.size()) {
-                    Log.e("Chart", "Index out of bounds: " + index + ", max size: " + xLabels.size());
+                int minGroup = Collections.min(dateMap.keySet());
+                int maxGroup = Collections.max(dateMap.keySet());
+
+                if (index < minGroup || index > maxGroup) {
+                    Log.e("Chart", "Index out of bounds: " + index + ", valid range: " + minGroup + " to " + maxGroup);
                     return;
                 }
 
@@ -187,9 +191,12 @@ public class PlantNutritionValueFragment extends BaseFragment {
             public void onValueSelected(Entry e, Highlight h) {
                 int index = (int) e.getX(); // byGroup bắt đầu từ 1
 
-                // 🔹 Kiểm tra index hợp lệ trước khi truy cập danh sách
-                if (index < 1 || index > xLabels.size()) {
-                    Log.e("Chart", "Index out of bounds: " + index + ", max size: " + xLabels.size());
+
+                int minGroup = Collections.min(dateMap.keySet());
+                int maxGroup = Collections.max(dateMap.keySet());
+
+                if (index < minGroup || index > maxGroup) {
+                    Log.e("Chart", "Index out of bounds: " + index + ", valid range: " + minGroup + " to " + maxGroup);
                     return;
                 }
 
@@ -270,6 +277,7 @@ public class PlantNutritionValueFragment extends BaseFragment {
 
         ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
         FluctuationSoilRequest request = new FluctuationSoilRequest(plantId, 200);
+
         // Hiển thị progressBar khi bắt đầu tải dữ liệu
         progressBar.setVisibility(View.VISIBLE);
         emptyStateLayout.setVisibility(View.GONE);
@@ -282,15 +290,24 @@ public class PlantNutritionValueFragment extends BaseFragment {
             public void onResponse(Call<ApiResponse<FluctuationSoilResponse>> call, Response<ApiResponse<FluctuationSoilResponse>> response) {
                 // Ẩn progressBar sau khi nhận được phản hồi từ API
                 progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                    List<FluctuationSoilResponse.FluctuationValue> fluctuationValues = response.body().getData().getFluctuationValue();
 
-                    if (fluctuationValues != null && !fluctuationValues.isEmpty()) {
-                        emptyStateLayout.setVisibility(View.GONE);
-                        mChart.setVisibility(View.VISIBLE);
-                        mChartDark.setVisibility(View.VISIBLE);
-                        processChartData(fluctuationValues);
-                        processChartDarkData(fluctuationValues);
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<FluctuationSoilResponse> apiResponse = response.body();
+
+                    if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
+                        List<FluctuationSoilResponse.FluctuationValue> fluctuationValues = apiResponse.getData().getFluctuationValue();
+
+                        if (fluctuationValues != null && !fluctuationValues.isEmpty()) {
+                            emptyStateLayout.setVisibility(View.GONE);
+                            mChart.setVisibility(View.VISIBLE);
+                            mChartDark.setVisibility(View.VISIBLE);
+                            processChartData(fluctuationValues);
+                            processChartDarkData(fluctuationValues);
+                        } else {
+                            emptyStateLayout.setVisibility(View.VISIBLE);
+                            mChart.setVisibility(View.GONE);
+                            mChartDark.setVisibility(View.GONE);
+                        }
                     } else {
                         emptyStateLayout.setVisibility(View.VISIBLE);
                         mChart.setVisibility(View.GONE);
@@ -298,9 +315,8 @@ public class PlantNutritionValueFragment extends BaseFragment {
                     }
                 } else {
                     emptyStateLayout.setVisibility(View.VISIBLE);
-                    mChartDark.setVisibility(View.GONE);
                     mChart.setVisibility(View.GONE);
-                    CustomToast.showCustomToast(getContext(), "Không thể lấy dữ liệu!");
+                    mChartDark.setVisibility(View.GONE);
                 }
             }
 
@@ -310,10 +326,10 @@ public class PlantNutritionValueFragment extends BaseFragment {
                 emptyStateLayout.setVisibility(View.VISIBLE);
                 mChart.setVisibility(View.GONE);
                 mChartDark.setVisibility(View.GONE);
-                CustomToast.showCustomToast(getContext(), "Lỗi kết nối API!");
             }
         });
     }
+
 
     private void processChartData(List<FluctuationSoilResponse.FluctuationValue> fluctuationValues) {
         if (fluctuationValues == null || fluctuationValues.isEmpty()) {
@@ -399,11 +415,16 @@ public class PlantNutritionValueFragment extends BaseFragment {
         mChart.setData(data);
         mChart.invalidate();
         if (xLabels != null && xLabels.size() > 3) {
-            mChart.setVisibleXRangeMaximum(3f); // Chỉ hiển thị 3 ngày trên màn hình
+            float lastIndex = Collections.max(dateMap.keySet()); // Lấy byGroup lớn nhất
+            float firstIndex = Collections.min(dateMap.keySet()); // Lấy byGroup nhỏ nhất
 
-            // 🔹 Di chuyển đến 3 điểm cuối cùng
-            float lastIndex = xLabels.size() - 1;
-            mChart.moveViewToX(lastIndex - 2); // Dịch chuyển đến điểm thứ (last - 2) để hiển thị 3 điểm cuối
+            Log.d("ChartDebug", "Moving to index: " + (lastIndex - 2) + ", firstIndex: " + firstIndex);
+
+            mChart.setVisibleXRangeMaximum(3f);
+            mChart.setVisibleXRangeMinimum(3f);
+            mChart.moveViewToX(lastIndex - 2 > firstIndex ? lastIndex - 2 : firstIndex);
+
+            mChart.invalidate(); // Buộc vẽ lại biểu đồ
         }
     }
 
@@ -432,32 +453,60 @@ public class PlantNutritionValueFragment extends BaseFragment {
      * 📌 Hàm tạo nút layout có icon trên, text dưới.
      */
     private void addCustomButton(String text, String colorHex, int iconRes, String itemName) {
-        LinearLayout buttonLayout = new LinearLayout(getContext());
+        Context context = getContext();
+        if (context == null) {
+            Log.e("PlantNutritionValueFragment", "Context is null in addCustomButton");
+            return;
+        }
+
+        LinearLayout buttonLayout = new LinearLayout(context);
         buttonLayout.setOrientation(LinearLayout.VERTICAL);
         buttonLayout.setGravity(Gravity.CENTER);
         buttonLayout.setPadding(10, 10, 10, 10);
 
-        // Nếu nút "Tất cả" đang được chọn, giữ nguyên màu API cho tất cả
-        boolean isSelected = (selectedItem == null && itemName == null) || (selectedItem != null && selectedItem.equals(itemName));
-        int secondaryColor = ContextCompat.getColor(getContext(), R.color.secon_textcolor);
-        String displayColor = (selectedItem == null) ? colorHex : (isSelected ? colorHex : String.format("#%06X", (0xFFFFFF & secondaryColor)));
+        // Kiểm tra xem nút có đang được chọn không
+        boolean isSelected = (selectedItem == null && itemName == null) ||
+                (selectedItem != null && selectedItem.equals(itemName));
+        int secondaryColor = ContextCompat.getColor(context, R.color.secon_textcolor);
 
+        // Kiểm tra hợp lệ trước khi sử dụng màu
+        String displayColor;
+        try {
+            displayColor = (selectedItem == null) ? colorHex
+                    : (isSelected ? colorHex
+                    : String.format("#%06X", (0xFFFFFF & secondaryColor)));
+        } catch (Exception e) {
+            Log.e("PlantNutritionValueFragment", "Invalid color format", e);
+            displayColor = "#000000"; // Màu mặc định nếu có lỗi
+        }
 
-        ImageView icon = new ImageView(getContext());
+        ImageView icon = new ImageView(context);
         icon.setImageResource(iconRes);
-        icon.setColorFilter(Color.parseColor(displayColor));
+        try {
+            icon.setColorFilter(Color.parseColor(displayColor));
+        } catch (IllegalArgumentException e) {
+            Log.e("PlantNutritionValueFragment", "Invalid color for icon", e);
+            icon.setColorFilter(Color.BLACK);
+        }
+
         LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(80, 80);
         icon.setLayoutParams(iconParams);
 
-        TextView textView = new TextView(getContext());
+        TextView textView = new TextView(context);
         textView.setText(text);
-        textView.setTextColor(Color.parseColor(displayColor));
+        try {
+            textView.setTextColor(Color.parseColor(displayColor));
+        } catch (IllegalArgumentException e) {
+            Log.e("PlantNutritionValueFragment", "Invalid color for text", e);
+            textView.setTextColor(Color.BLACK);
+        }
         textView.setGravity(Gravity.CENTER);
 
         buttonLayout.addView(icon);
         buttonLayout.addView(textView);
 
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        // Lấy kích thước màn hình
+        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         int buttonWidth = screenWidth / 5;
 
         FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
@@ -467,13 +516,19 @@ public class PlantNutritionValueFragment extends BaseFragment {
 
         // Gán sự kiện click
         buttonLayout.setOnClickListener(v -> {
-            selectedItem = itemName; // Nếu chọn "Tất cả", itemName sẽ là null
+            selectedItem = itemName;
             renderChart(selectedItem);
-            renderButtons(); // Cập nhật lại màu sắc các nút
+            renderButtons();
         });
 
-        buttonContainer.addView(buttonLayout);
+        // Kiểm tra buttonContainer trước khi thêm
+        if (buttonContainer != null) {
+            buttonContainer.addView(buttonLayout);
+        } else {
+            Log.e("PlantNutritionValueFragment", "buttonContainer is null");
+        }
     }
+
 
 
 
@@ -505,11 +560,16 @@ public class PlantNutritionValueFragment extends BaseFragment {
         mChartDark.setData(data);
         mChartDark.invalidate();
         if (xLabels != null && xLabels.size() > 3) {
-            mChartDark.setVisibleXRangeMaximum(3f); // Chỉ hiển thị 3 ngày trên màn hình
+            float lastIndex = Collections.max(dateMap.keySet()); // Lấy byGroup lớn nhất
+            float firstIndex = Collections.min(dateMap.keySet()); // Lấy byGroup nhỏ nhất
 
-            // 🔹 Di chuyển đến 3 điểm cuối cùng
-            float lastIndex = xLabels.size() - 1;
-            mChartDark.moveViewToX(lastIndex - 2); // Dịch chuyển đến điểm thứ (last - 2) để hiển thị 3 điểm cuối
+            Log.d("ChartDebug", "Moving to index: " + (lastIndex - 2) + ", firstIndex: " + firstIndex);
+
+            mChart.setVisibleXRangeMaximum(3f);
+            mChart.setVisibleXRangeMinimum(3f);
+            mChart.moveViewToX(lastIndex - 2 > firstIndex ? lastIndex - 2 : firstIndex);
+
+            mChart.invalidate(); // Buộc vẽ lại biểu đồ
         }
     }
     private void processChartDarkData(List<FluctuationSoilResponse.FluctuationValue> fluctuationValues) {
@@ -586,32 +646,60 @@ public class PlantNutritionValueFragment extends BaseFragment {
 }
 
     private void addCustomDarkButton(String text, String colorHex, int iconRes, String itemName) {
-        LinearLayout buttonLayout = new LinearLayout(getContext());
+        Context context = getContext();
+        if (context == null) {
+            Log.e("PlantNutritionValueFragment", "Context is null in addCustomDarkButton");
+            return;
+        }
+
+        LinearLayout buttonLayout = new LinearLayout(context);
         buttonLayout.setOrientation(LinearLayout.VERTICAL);
         buttonLayout.setGravity(Gravity.CENTER);
         buttonLayout.setPadding(10, 10, 10, 10);
 
-        // Nếu nút "Tất cả" đang được chọn, giữ nguyên màu API cho tất cả
-        boolean isSelected = (selectedItem == null && itemName == null) || (selectedItem != null && selectedItem.equals(itemName));
-        int secondaryColor = ContextCompat.getColor(getContext(), R.color.secon_textcolor);
-        String displayColor = (selectedItem == null) ? colorHex : (isSelected ? colorHex : String.format("#%06X", (0xFFFFFF & secondaryColor)));
+        // Kiểm tra xem nút có đang được chọn không
+        boolean isSelected = (selectedItem == null && itemName == null) ||
+                (selectedItem != null && selectedItem.equals(itemName));
+        int secondaryColor = ContextCompat.getColor(context, R.color.secon_textcolor);
 
+        // Kiểm tra hợp lệ trước khi sử dụng màu
+        String displayColor;
+        try {
+            displayColor = (selectedItem == null) ? colorHex
+                    : (isSelected ? colorHex
+                    : String.format("#%06X", (0xFFFFFF & secondaryColor)));
+        } catch (Exception e) {
+            Log.e("PlantNutritionValueFragment", "Invalid color format", e);
+            displayColor = "#000000"; // Màu mặc định nếu có lỗi
+        }
 
-        ImageView icon = new ImageView(getContext());
+        ImageView icon = new ImageView(context);
         icon.setImageResource(iconRes);
-        icon.setColorFilter(Color.parseColor(displayColor));
+        try {
+            icon.setColorFilter(Color.parseColor(displayColor));
+        } catch (IllegalArgumentException e) {
+            Log.e("PlantNutritionValueFragment", "Invalid color for icon", e);
+            icon.setColorFilter(Color.BLACK);
+        }
+
         LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(80, 80);
         icon.setLayoutParams(iconParams);
 
-        TextView textView = new TextView(getContext());
+        TextView textView = new TextView(context);
         textView.setText(text);
-        textView.setTextColor(Color.parseColor(displayColor));
+        try {
+            textView.setTextColor(Color.parseColor(displayColor));
+        } catch (IllegalArgumentException e) {
+            Log.e("PlantNutritionValueFragment", "Invalid color for text", e);
+            textView.setTextColor(Color.BLACK);
+        }
         textView.setGravity(Gravity.CENTER);
 
         buttonLayout.addView(icon);
         buttonLayout.addView(textView);
 
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        // Lấy kích thước màn hình
+        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         int buttonWidth = screenWidth / 5;
 
         FlexboxLayout.LayoutParams params = new FlexboxLayout.LayoutParams(
@@ -621,11 +709,17 @@ public class PlantNutritionValueFragment extends BaseFragment {
 
         // Gán sự kiện click
         buttonLayout.setOnClickListener(v -> {
-            selectedItem = itemName; // Nếu chọn "Tất cả", itemName sẽ là null
+            selectedItem = itemName;
             renderDarkChart(selectedItem);
             renderDarkButtons();
         });
 
-        buttonContainerDark.addView(buttonLayout);
+        // Kiểm tra buttonContainerDark trước khi thêm
+        if (buttonContainerDark != null) {
+            buttonContainerDark.addView(buttonLayout);
+        } else {
+            Log.e("PlantNutritionValueFragment", "buttonContainerDark is null");
+        }
     }
+
 }

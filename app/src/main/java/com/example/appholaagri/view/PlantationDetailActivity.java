@@ -2,16 +2,16 @@ package com.example.appholaagri.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.databinding.ActivityPlantationDetailBinding;
@@ -39,45 +39,36 @@ public class PlantationDetailActivity extends AppCompatActivity {
                             View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
 
-        // Đặt Fragment mặc định
-        if (savedInstanceState == null) {
-            replaceFragment(new PlatationDetailMapFragment());
-        }
-        // Kiểm tra nếu cần điều hướng đến SettingFragment
-        String navigateTo = getIntent().getStringExtra("navigate_to");
-        if ("plant".equals(navigateTo)) {
-            replaceFragment(new PlantFragment());
-            binding.bottomNavigationView.setSelectedItemId(R.id.nav_plant);  // Đánh dấu mục Setting là active
-        } else if ("sensor".equals(navigateTo)) {
-            replaceFragment(new SensorFragment());
-            binding.bottomNavigationView.setSelectedItemId(R.id.nav_sensor);  // Đánh dấu mục Setting là active
-        }
         // Nhận plantationId từ Intent
         int plantationId = getIntent().getIntExtra("plantationId", -1);
 
+        // Đặt Fragment mặc định
+        if (savedInstanceState == null) {
+            replaceFragment(new PlatationDetailMapFragment(), "MAP", plantationId);
+        }
 
+        // Kiểm tra nếu cần điều hướng đến một Fragment cụ thể
+        String navigateTo = getIntent().getStringExtra("navigate_to");
+        if ("plant".equals(navigateTo)) {
+            replaceFragment(new PlantFragment(), "PLANT", plantationId);
+            binding.bottomNavigationView.setSelectedItemId(R.id.nav_plant);
+        } else if ("sensor".equals(navigateTo)) {
+            replaceFragment(new SensorFragment(), "SENSOR", plantationId);
+            binding.bottomNavigationView.setSelectedItemId(R.id.nav_sensor);
+        }
 
         // Xử lý Bottom Navigation
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.nav_map:
-                    selectedFragment = new PlatationDetailMapFragment();
+                    replaceFragment(new PlatationDetailMapFragment(), "MAP", plantationId);
                     break;
                 case R.id.nav_plant:
-                    selectedFragment = new PlantFragment();
+                    replaceFragment(new PlantFragment(), "PLANT", plantationId);
                     break;
                 case R.id.nav_sensor:
-                    selectedFragment = new SensorFragment();
+                    replaceFragment(new SensorFragment(), "SENSOR", plantationId);
                     break;
-            }
-
-            if (selectedFragment != null) {
-                // Truyền plantationId vào Fragment mới
-                Bundle bundle = new Bundle();
-                bundle.putInt("plantationId", plantationId);
-                selectedFragment.setArguments(bundle);
-                replaceFragment(selectedFragment);
             }
             return true;
         });
@@ -91,9 +82,22 @@ public class PlantationDetailActivity extends AppCompatActivity {
     }
 
     // Hàm thay đổi Fragment
-    private void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, fragment)
-                .commit();
+    private void replaceFragment(Fragment newFragment, String tag, int plantationId) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.frameLayout);
+
+        // Kiểm tra nếu fragment mới giống fragment đang hiển thị
+        if (currentFragment != null && currentFragment.getClass().equals(newFragment.getClass())) {
+            return; // Nếu giống nhau, không thay thế
+        }
+
+        // Truyền plantationId vào fragment
+        Bundle bundle = new Bundle();
+        bundle.putInt("plantationId", plantationId);
+        newFragment.setArguments(bundle);
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, newFragment, tag);
+        fragmentTransaction.commit();
     }
 }

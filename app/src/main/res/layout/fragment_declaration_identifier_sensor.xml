@@ -265,7 +265,7 @@
                         android:orientation="horizontal"
                         >
                         <TextView
-                            android:text="Vị trí sử dụng"
+                            android:text="Phạm vi sử dụng"
                             android:layout_marginEnd="5dp"
                             android:textColor="@color/secondarycolor"
                             style="@style/TextStyle_16_500"

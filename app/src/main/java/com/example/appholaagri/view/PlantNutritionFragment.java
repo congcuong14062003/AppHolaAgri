@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.example.appholaagri.model.PlantDetailModel.PlantDetailResponse;
 import com.example.appholaagri.model.SoilDetailModel.SoilDetailRespose;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.viewmodel.PlantViewModel;
 
 import java.util.List;
@@ -51,6 +53,7 @@ public class PlantNutritionFragment extends BaseFragment {
         String token = sharedPreferences.getString("auth_token", null);
         if (getArguments() != null) {
             plantId = getArguments().getInt("plantId", -1);
+            Log.d("PlantNutritionFragment", "plantId: " + plantId);
             fetchDetailSoil(token, plantId);
         }
         return view;
@@ -76,7 +79,6 @@ public class PlantNutritionFragment extends BaseFragment {
                         if (soilInfos != null && !soilInfos.isEmpty()) {
                             adapter = new ListSoilDetailAdapter(soilInfos);
                             recyclerView.setAdapter(adapter);
-
                             recyclerView.setVisibility(View.VISIBLE);
                             emptyStateLayout.setVisibility(View.GONE);
                         } else {
@@ -84,6 +86,7 @@ public class PlantNutritionFragment extends BaseFragment {
                             emptyStateLayout.setVisibility(View.VISIBLE);
                         }
                     } else {
+                        CustomToast.showCustomToast(getContext(), apiResponse.getMessage());
                         recyclerView.setVisibility(View.GONE);
                         emptyStateLayout.setVisibility(View.VISIBLE);
                     }

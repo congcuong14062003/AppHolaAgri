@@ -62,6 +62,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
     private int selectedMonitoringId = -1;
     private int selectedAssetId = -1;
 
+    private int isFixed = 0;
     private int selectedRow = -1;
     private int selectedColumn = -1;
     private String token;
@@ -181,8 +182,25 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         });
 
         next_btn.setOnClickListener(view1 -> {
-            checkCameraPermissionSensor();
+            if (isValidMonitoringDetails()) {
+                checkCameraPermissionSensor();
+            } else {
+                CustomToast.showCustomToast(getContext(), "Vui lòng nhập đầy đủ thông tin phạm vi sử dụng");
+            }
         });
+
+    }
+    private boolean isValidMonitoringDetails() {
+        for (IdentificationSensorRequest.MonitoringDetail detail : monitoringDetails) {
+            if (detail.getIdCultivationArea() <= 0 ||
+                    detail.getRowFrom() <= 0 ||
+                    detail.getRowTo() <= 0 ||
+                    detail.getColumnFrom() <= 0 ||
+                    detail.getColumnTo() <= 0) {
+                return false; // Nếu có bất kỳ giá trị nào không hợp lệ, trả về false
+            }
+        }
+        return true; // Tất cả đều hợp lệ
     }
 
     private void initApi() {
@@ -198,7 +216,6 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         monitoringDetails.add(new IdentificationSensorRequest.MonitoringDetail(0, 0, 0, 0, 0));
         measurementLocationAdapter.notifyItemInserted(monitoringDetails.size() - 1);
         measurementLocationAdapter.notifyDataSetChanged();  // Cập nhật toàn bộ RecyclerView
-
     }
 
 
@@ -239,10 +256,11 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             if (position > 0) { // Bỏ qua item mặc định
                 SensorAppInitFormResponse.Asset selectedAsset = assetList.get(position - 1);
                 selectedAssetId = selectedAsset.getId();
-                int isFixed = selectedAsset.getIsFixed(); // Giả sử có phương thức isFixed()
+                isFixed = selectedAsset.getIsFixed(); // Giả sử có phương thức isFixed()
                 Log.d("DeclarationIdentifierSensorFragment", "Selected Asset ID: " + selectedAssetId + ", isFixed: " + isFixed);
                 if(isFixed == 1) {
                     checkCameraPermission();
+                    container_permanent.setVisibility(View.VISIBLE);
                 } else {
                     container_permanent.setVisibility(View.GONE);
                     checkEnableNextButton();
@@ -483,10 +501,13 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
     }
     private void openQRScanner() {
         Intent intent = new Intent(getContext(), QRScannerActivity.class);
+        intent.putExtra("SCAN_INSTRUCTION", "Quét mã qr ở cây gần nhất"); // Truyền nội dung hướng dẫn
         startActivityForResult(intent, 200); // 200 là requestCode
     }
+
     private void openQRScannerSensor() {
         Intent intent = new Intent(getContext(), QRScannerSensor.class);
+        intent.putExtra("SCAN_INSTRUCTION", "Quét mã qr ở cảm biến gần nhất"); // Truyền nội dung hướng dẫn
         startActivityForResult(intent, 200); // 200 là requestCode
     }
 
@@ -520,6 +541,8 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
                 container_permanent.setVisibility(View.VISIBLE);
                 Log.d("DeclarationIdentifierSensorFragment", "qrContent: " + qrContent);
                 getInitForSensor(qrContent); // Gọi lại API với QR đã quét
+            } else {
+                container_permanent.setVisibility(View.VISIBLE);
             }
             qrContentIdentificationSensor = data.getStringExtra("QR_RESULT_SENSOR");
             if(qrContentIdentificationSensor != null) {
@@ -533,6 +556,8 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             }
         }
     }
+
+
     private void autoFillData(SensorAppInitFormResponse data) {
         if (data == null || data.getObjectSelected() == null) return;
         SensorAppInitFormResponse.ObjectSelected objectSelected = data.getObjectSelected();
@@ -582,7 +607,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
                                 List<SensorAppInitFormResponse.MonitoringDetail> monitoringDetailList = selectedMonitoring.getMonitoringDetail();
                                 List<IdentificationSensorRequest.MonitoringDetail> convertedMonitoringDetails = new ArrayList<>();
 
-                                if (monitoringDetailList != null) {
+                                if (monitoringDetailList != null && !monitoringDetailList.isEmpty()) {
                                     for (SensorAppInitFormResponse.MonitoringDetail detail : monitoringDetailList) {
                                         IdentificationSensorRequest.MonitoringDetail convertedDetail = new IdentificationSensorRequest.MonitoringDetail(
                                                 detail.getColumnFrom(),
@@ -593,10 +618,14 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
                                         );
                                         convertedMonitoringDetails.add(convertedDetail);
                                     }
+                                } else {
+                                    // 🔴 Nếu không có dữ liệu, thêm một vị trí mới mặc định
+                                    convertedMonitoringDetails.add(new IdentificationSensorRequest.MonitoringDetail(0, 0, 0, 0, 0));
                                 }
 
                                 // Cập nhật RecyclerView Adapter
                                 measurementLocationAdapter.updateMonitoringDetails(convertedMonitoringDetails);
+
                             }
                         }, 100);
                     }
@@ -604,7 +633,16 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             }
         }, 100);
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        reloadFragment(); // Gọi hàm reload khi quay lại
+    }
 
+    private void reloadFragment() {
+        FragmentTransaction ft = getParentFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit(); // Làm mới chính Fragment hiện tại
+    }
     private void handleIdentificationSensor(boolean isConfirmed) {
         IdentificationSensorRequest identificationSensorRequest = new IdentificationSensorRequest();
         identificationSensorRequest.setIdPlantation(selectedPlantationId);
@@ -671,9 +709,21 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
     }
     // Chuyển sang màn hình thành công
     private void navigateToSuccessActivity() {
+        int tabIndex = getCurrentTabIndex(); // Lấy tab hiện tại
         Intent intent = new Intent(getContext(), SendSuccessData.class);
+        intent.putExtra("tab_index", tabIndex); // Truyền tab_index vào Intent
         startActivity(intent);
     }
+
+
+    private int getCurrentTabIndex() {
+        DeclarationIdentifierActivity activity = (DeclarationIdentifierActivity) getActivity();
+        if (activity != null) {
+            return activity.getCurrentTabIndex();
+        }
+        return 0; // Mặc định là tab 0 (Cây trồng)
+    }
+
     // 📌 Hàm để load lại chính Fragment
     private void reloadCurrentFragment() {
         FragmentTransaction ft = getParentFragmentManager().beginTransaction();

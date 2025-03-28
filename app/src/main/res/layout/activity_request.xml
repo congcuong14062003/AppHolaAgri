@@ -121,7 +121,7 @@
                 app:tabIndicatorColor="@color/secondarycolor"
                 app:tabMode="fixed"
                 app:tabSelectedTextColor="@color/secondarycolor"
-                app:tabTextAppearance="@style/CustomTabTextStyle"
+                app:tabTextAppearance="@style/CustomTabTextStyleNormal"
                 app:tabTextColor="@color/textcolor" />
 
             <!-- Icon lọc (Nằm bên phải) -->

@@ -50,212 +50,437 @@
 
         <!--    nhiệt độ và độ ẩm-->
         <LinearLayout
-            android:id="@+id/circle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-            <!--        item ảnh tròn-->
-            <FrameLayout
-                android:id="@+id/nhietdo_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
-
-                <ImageView
-                    android:id="@+id/image_soil"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:src="@drawable/zero_to_hundred"
-                    android:visibility="visible" />
-
-                <ImageView
-                    android:id="@+id/arrow_pointer"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/arrow_circle"
-                    android:translationY="18dp"
-                    android:visibility="visible" />  <!-- Điều chỉnh vị trí nếu cần -->
-
-                <TextView
-                    android:id="@+id/value_soil"
-                    style="@style/TextStyle_16_600"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="26 C"
-                    android:textColor="@color/textcolor"
-                    android:translationY="45dp" />
-            </FrameLayout>
-
-            <!--        item ảnh line-->
-
+            >
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/circle"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/status_soil"
-                    style="@style/TextStyle_14_600"
-                    android:layout_width="150dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <!--        item ảnh tròn-->
+                <FrameLayout
+                    android:id="@+id/nhietdo_layout"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/button_custom"
-                    android:backgroundTint="#feeccd"
-                    android:padding="5dp"
-                    android:textColor="@color/textcolor"
-                    android:text="đủ"
-                    android:textAlignment="center" />
+                    android:layout_gravity="center">
+
+                    <ImageView
+                        android:id="@+id/image_soil"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:src="@drawable/zero_to_hundred"
+                        android:visibility="visible" />
+
+                    <ImageView
+                        android:id="@+id/arrow_pointer"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrow_circle"
+                        android:translationY="18dp"
+                        android:visibility="visible" />  <!-- Điều chỉnh vị trí nếu cần -->
+
+                    <TextView
+                        android:id="@+id/value_soil"
+                        style="@style/TextStyle_16_600"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="26 C"
+                        android:textColor="@color/textcolor"
+                        android:translationY="45dp" />
+                </FrameLayout>
+
+                <!--        item ảnh line-->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/status_soil"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/button_custom"
+                        android:backgroundTint="#feeccd"
+                        android:padding="5dp"
+                        android:textColor="@color/textcolor"
+                        android:text="đủ"
+                        android:textAlignment="center" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginStart="20dp"
+                android:id="@+id/circle_50"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <!--        item ảnh tròn-->
+                <FrameLayout
+                    android:id="@+id/nhietdo_layout_50"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <ImageView
+                        android:id="@+id/image_soil_50"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:src="@drawable/zero_to_hundred"
+                         />
+
+                    <ImageView
+                        android:id="@+id/arrow_pointer_50"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/arrow_circle"
+                        android:translationY="18dp"
+                        android:visibility="visible" />  <!-- Điều chỉnh vị trí nếu cần -->
+
+                    <TextView
+                        android:id="@+id/value_soil_50"
+                        style="@style/TextStyle_16_600"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="26 C"
+                        android:textColor="@color/textcolor"
+                        android:translationY="45dp" />
+                </FrameLayout>
+
+                <!--        item ảnh line-->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/status_soil_50"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/button_custom"
+                        android:backgroundTint="#feeccd"
+                        android:padding="5dp"
+                        android:textColor="@color/textcolor"
+                        android:text="đủ"
+                        android:textAlignment="center" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
+
+
         <LinearLayout
-            android:id="@+id/line"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/line_item"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        style="@style/TextStyle_14_400"
-                        android:textColor="@color/textcolor"
-                        android:id="@+id/tv_low"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="Thiếu" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            style="@style/TextStyle_14_400"
-                            android:textColor="@color/textcolor"
-                            android:id="@+id/tv_optimal_from"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Optimal From"
-                            android:textAlignment="center" />
-
-                        <TextView
-                            style="@style/TextStyle_14_400"
-                            android:textColor="@color/textcolor"
-                            android:id="@+id/tv_optimal_to"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Optimal To"
-                            android:textAlignment="center" />
-                    </LinearLayout>
-
-
-                    <TextView
-                        android:id="@+id/tv_high"
-                        android:layout_width="0dp"
-                        style="@style/TextStyle_14_400"
-                        android:textColor="@color/textcolor"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="Thừa" />
-                </LinearLayout>
-
-                <ImageView
-                    android:visibility="gone"
-                    android:id="@+id/dot_line_arrow"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:src="@drawable/dot_line_arrow"
-                    />
-                <!-- Thanh ngang -->
-                <ImageView
-                    android:id="@+id/line_soil"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="10dp"
-                    android:src="@drawable/dashed_line_plant"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <!-- Chấm tròn -->
-                <ImageView
-                    android:id="@+id/dot_line"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/dot_line"
-                    app:layout_constraintBottom_toBottomOf="@id/line_soil"
-                    app:layout_constraintEnd_toEndOf="@id/line_soil"
-                    app:layout_constraintHorizontal_bias="0.3"
-                    app:layout_constraintStart_toStartOf="@id/line_soil"
-                    app:layout_constraintTop_toTopOf="@id/line_soil" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+            android:layout_height="wrap_content"
+            >
             <LinearLayout
+                android:id="@+id/line"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/button_custom"
-                android:backgroundTint="#feeccd"
-                android:orientation="horizontal">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <TextView
-                    android:id="@+id/status_line"
-                    style="@style/TextStyle_14_400"
-                    android:textColor="@color/textcolor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:padding="5dp"
-                    android:text="Thiếu" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    <LinearLayout
+                        android:id="@+id/line_item"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/msm_line"
-                    style="@style/TextStyle_14_400"
-                    android:layout_width="wrap_content"
+                        <TextView
+                            style="@style/TextStyle_14_400"
+                            android:textColor="@color/textcolor"
+                            android:id="@+id/tv_low"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Thiếu" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/TextStyle_14_400"
+                                android:textColor="@color/textcolor"
+                                android:id="@+id/tv_optimal_from"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Optimal From"
+                                android:textAlignment="center" />
+
+                            <TextView
+                                style="@style/TextStyle_14_400"
+                                android:textColor="@color/textcolor"
+                                android:id="@+id/tv_optimal_to"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Optimal To"
+                                android:textAlignment="center" />
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:id="@+id/tv_high"
+                            android:layout_width="0dp"
+                            style="@style/TextStyle_14_400"
+                            android:textColor="@color/textcolor"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Thừa" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/dot_line_arrow"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:src="@drawable/dot_line_arrow"
+                        />
+                    <!-- Thanh ngang -->
+                    <ImageView
+                        android:id="@+id/line_soil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:src="@drawable/line"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Chấm tròn -->
+                    <ImageView
+                        android:id="@+id/dot_line"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/dot_line"
+                        app:layout_constraintBottom_toBottomOf="@id/line_soil"
+                        app:layout_constraintEnd_toEndOf="@id/line_soil"
+                        app:layout_constraintHorizontal_bias="0.3"
+                        app:layout_constraintStart_toStartOf="@id/line_soil"
+                        app:layout_constraintTop_toTopOf="@id/line_soil" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:textColor="@color/textcolor"
-                    android:padding="5dp"
-                    android:text="33 mS/m" />
+                    android:background="@drawable/button_custom"
+                    android:backgroundTint="#feeccd"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/status_line"
+                        style="@style/TextStyle_14_400"
+                        android:textColor="@color/textcolor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:padding="5dp"
+                        android:text="Thiếu" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/msm_line"
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/textcolor"
+                        android:padding="5dp"
+                        android:text="33 mS/m" />
+                </LinearLayout>
+
+
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/line_50"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/line_item_50"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            style="@style/TextStyle_14_400"
+                            android:textColor="@color/textcolor"
+                            android:id="@+id/tv_low_50"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Thiếu" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/TextStyle_14_400"
+                                android:textColor="@color/textcolor"
+                                android:id="@+id/tv_optimal_from_50"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Optimal From"
+                                android:textAlignment="center" />
+
+                            <TextView
+                                style="@style/TextStyle_14_400"
+                                android:textColor="@color/textcolor"
+                                android:id="@+id/tv_optimal_to_50"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Optimal To"
+                                android:textAlignment="center" />
+                        </LinearLayout>
 
 
+                        <TextView
+                            android:id="@+id/tv_high_50"
+                            android:layout_width="0dp"
+                            style="@style/TextStyle_14_400"
+                            android:textColor="@color/textcolor"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Thừa" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:visibility="gone"
+                        android:id="@+id/dot_line_arrow_50"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:src="@drawable/dot_line_arrow"
+                        />
+                    <!-- Thanh ngang -->
+                    <ImageView
+                        android:id="@+id/line_soil_50"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="10dp"
+                        android:src="@drawable/line"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Chấm tròn -->
+                    <ImageView
+                        android:id="@+id/dot_line_50"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/dot_line"
+                        app:layout_constraintBottom_toBottomOf="@id/line_soil_50"
+                        app:layout_constraintEnd_toEndOf="@id/line_soil_50"
+                        app:layout_constraintHorizontal_bias="0.3"
+                        app:layout_constraintStart_toStartOf="@id/line_soil_50"
+                        app:layout_constraintTop_toTopOf="@id/line_soil_50" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_custom"
+                    android:backgroundTint="#feeccd"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/status_line_50"
+                        style="@style/TextStyle_14_400"
+                        android:textColor="@color/textcolor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:padding="5dp"
+                        android:text="Thiếu" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/msm_line_50"
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/textcolor"
+                        android:padding="5dp"
+                        android:text="33 mS/m" />
+                </LinearLayout>
+
+
+            </LinearLayout>
         </LinearLayout>
 
 

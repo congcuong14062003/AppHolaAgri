@@ -23,6 +23,8 @@ import com.example.appholaagri.model.PlantDetailModel.PlantDetailResponse;
 import com.example.appholaagri.model.PlantationListModel.PlantationListRequest;
 import com.example.appholaagri.model.PlantationListModel.PlantationListResponse;
 import com.example.appholaagri.model.PlantingDateModel.PlantingDateResponse;
+import com.example.appholaagri.model.RecordConditionModel.RecordConditionRequest;
+import com.example.appholaagri.model.RecordConditionModel.RecordConditionResponse;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateResponse;
@@ -230,7 +232,11 @@ public interface ApiInterface {
     // danh sách cây trồng
     @GET("plant-app/detail-plant")
     Call<ApiResponse<PlantDetailResponse>> detailPlant(@Header("Authorization") String token, @Query("id") int id);
-    //
+
+    // ghi nhận tình trạng
+    @POST("plant-app/list-examination")
+    Call<ApiResponse<RecordConditionResponse>> recordCondition(@Header("Authorization") String token, @Body RecordConditionRequest recordConditionRequest);
+
 
     @GET("soil-information/detail-soil")
     Call<ApiResponse<SoilDetailRespose>> detailSoil(
@@ -243,4 +249,6 @@ public interface ApiInterface {
     //
     @POST("soil-information/fluctuation-soil")
     Call<ApiResponse<FluctuationSoilResponse>> fluctuationSoil(@Header("Authorization") String token, @Body FluctuationSoilRequest fluctuationSoilRequest);
+
+
 }

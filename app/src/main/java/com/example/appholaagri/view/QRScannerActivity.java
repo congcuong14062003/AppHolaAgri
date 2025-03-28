@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.activity.EdgeToEdge;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -20,8 +22,13 @@ public class QRScannerActivity extends BaseActivity {
         setContentView(R.layout.activity_qrscanner);
         barcodeScanner = findViewById(R.id.barcode_scanner);
         closeScanner = findViewById(R.id.close_scanner);
-
+        TextView scan_instruction = findViewById(R.id.scan_instruction);
         // Bắt đầu quét QR
+        // Lấy dữ liệu từ Intent
+        String instruction = getIntent().getStringExtra("SCAN_INSTRUCTION");
+        if (instruction != null) {
+            scan_instruction.setText(instruction);
+        }
         barcodeScanner.decodeContinuous(new BarcodeCallback() {
             @Override
             public void barcodeResult(BarcodeResult result) {

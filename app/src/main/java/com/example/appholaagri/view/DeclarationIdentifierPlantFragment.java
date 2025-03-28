@@ -242,7 +242,11 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment implements 
                 .show();
     }
     private void openQRScanner() {
+//        Intent intent = new Intent(getContext(), QRScannerActivity.class);
+//        startActivityForResult(intent, 200); // 200 là requestCode
+
         Intent intent = new Intent(getContext(), QRScannerActivity.class);
+        intent.putExtra("SCAN_INSTRUCTION", "Quét mã qr ở cây gần nhất"); // Truyền nội dung hướng dẫn
         startActivityForResult(intent, 200); // 200 là requestCode
     }
 
@@ -566,12 +570,21 @@ public class DeclarationIdentifierPlantFragment extends BaseFragment implements 
         });
     }
 
-    // Chuyển sang màn hình thành công
     private void navigateToSuccessActivity() {
+        int tabIndex = getCurrentTabIndex(); // Lấy tab hiện tại
         Intent intent = new Intent(getContext(), SendSuccessData.class);
+        intent.putExtra("tab_index", tabIndex); // Truyền tab_index vào Intent
         startActivity(intent);
     }
 
+
+    private int getCurrentTabIndex() {
+        DeclarationIdentifierActivity activity = (DeclarationIdentifierActivity) getActivity();
+        if (activity != null) {
+            return activity.getCurrentTabIndex();
+        }
+        return 0; // Mặc định là tab 0 (Cây trồng)
+    }
 
 
     // Hiển thị popup xác nhận khi nhận status 606

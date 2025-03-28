@@ -98,14 +98,10 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
     public void removeItem(int position) {
         if (position >= 0 && position < monitoringDetails.size()) {
             monitoringDetails.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, monitoringDetails.size());
-
-            if (monitoringDetailsChangeListener != null) {
-                monitoringDetailsChangeListener.onMonitoringDetailsChanged(new ArrayList<>(monitoringDetails));
-            }
+            notifyDataSetChanged(); // Thay vì chỉ `notifyItemRemoved`, cập nhật toàn bộ danh sách
         }
     }
+
 
 
     @Override
@@ -127,6 +123,13 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
         }
 
         public void bind(IdentificationSensorRequest.MonitoringDetail item) {
+            // Reset các Spinner trước khi bind dữ liệu mới
+            spinnerArea.setSelection(0);
+            spinnerRowFrom.setAdapter(null);
+            spinnerRowTo.setAdapter(null);
+            spinnerColumnFrom.setAdapter(null);
+            spinnerColumnTo.setAdapter(null);
+
             // Tạo danh sách khu vực
             List<String> areaNames = new ArrayList<>();
             areaNames.add("--Chọn khu vực--");
@@ -138,11 +141,12 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
             areaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerArea.setAdapter(areaAdapter);
 
-            // Tự động chọn khu vực
+            // Tự động chọn khu vực nếu có
             if (item.getIdCultivationArea() > 0) {
                 for (int i = 0; i < areaList.size(); i++) {
                     if (areaList.get(i).getId() == item.getIdCultivationArea()) {
-                        spinnerArea.setSelection(i + 1); // +1 do vị trí 0 là "--Chọn khu vực--"
+                        spinnerArea.setSelection(i + 1);
+                        updateRowAndColumnSpinners(areaList.get(i), item);
                         break;
                     }
                 }
@@ -156,9 +160,10 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
                     if (position > 0) {
                         SensorAppInitFormResponse.Area selectedArea = areaList.get(position - 1);
                         item.setIdCultivationArea(selectedArea.getId());
-
-                        // Cập nhật danh sách hàng & cột khi chọn khu vực
                         updateRowAndColumnSpinners(selectedArea, item);
+                    } else {
+                        // Nếu chưa chọn khu vực, xóa danh sách hàng/cột
+                        resetRowAndColumnSpinners();
                     }
                 }
 
@@ -167,16 +172,15 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
             });
         }
 
+
         // 📌 Hàm cập nhật Spinner hàng/cột
         private void updateRowAndColumnSpinners(SensorAppInitFormResponse.Area selectedArea, IdentificationSensorRequest.MonitoringDetail item) {
-            // Cập nhật danh sách hàng
             List<String> rowList = new ArrayList<>();
             rowList.add("--Chọn hàng--");
             for (int i = 1; i <= selectedArea.getTotalRow(); i++) {
                 rowList.add("Hàng " + i);
             }
 
-            // Cập nhật danh sách cột
             List<String> columnList = new ArrayList<>();
             columnList.add("--Chọn cột--");
             for (int i = 1; i <= selectedArea.getTotalColumn(); i++) {
@@ -186,34 +190,60 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
             // Cập nhật Spinner RowFrom
             setSpinnerAdapter(spinnerRowFrom, rowList, selectedPos -> {
                 item.setRowFrom(selectedPos > 0 ? selectedPos : 0);
+                if (spinnerRowFrom.getSelectedView() instanceof TextView) {
+                    ((TextView) spinnerRowFrom.getSelectedView()).setText("Từ " + rowList.get(selectedPos));
+                }
                 logMonitoringDetails();
             });
 
             // Cập nhật Spinner RowTo
             setSpinnerAdapter(spinnerRowTo, rowList, selectedPos -> {
                 item.setRowTo(selectedPos > 0 ? selectedPos : 0);
+                if (spinnerRowTo.getSelectedView() instanceof TextView) {
+                    ((TextView) spinnerRowTo.getSelectedView()).setText("Đến " + rowList.get(selectedPos));
+                }
                 logMonitoringDetails();
             });
 
             // Cập nhật Spinner ColumnFrom
             setSpinnerAdapter(spinnerColumnFrom, columnList, selectedPos -> {
                 item.setColumnFrom(selectedPos > 0 ? selectedPos : 0);
+                if (spinnerColumnFrom.getSelectedView() instanceof TextView) {
+                    ((TextView) spinnerColumnFrom.getSelectedView()).setText("Từ " + columnList.get(selectedPos));
+                }
                 logMonitoringDetails();
             });
 
             // Cập nhật Spinner ColumnTo
             setSpinnerAdapter(spinnerColumnTo, columnList, selectedPos -> {
                 item.setColumnTo(selectedPos > 0 ? selectedPos : 0);
+                if (spinnerColumnTo.getSelectedView() instanceof TextView) {
+                    ((TextView) spinnerColumnTo.getSelectedView()).setText("Đến " + columnList.get(selectedPos));
+                }
                 logMonitoringDetails();
             });
 
-            // Tự động chọn hàng/cột dựa vào dữ liệu có sẵn
+            // Đảm bảo chọn giá trị đúng
             spinnerRowFrom.setSelection(item.getRowFrom());
             spinnerRowTo.setSelection(item.getRowTo());
             spinnerColumnFrom.setSelection(item.getColumnFrom());
             spinnerColumnTo.setSelection(item.getColumnTo());
         }
+
+        private void resetRowAndColumnSpinners() {
+            List<String> emptyList = new ArrayList<>();
+            emptyList.add("--Chọn hàng--");
+
+            setSpinnerAdapter(spinnerRowFrom, emptyList, selectedPos -> {});
+            setSpinnerAdapter(spinnerRowTo, emptyList, selectedPos -> {});
+
+            emptyList.set(0, "--Chọn cột--");
+            setSpinnerAdapter(spinnerColumnFrom, emptyList, selectedPos -> {});
+            setSpinnerAdapter(spinnerColumnTo, emptyList, selectedPos -> {});
+        }
     }
+
+
     private void setSpinnerAdapter(Spinner spinner, List<String> data, OnItemSelectedCallback callback) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, data);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -230,6 +260,7 @@ public class MeasurementLocationAdapter extends RecyclerView.Adapter<Measurement
             public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
+
     private void logMonitoringDetails() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(monitoringDetails);

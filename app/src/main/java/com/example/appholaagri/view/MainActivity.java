@@ -1,16 +1,21 @@
 package com.example.appholaagri.view;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +40,8 @@ import com.example.appholaagri.utils.Utils;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,17 +56,19 @@ public class MainActivity extends BaseActivity {
     private EditText newPassInput, confirmPassInput;
     Button change_pass_button;
     TextInputLayout confirm_new_pass_layout, new_pass_input_layout;
+
+    private Dialog loadingDialog;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+//            return insets;
+//        });
         btnForgotPass = findViewById(R.id.forgot_password);
         btnLogin = findViewById(R.id.login_button);
         // nút quên mật khẩu
@@ -125,8 +134,30 @@ public class MainActivity extends BaseActivity {
             finish();
         }
     }
+    // Hiển thị loading
+    private void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = new Dialog(this);
+            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            loadingDialog.setContentView(R.layout.dialog_loading);
+            loadingDialog.setCancelable(false);
 
+            if (loadingDialog.getWindow() != null) {
+                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+        }
+        loadingDialog.show();
+    }
+
+    // Ẩn loading
+    private void hideLoading() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
     private void login(String phone, String password, String deviceId) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         // Cập nhật các giá trị cho LoginRequest
         int isMobile = 1;  // Giả sử là điện thoại
@@ -142,10 +173,15 @@ public class MainActivity extends BaseActivity {
         call.enqueue(new Callback<ApiResponse<LoginData>>() {
             @Override
             public void onResponse(Call<ApiResponse<LoginData>> call, Response<ApiResponse<LoginData>> response) {
+                hideLoading(); // Ẩn loading khi hoàn thành
                 Log.d("LoginActivity", "Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<LoginData> apiResponse = response.body();
+                    Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+                    String fluctuationValue = gson.toJson(response.body());
+                    Log.d("LoginActivity", "dataa: " + fluctuationValue);
                     if (apiResponse.getStatus() == 200) {
+
                         // Lấy dữ liệu đăng nhập
                         LoginData loginData = apiResponse.getData();
                         String token = loginData.getToken();
@@ -177,6 +213,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<LoginData>> call, Throwable t) {
+                hideLoading(); // Ẩn loading khi hoàn thành
                 CustomToast.showCustomToast(MainActivity.this, "Error: " + t.getMessage());
             }
         });

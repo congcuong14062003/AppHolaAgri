@@ -5,19 +5,18 @@
     android:id="@+id/container_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.HomeFragment"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".view.HomeFragment">
 
     <!-- Header -->
     <LinearLayout
-        android:gravity="center_vertical"
         android:id="@+id/header_card"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- User Image -->
         <androidx.cardview.widget.CardView
@@ -27,20 +26,21 @@
             android:scaleType="centerCrop"
             app:cardCornerRadius="50dp"
             app:cardElevation="4dp">
+
             <ImageView
                 android:id="@+id/avtUser"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/avatar"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/avatar" />
         </androidx.cardview.widget.CardView>
 
         <!-- User Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="16dp"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -48,17 +48,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lữ Văn Quân"
+                android:textColor="@color/black"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/user_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="KS01246 - Kỹ sư nông nghiệp"
-                android:textSize="14sp"
-                android:textColor="@color/textcolor" />
+                android:textColor="@color/textcolor"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <!-- Notification Icon -->
@@ -66,17 +66,18 @@
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_marginStart="8dp"
-            android:scaleType="centerCrop"
             android:backgroundTint="#cdf3e6"
+            android:scaleType="centerCrop"
             app:cardCornerRadius="50dp"
             app:cardElevation="4dp">
+
             <ImageView
                 android:id="@+id/notice_icon"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center"
-                android:src="@drawable/notice_icon"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/notice_icon" />
         </androidx.cardview.widget.CardView>
 
         <!-- QR Code Icon -->
@@ -84,184 +85,191 @@
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_marginStart="8dp"
-            android:scaleType="centerCrop"
             android:backgroundTint="#cdf3e6"
+            android:scaleType="centerCrop"
             app:cardCornerRadius="50dp"
             app:cardElevation="4dp">
+
             <ImageView
                 android:id="@+id/qr_icon"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center"
-                android:src="@drawable/qr_icon"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/qr_icon" />
         </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 
 
-
     <!-- Work Schedule -->
-<!--    <androidx.cardview.widget.CardView-->
-<!--        android:id="@+id/schedule_card"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_marginTop="20dp"-->
-<!--        android:layout_marginBottom="10dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background=""-->
-<!--        app:layout_constraintTop_toBottomOf="@id/header_card"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent">-->
+    <!--    <androidx.cardview.widget.CardView-->
+    <!--        android:id="@+id/schedule_card"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_marginTop="20dp"-->
+    <!--        android:layout_marginBottom="10dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:background=""-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/header_card"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent">-->
 
-        <RelativeLayout
-            android:id="@+id/schedule_card"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/bg_rounded_10"
-            app:layout_constraintTop_toBottomOf="@id/header_card"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/schedule_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_rounded_10"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_card">
+
+        <ImageView
+            android:id="@+id/schedule_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/lich_icon" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/schedule_icon"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/schedule_icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/lich_icon" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/schedule_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/schedule_icon"
-                android:orientation="vertical">
+                android:text="Lịch làm việc hôm nay"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/schedule_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lịch làm việc hôm nay"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/schedule_details"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="4dp"
-                    android:text="20/09/2024 13:30\nBón phân cho cây sầu riêng lô số: 2, 3, 4"
-                    android:textColor="@color/textcolor"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </RelativeLayout>
-<!--    </androidx.cardview.widget.CardView>-->
+            <TextView
+                android:id="@+id/schedule_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="4dp"
+                android:text="20/09/2024 13:30\nBón phân cho cây sầu riêng lô số: 2, 3, 4"
+                android:textColor="@color/textcolor"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </RelativeLayout>
+    <!--    </androidx.cardview.widget.CardView>-->
 
     <!-- Utility Menu -->
     <TextView
         android:id="@+id/utility_title"
+        style="@style/TextStyle_16_600"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:gravity="start"
         android:text="Danh mục tiện ích"
         android:textColor="@color/black"
-        style="@style/TextStyle_16_600"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.056"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/schedule_card" />
 
     <GridLayout
-        android:paddingTop="10dp"
         android:id="@+id/utility_grid"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:columnCount="2"
+        android:paddingTop="10dp"
         android:rowCount="2"
-        app:layout_constraintTop_toBottomOf="@id/utility_title"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/utility_title">
 
         <!-- Item 1 -->
-            <LinearLayout
-                android:id="@+id/thongkechamcong_container"
-                android:layout_width="0dp"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
-                android:padding="20dp"
-                android:orientation="vertical"
-                android:background="@drawable/item2">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_gravity="left"
-                    android:scaleType="centerCrop"
-                    app:cardCornerRadius="50dp"
-                    app:cardElevation="4dp">
-                    <ImageView
-                        android:layout_gravity="center"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:src="@drawable/thongkechamcong_icon"
-                        android:scaleType="centerCrop" />
-                </androidx.cardview.widget.CardView>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    style="@style/TextStyle_14_500"
-                    android:textColor="@color/white"
-                    android:text="Thống kê chấm công"
-                    android:gravity="center" />
-            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/thongkechamcong_container"
+            android:layout_width="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@drawable/item2"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <LinearLayout
-                android:id="@+id/bangcongluong_container"
-                android:layout_width="0dp"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
-                android:padding="20dp"
-                android:orientation="vertical"
-                android:background="@drawable/item1">
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/bangcongluongne"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_gravity="left"
-                    android:scaleType="centerCrop"
-                    app:cardCornerRadius="50dp"
-                    app:cardElevation="4dp">
-                    <ImageView
-                        android:layout_gravity="center"
-                        android:id="@+id/bangcongluong"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:src="@drawable/tohopcong_icon"
-                        android:scaleType="centerCrop" />
-                </androidx.cardview.widget.CardView>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    style="@style/TextStyle_14_500"
-                    android:textColor="@color/white"
-                    android:text="Bảng công lương"
-                    android:gravity="center" />
-            </LinearLayout>
+            <androidx.cardview.widget.CardView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="left"
+                android:scaleType="centerCrop"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="4dp">
 
-            <LinearLayout
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/thongkechamcong_icon" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                style="@style/TextStyle_14_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Thống kê chấm công"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bangcongluong_container"
+            android:layout_width="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@drawable/item1"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/bangcongluongne"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="left"
+                android:scaleType="centerCrop"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="4dp">
+
+                <ImageView
+                    android:id="@+id/bangcongluong"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/tohopcong_icon" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                style="@style/TextStyle_14_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Bảng công lương"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/yeucau_dexuat_container"
             android:layout_width="0dp"
-            android:layout_columnWeight="1"
             android:layout_rowWeight="1"
-            android:padding="20dp"
+            android:layout_columnWeight="1"
+            android:background="@drawable/item3"
             android:orientation="vertical"
-            android:background="@drawable/item3">
+            android:padding="20dp">
+
             <androidx.cardview.widget.CardView
                 android:layout_width="56dp"
                 android:layout_height="56dp"
@@ -269,31 +277,34 @@
                 android:scaleType="centerCrop"
                 app:cardCornerRadius="50dp"
                 app:cardElevation="4dp">
+
                 <ImageView
-                    android:layout_gravity="center"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/yeucaudexuat_icon"
-                    android:scaleType="centerCrop" />
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/yeucaudexuat_icon" />
             </androidx.cardview.widget.CardView>
+
             <TextView
+                style="@style/TextStyle_14_500"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                style="@style/TextStyle_14_500"
-                android:textColor="@color/white"
+                android:gravity="center"
                 android:text="Yêu cầu - Đề xuất"
-                android:gravity="center" />
+                android:textColor="@color/white" />
         </LinearLayout>
 
-            <LinearLayout
+        <LinearLayout
             android:id="@+id/dinhdanh_container"
             android:layout_width="0dp"
-            android:layout_columnWeight="1"
             android:layout_rowWeight="1"
-            android:padding="20dp"
+            android:layout_columnWeight="1"
+            android:background="@drawable/item4"
             android:orientation="vertical"
-            android:background="@drawable/item4">
+            android:padding="20dp">
+
             <androidx.cardview.widget.CardView
                 android:layout_width="56dp"
                 android:layout_height="56dp"
@@ -301,53 +312,92 @@
                 android:scaleType="centerCrop"
                 app:cardCornerRadius="50dp"
                 app:cardElevation="4dp">
+
                 <ImageView
-                    android:layout_gravity="center"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/quanlytaisan"
-                    android:scaleType="centerCrop" />
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/quanlytaisan" />
             </androidx.cardview.widget.CardView>
+
             <TextView
+                style="@style/TextStyle_14_500"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                style="@style/TextStyle_14_500"
-                android:textColor="@color/white"
+                android:gravity="center"
                 android:text="Khai báo - định danh"
-                android:gravity="center" />
+                android:textColor="@color/white" />
         </LinearLayout>
 
-            <LinearLayout
+        <LinearLayout
             android:id="@+id/manager_plant"
             android:layout_width="0dp"
-            android:layout_columnWeight="1"
             android:layout_rowWeight="1"
-            android:padding="20dp"
+            android:layout_columnWeight="1"
+            android:background="@drawable/item2"
             android:orientation="vertical"
-            android:background="@drawable/item2">
-                <androidx.cardview.widget.CardView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_gravity="left"
+            android:padding="20dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="left"
+                android:scaleType="centerCrop"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="4dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
                     android:scaleType="centerCrop"
-                    app:cardCornerRadius="50dp"
-                    app:cardElevation="4dp">
-                    <ImageView
-                        android:layout_gravity="center"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:src="@drawable/thongkechamcong_icon"
-                        android:scaleType="centerCrop" />
+                    android:src="@drawable/thongkechamcong_icon" />
             </androidx.cardview.widget.CardView>
+
             <TextView
+                style="@style/TextStyle_14_500"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                style="@style/TextStyle_14_500"
-                android:textColor="@color/white"
+                android:gravity="center"
                 android:text="Quản lý cây trồng"
-                android:gravity="center" />
+                android:textColor="@color/white" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/record_condition"
+            android:layout_width="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@drawable/item2"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="left"
+                android:scaleType="centerCrop"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="4dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/thongkechamcong_icon" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                style="@style/TextStyle_14_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Ghi nhận tình trạng"
+                android:textColor="@color/white" />
         </LinearLayout>
 
 

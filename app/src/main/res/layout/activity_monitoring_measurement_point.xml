@@ -6,63 +6,61 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.MonitoringMeasurementPointActivity"
+    tools:context=".view.SalaryTableActivity"
     android:background="@drawable/bg_home">
 
-    <!-- AppBarLayout chứa Toolbar -->
-    <com.google.android.material.appbar.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:elevation="0dp"
-        android:stateListAnimator="@null">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:paddingLeft="0dp"
+            android:paddingStart="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+            android:background="@color/white"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:background="@drawable/bg_rounded_26_bottom"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:paddingBottom="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/backBtn"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/back_btn"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+            android:layout_height="wrap_content">
 
-                <!-- Tiêu đề -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:background="@drawable/bg_rounded_26_bottom"
+                android:layout_height="wrap_content">
+
                 <TextView
                     android:id="@+id/title"
+                    style="@style/TextStyle_16_600"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ĐIỂM ĐO QUAN TRẮC"
-                    style="@style/TextStyle_16_600"
+                    android:textAllCaps="true"
                     android:textColor="@color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"/>
-
-                <!-- Icon vị trí -->
-<!--                <ImageView-->
-<!--                    android:id="@+id/locationIcon"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:src="@drawable/checkin"-->
-<!--                    android:layout_marginEnd="20dp"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"/>-->
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.466"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.389" />
 
                 <!-- Nội dung thông tin -->
+                <ImageView
+                    android:id="@+id/backBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.376"
+                    app:layout_constraintWidth_percent="0.1013"
+                    app:srcCompat="@drawable/back_btn" />
+
                 <LinearLayout
                     android:padding="5dp"
                     android:id="@+id/layout_1"
@@ -85,14 +83,14 @@
                             android:layout_height="wrap_content"
                             android:text="🔸 Điểm đo: "
                             android:textColor="@android:color/white"
-                            android:textSize="14sp"/>
+                            style="@style/TextStyle_14_400"/>
                         <TextView
                             android:id="@+id/measurement_point"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="45 - Khu A - Vườn Sầu riêng u tối"
                             android:textColor="@android:color/white"
-                            android:textSize="14sp"/>
+                            style="@style/TextStyle_14_600"/>
 
                     </LinearLayout>
                     <LinearLayout
@@ -106,19 +104,18 @@
                             android:layout_height="wrap_content"
                             android:text="🔸 Ngày đo: "
                             android:textColor="@android:color/white"
-                            android:textSize="14sp"/>
+                            style="@style/TextStyle_14_400"/>
                         <TextView
                             android:id="@+id/measurement_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="24/10/2024"
-
                             android:textColor="@android:color/white"
-                            android:textSize="14sp"/>
-
+                            style="@style/TextStyle_14_600"/>
                     </LinearLayout>
 
                 </LinearLayout>
+
                 <!-- Nội dung thông tin -->
                 <LinearLayout
                     android:id="@+id/layout_2"
@@ -132,8 +129,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
-
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -145,28 +140,21 @@
                             android:layout_height="wrap_content"
                             android:text="🔸 Thiết bị: "
                             android:textColor="@android:color/white"
-                            android:textSize="14sp"/>
+                            style="@style/TextStyle_14_400"/>
                         <TextView
                             android:id="@+id/measuring_equipment"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="A:0001"
                             android:textColor="@android:color/white"
-                            android:textSize="14sp"/>
+                            style="@style/TextStyle_14_600"/>
 
                     </LinearLayout>
                 </LinearLayout>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
 
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Nội dung chính gồm TabLayout và ViewPager -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <!-- TabLayout -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
@@ -174,22 +162,15 @@
             android:background="@color/white"
             android:elevation="0dp"
             app:tabTextAppearance="@style/CustomTabTextStyle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:tabIndicatorColor="@color/secondarycolor"
             app:tabSelectedTextColor="@color/secondarycolor"
-            app:tabTextColor="@color/textcolor" />
+            app:tabTextColor="@color/textcolor"/>
 
+        <!-- ViewPager2 -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tabLayout"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="0dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+            android:layout_weight="1"/>
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,241 +85,7 @@ public class MonitoringFluctuatingValueFragment extends Fragment {
         setupChartDark();
         return view;
     }
-    // tầng nông
-    private void setupChart() {
-        mChart.getDescription().setEnabled(false);
-        mChart.setBackgroundColor(Color.WHITE);
-        mChart.setDrawGridBackground(false);
-        mChart.setDrawBarShadow(false);
-        mChart.setHighlightFullBarEnabled(false);
-        mChart.getLegend().setEnabled(false);
-
-        // 🔹 Cho phép kéo và zoom ngang
-        mChart.setDragEnabled(true);
-        mChart.setScaleXEnabled(true);
-        mChart.setScaleYEnabled(false); // Không cho phép zoom theo trục Y
-        mChart.setPinchZoom(true); // Hỗ trợ zoom đa điểm
-
-        XAxis xAxis = mChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1f);
-        xAxis.setLabelRotationAngle(0);
-        xAxis.setTextSize(2f);
-        xAxis.setCenterAxisLabels(false);
-        xAxis.enableGridDashedLine(10f, 5f, 0f);
-
-        mChart.getAxisLeft().enableGridDashedLine(10f, 5f, 0f);
-        mChart.getAxisRight().setEnabled(false);
-
-        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                int index = (int) e.getX(); // byGroup bắt đầu từ 1
-
-                // 🔹 Kiểm tra index hợp lệ trước khi truy cập danh sách
-                if (index < 1 || index > xLabels.size()) {
-                    Log.e("Chart", "Index out of bounds: " + index + ", max size: " + xLabels.size());
-                    return;
-                }
-
-                String date = dateMap.get(index);
-                if (date == null) {
-                    Log.e("Chart", "Date not found for index: " + index);
-                    return;
-                }
-
-
-                // Lấy danh sách chỉ số đang hiển thị trên biểu đồ
-                List<String> activeIndicators = new ArrayList<>();
-                for (ILineDataSet dataSet : mChart.getLineData().getDataSets()) {
-                    activeIndicators.add(dataSet.getLabel());
-                }
-
-                // Lọc dữ liệu theo chỉ số đang hiển thị
-                Map<String, Float> valuesForDate = new HashMap<>();
-                for (Map.Entry<String, List<Entry>> entry : dataEntriesMap.entrySet()) {
-                    String name = entry.getKey();
-                    if (!activeIndicators.contains(name)) continue;  // Bỏ qua chỉ số không hiển thị
-
-                    for (Entry entryData : entry.getValue()) {
-                        if ((int) entryData.getX() == index) { // 🔹 Không cần trừ 1 ở đây vì dữ liệu lấy từ API
-                            valuesForDate.put(name, entryData.getY());
-                            break;
-                        }
-                    }
-                }
-
-                showDataDialog(date, valuesForDate);
-            }
-            @Override
-            public void onNothingSelected() {
-                // Không làm gì khi không có điểm nào được chọn
-            }
-        });
-
-    }
-    // tầng sâu
-    private void setupChartDark() {
-        mChartDark.getDescription().setEnabled(false);
-        mChartDark.setBackgroundColor(Color.WHITE);
-        mChartDark.setDrawGridBackground(false);
-        mChartDark.setDrawBarShadow(false);
-        mChartDark.setHighlightFullBarEnabled(false);
-        mChartDark.getLegend().setEnabled(false);
-
-        // 🔹 Cho phép kéo và zoom ngang
-        mChartDark.setDragEnabled(true);
-        mChartDark.setScaleXEnabled(true);
-        mChartDark.setScaleYEnabled(false); // Không cho phép zoom theo trục Y
-        mChartDark.setPinchZoom(true); // Hỗ trợ zoom đa điểm
-
-        XAxis xAxis = mChartDark.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1f);
-        xAxis.setLabelRotationAngle(0);
-        xAxis.setTextSize(2f);
-        xAxis.setCenterAxisLabels(false);
-        xAxis.enableGridDashedLine(10f, 5f, 0f);
-
-        mChartDark.getAxisLeft().enableGridDashedLine(10f, 5f, 0f);
-        mChartDark.getAxisRight().setEnabled(false);
-
-        mChartDark.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                int index = (int) e.getX(); // byGroup bắt đầu từ 1
-
-                // 🔹 Kiểm tra index hợp lệ trước khi truy cập danh sách
-                if (index < 1 || index > xLabels.size()) {
-                    Log.e("Chart", "Index out of bounds: " + index + ", max size: " + xLabels.size());
-                    return;
-                }
-
-                String date = dateMap.get(index);
-                if (date == null) {
-                    Log.e("Chart", "Date not found for index: " + index);
-                    return;
-                }
-
-
-                // Lấy danh sách chỉ số đang hiển thị trên biểu đồ
-                List<String> activeIndicators = new ArrayList<>();
-                for (ILineDataSet dataSet : mChartDark.getLineData().getDataSets()) {
-                    activeIndicators.add(dataSet.getLabel());
-                }
-
-                // Lọc dữ liệu theo chỉ số đang hiển thị
-                Map<String, Float> valuesForDate = new HashMap<>();
-                for (Map.Entry<String, List<Entry>> entry : dataEntriesDarkMap.entrySet()) {
-                    String name = entry.getKey();
-                    if (!activeIndicators.contains(name)) continue;  // Bỏ qua chỉ số không hiển thị
-
-                    for (Entry entryData : entry.getValue()) {
-                        if ((int) entryData.getX() == index) { // 🔹 Không cần trừ 1 ở đây vì dữ liệu lấy từ API
-                            valuesForDate.put(name, entryData.getY());
-                            break;
-                        }
-                    }
-                }
-
-                showDataDialog(date, valuesForDate);
-            }
-            @Override
-            public void onNothingSelected() {
-                // Không làm gì khi không có điểm nào được chọn
-            }
-        });
-
-    }
-
-    private void showDataDialog(String date, Map<String, Float> valuesForDate) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Thông tin ngày: " + date);
-
-        // Tạo layout chứa danh sách các chỉ số
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(40, 20, 40, 20);
-
-        for (Map.Entry<String, Float> entry : valuesForDate.entrySet()) {
-            String name = entry.getKey();
-            float value = entry.getValue();
-            String colorHex = colorMap.get(name);
-
-            // Tạo TextView hiển thị chỉ số
-            TextView textView = new TextView(getContext());
-            textView.setText(name + ": " + value);
-            textView.setTextSize(16);
-            textView.setTextColor(Color.BLACK);
-            textView.setPadding(10, 10, 10, 10);
-
-            // Thêm biểu tượng màu trước chỉ số
-            SpannableString spannable = new SpannableString("⬤  " + textView.getText());
-            spannable.setSpan(new ForegroundColorSpan(Color.parseColor(colorHex)), 0, 1, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-            textView.setText(spannable);
-
-            layout.addView(textView);
-        }
-
-        builder.setView(layout);
-        builder.setPositiveButton("OK", null);
-        builder.show();
-    }
-
-    private void callChartData(int monitoringId) {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-        String token = sharedPreferences.getString("auth_token", null);
-
-        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
-        FluctuationSoilRequest request = new FluctuationSoilRequest(monitoringId, 200, true);
-        // Hiển thị progressBar khi bắt đầu tải dữ liệu
-        progressBar.setVisibility(View.VISIBLE);
-        emptyStateLayout.setVisibility(View.GONE);
-        mChart.setVisibility(View.GONE);
-        mChartDark.setVisibility(View.GONE);
-
-        Call<ApiResponse<FluctuationSoilResponse>> call = apiInterface.fluctuationSoil(token, request);
-        call.enqueue(new Callback<ApiResponse<FluctuationSoilResponse>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<FluctuationSoilResponse>> call, Response<ApiResponse<FluctuationSoilResponse>> response) {
-                // Ẩn progressBar sau khi nhận được phản hồi từ API
-                progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                    List<FluctuationSoilResponse.FluctuationValue> fluctuationValues = response.body().getData().getFluctuationValue();
-
-                    Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-                    String fluctuationValue = gson.toJson(fluctuationValues);
-                    Log.d("MonitoringFluctuatingValueFragment", "dataa: " + fluctuationValue);
-                    if (fluctuationValues != null && !fluctuationValues.isEmpty()) {
-                        emptyStateLayout.setVisibility(View.GONE);
-                        mChart.setVisibility(View.VISIBLE);
-                        mChartDark.setVisibility(View.VISIBLE);
-                        processChartData(fluctuationValues);
-                        processChartDarkData(fluctuationValues);
-                    } else {
-                        emptyStateLayout.setVisibility(View.VISIBLE);
-                        mChart.setVisibility(View.GONE);
-                        mChartDark.setVisibility(View.GONE);
-                    }
-                } else {
-                    emptyStateLayout.setVisibility(View.VISIBLE);
-                    mChartDark.setVisibility(View.GONE);
-                    mChart.setVisibility(View.GONE);
-                    CustomToast.showCustomToast(getContext(), "Không thể lấy dữ liệu!");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse<FluctuationSoilResponse>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                emptyStateLayout.setVisibility(View.VISIBLE);
-                mChart.setVisibility(View.GONE);
-                mChartDark.setVisibility(View.GONE);
-                CustomToast.showCustomToast(getContext(), "Lỗi kết nối API!");
-            }
-        });
-    }
-
+    // gọi api dữ liệu biểu đồ
     private void processChartData(List<FluctuationSoilResponse.FluctuationValue> fluctuationValues) {
         if (fluctuationValues == null || fluctuationValues.isEmpty()) {
             CustomToast.showCustomToast(getContext(), "Không có dữ liệu để hiển thị!");
@@ -373,10 +140,170 @@ public class MonitoringFluctuatingValueFragment extends Fragment {
         renderButtons();
     }
 
+    private void showDataDialog(String date, Map<String, Float> valuesForDate) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Thông tin ngày: " + date);
+
+        // Tạo layout chứa danh sách các chỉ số
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 20, 40, 20);
+
+        for (Map.Entry<String, Float> entry : valuesForDate.entrySet()) {
+            String name = entry.getKey();
+            float value = entry.getValue();
+            String colorHex = colorMap.get(name);
+
+            // Tạo TextView hiển thị chỉ số
+            TextView textView = new TextView(getContext());
+            textView.setText(name + ": " + value);
+            textView.setTextSize(16);
+            textView.setTextColor(Color.BLACK);
+            textView.setPadding(10, 10, 10, 10);
+
+            // Thêm biểu tượng màu trước chỉ số
+            SpannableString spannable = new SpannableString("⬤  " + textView.getText());
+            spannable.setSpan(new ForegroundColorSpan(Color.parseColor(colorHex)), 0, 1, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textView.setText(spannable);
+
+            layout.addView(textView);
+        }
+
+        builder.setView(layout);
+        builder.setPositiveButton("OK", null);
+        builder.show();
+    }
 
 
 
+    // tầng nông
+    private void setupChart() {
+        mChart.getDescription().setEnabled(false);
+        mChart.setBackgroundColor(Color.WHITE);
+        mChart.setDrawGridBackground(false);
+        mChart.setDrawBarShadow(false);
+        mChart.setHighlightFullBarEnabled(false);
+        mChart.getLegend().setEnabled(false);
 
+        // 🔹 Cho phép kéo và zoom ngang
+        mChart.setDragEnabled(true);
+        mChart.setScaleXEnabled(true);
+        mChart.setScaleYEnabled(false); // Không cho phép zoom theo trục Y
+        mChart.setPinchZoom(true); // Hỗ trợ zoom đa điểm
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelRotationAngle(0);
+        xAxis.setTextSize(2f);
+        xAxis.setCenterAxisLabels(false);
+        xAxis.enableGridDashedLine(10f, 5f, 0f);
+
+        mChart.getAxisLeft().enableGridDashedLine(10f, 5f, 0f);
+        mChart.getAxisRight().setEnabled(false);
+
+        mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                int index = (int) e.getX(); // byGroup bắt đầu từ 1
+                int minGroup = Collections.min(dateMap.keySet());
+                int maxGroup = Collections.max(dateMap.keySet());
+
+                if (index < minGroup || index > maxGroup) {
+                    Log.e("Chart", "Index out of bounds: " + index + ", valid range: " + minGroup + " to " + maxGroup);
+                    return;
+                }
+
+
+                String date = dateMap.get(index);
+                if (date == null) {
+                    Log.e("Chart", "Date not found for index: " + index);
+                    return;
+                }
+
+
+                // Lấy danh sách chỉ số đang hiển thị trên biểu đồ
+                List<String> activeIndicators = new ArrayList<>();
+                for (ILineDataSet dataSet : mChart.getLineData().getDataSets()) {
+                    activeIndicators.add(dataSet.getLabel());
+                }
+
+                // Lọc dữ liệu theo chỉ số đang hiển thị
+                Map<String, Float> valuesForDate = new HashMap<>();
+                for (Map.Entry<String, List<Entry>> entry : dataEntriesMap.entrySet()) {
+                    String name = entry.getKey();
+                    if (!activeIndicators.contains(name)) continue;  // Bỏ qua chỉ số không hiển thị
+
+                    for (Entry entryData : entry.getValue()) {
+                        if ((int) entryData.getX() == index) { // 🔹 Không cần trừ 1 ở đây vì dữ liệu lấy từ API
+                            valuesForDate.put(name, entryData.getY());
+                            break;
+                        }
+                    }
+                }
+
+                showDataDialog(date, valuesForDate);
+            }
+            @Override
+            public void onNothingSelected() {
+                // Không làm gì khi không có điểm nào được chọn
+            }
+        });
+
+    }
+    private void callChartData(int monitoringId) {
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+
+        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
+        FluctuationSoilRequest request = new FluctuationSoilRequest(monitoringId, 200, true);
+        // Hiển thị progressBar khi bắt đầu tải dữ liệu
+        progressBar.setVisibility(View.VISIBLE);
+        emptyStateLayout.setVisibility(View.GONE);
+        mChart.setVisibility(View.GONE);
+        mChartDark.setVisibility(View.GONE);
+
+        Call<ApiResponse<FluctuationSoilResponse>> call = apiInterface.fluctuationSoil(token, request);
+        call.enqueue(new Callback<ApiResponse<FluctuationSoilResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<FluctuationSoilResponse>> call, Response<ApiResponse<FluctuationSoilResponse>> response) {
+                // Ẩn progressBar sau khi nhận được phản hồi từ API
+                progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    List<FluctuationSoilResponse.FluctuationValue> fluctuationValues = response.body().getData().getFluctuationValue();
+
+                    Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+                    String fluctuationValue = gson.toJson(fluctuationValues);
+                    Log.d("MonitoringFluctuatingValueFragment", "dataa: " + fluctuationValue);
+                    if (fluctuationValues != null && !fluctuationValues.isEmpty()) {
+                        emptyStateLayout.setVisibility(View.GONE);
+                        mChart.setVisibility(View.VISIBLE);
+                        mChartDark.setVisibility(View.VISIBLE);
+                        processChartData(fluctuationValues);
+                        processChartDarkData(fluctuationValues);
+                    } else {
+                        emptyStateLayout.setVisibility(View.VISIBLE);
+                        mChart.setVisibility(View.GONE);
+                        mChartDark.setVisibility(View.GONE);
+                    }
+                } else {
+                    emptyStateLayout.setVisibility(View.VISIBLE);
+                    mChartDark.setVisibility(View.GONE);
+                    mChart.setVisibility(View.GONE);
+                    CustomToast.showCustomToast(getContext(), "Không thể lấy dữ liệu!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<FluctuationSoilResponse>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                emptyStateLayout.setVisibility(View.VISIBLE);
+                mChart.setVisibility(View.GONE);
+                mChartDark.setVisibility(View.GONE);
+                CustomToast.showCustomToast(getContext(), "Lỗi kết nối API!");
+            }
+        });
+    }
     private void renderChart(String selectedItem) {
         LineData lineData = new LineData();
 
@@ -403,14 +330,18 @@ public class MonitoringFluctuatingValueFragment extends Fragment {
         mChart.setData(data);
         mChart.invalidate();
         if (xLabels != null && xLabels.size() > 3) {
-            mChart.setVisibleXRangeMaximum(3f); // Chỉ hiển thị 3 ngày trên màn hình
+            float lastIndex = Collections.max(dateMap.keySet()); // Lấy byGroup lớn nhất
+            float firstIndex = Collections.min(dateMap.keySet()); // Lấy byGroup nhỏ nhất
 
-            // 🔹 Di chuyển đến 3 điểm cuối cùng
-            float lastIndex = xLabels.size() - 1;
-            mChart.moveViewToX(lastIndex - 2); // Dịch chuyển đến điểm thứ (last - 2) để hiển thị 3 điểm cuối
+            Log.d("ChartDebug", "Moving to index: " + (lastIndex - 2) + ", firstIndex: " + firstIndex);
+
+            mChart.setVisibleXRangeMaximum(3f);
+            mChart.setVisibleXRangeMinimum(3f);
+            mChart.moveViewToX(lastIndex - 2 > firstIndex ? lastIndex - 2 : firstIndex);
+
+            mChart.invalidate(); // Buộc vẽ lại biểu đồ
         }
     }
-
     private void renderButtons() {
         buttonContainer.removeAllViews();
 
@@ -430,11 +361,6 @@ public class MonitoringFluctuatingValueFragment extends Fragment {
             addCustomButton(cleanName, colorHex, R.drawable.icon_line_chart, nameVi);
         }
     }
-
-
-    /**
-     * 📌 Hàm tạo nút layout có icon trên, text dưới.
-     */
     private void addCustomButton(String text, String colorHex, int iconRes, String itemName) {
         LinearLayout buttonLayout = new LinearLayout(getContext());
         buttonLayout.setOrientation(LinearLayout.VERTICAL);
@@ -481,8 +407,81 @@ public class MonitoringFluctuatingValueFragment extends Fragment {
 
 
 
+    // tầng sâu
+    private void setupChartDark() {
+        mChartDark.getDescription().setEnabled(false);
+        mChartDark.setBackgroundColor(Color.WHITE);
+        mChartDark.setDrawGridBackground(false);
+        mChartDark.setDrawBarShadow(false);
+        mChartDark.setHighlightFullBarEnabled(false);
+        mChartDark.getLegend().setEnabled(false);
+
+        // 🔹 Cho phép kéo và zoom ngang
+        mChartDark.setDragEnabled(true);
+        mChartDark.setScaleXEnabled(true);
+        mChartDark.setScaleYEnabled(false); // Không cho phép zoom theo trục Y
+        mChartDark.setPinchZoom(true); // Hỗ trợ zoom đa điểm
+
+        XAxis xAxis = mChartDark.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelRotationAngle(0);
+        xAxis.setTextSize(2f);
+        xAxis.setCenterAxisLabels(false);
+        xAxis.enableGridDashedLine(10f, 5f, 0f);
+
+        mChartDark.getAxisLeft().enableGridDashedLine(10f, 5f, 0f);
+        mChartDark.getAxisRight().setEnabled(false);
+
+        mChartDark.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                int index = (int) e.getX(); // byGroup bắt đầu từ 1
+
+                int minGroup = Collections.min(dateMap.keySet());
+                int maxGroup = Collections.max(dateMap.keySet());
+
+                if (index < minGroup || index > maxGroup) {
+                    Log.e("Chart", "Index out of bounds: " + index + ", valid range: " + minGroup + " to " + maxGroup);
+                    return;
+                }
+
+                String date = dateMap.get(index);
+                if (date == null) {
+                    Log.e("Chart", "Date not found for index: " + index);
+                    return;
+                }
 
 
+                // Lấy danh sách chỉ số đang hiển thị trên biểu đồ
+                List<String> activeIndicators = new ArrayList<>();
+                for (ILineDataSet dataSet : mChartDark.getLineData().getDataSets()) {
+                    activeIndicators.add(dataSet.getLabel());
+                }
+
+                // Lọc dữ liệu theo chỉ số đang hiển thị
+                Map<String, Float> valuesForDate = new HashMap<>();
+                for (Map.Entry<String, List<Entry>> entry : dataEntriesDarkMap.entrySet()) {
+                    String name = entry.getKey();
+                    if (!activeIndicators.contains(name)) continue;  // Bỏ qua chỉ số không hiển thị
+
+                    for (Entry entryData : entry.getValue()) {
+                        if ((int) entryData.getX() == index) { // 🔹 Không cần trừ 1 ở đây vì dữ liệu lấy từ API
+                            valuesForDate.put(name, entryData.getY());
+                            break;
+                        }
+                    }
+                }
+
+                showDataDialog(date, valuesForDate);
+            }
+            @Override
+            public void onNothingSelected() {
+                // Không làm gì khi không có điểm nào được chọn
+            }
+        });
+
+    }
     private void renderDarkChart(String selectedItem) {
         LineData lineData = new LineData();
 
@@ -509,11 +508,16 @@ public class MonitoringFluctuatingValueFragment extends Fragment {
         mChartDark.setData(data);
         mChartDark.invalidate();
         if (xLabels != null && xLabels.size() > 3) {
-            mChartDark.setVisibleXRangeMaximum(3f); // Chỉ hiển thị 3 ngày trên màn hình
+            float lastIndex = Collections.max(dateMap.keySet()); // Lấy byGroup lớn nhất
+            float firstIndex = Collections.min(dateMap.keySet()); // Lấy byGroup nhỏ nhất
 
-            // 🔹 Di chuyển đến 3 điểm cuối cùng
-            float lastIndex = xLabels.size() - 1;
-            mChartDark.moveViewToX(lastIndex - 2); // Dịch chuyển đến điểm thứ (last - 2) để hiển thị 3 điểm cuối
+            Log.d("ChartDebug", "Moving to index: " + (lastIndex - 2) + ", firstIndex: " + firstIndex);
+
+            mChartDark.setVisibleXRangeMaximum(3f);
+            mChartDark.setVisibleXRangeMinimum(3f);
+            mChartDark.moveViewToX(lastIndex - 2 > firstIndex ? lastIndex - 2 : firstIndex);
+
+            mChartDark.invalidate(); // Buộc vẽ lại biểu đồ
         }
     }
     private void processChartDarkData(List<FluctuationSoilResponse.FluctuationValue> fluctuationValues) {
@@ -588,7 +592,6 @@ public class MonitoringFluctuatingValueFragment extends Fragment {
             addCustomDarkButton(cleanName, colorHex, R.drawable.icon_line_chart, nameVi);
         }
     }
-
     private void addCustomDarkButton(String text, String colorHex, int iconRes, String itemName) {
         LinearLayout buttonLayout = new LinearLayout(getContext());
         buttonLayout.setOrientation(LinearLayout.VERTICAL);

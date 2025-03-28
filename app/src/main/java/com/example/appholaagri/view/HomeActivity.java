@@ -52,35 +52,35 @@ public class HomeActivity extends AppCompatActivity {
         });
         // Set default fragment (HomeFragment)
         if (savedInstanceState == null) {
-            replaceFragment(new HomeFragment());
+            replaceFragment(new HomeFragment(), "HOME");
         }
         // Kiểm tra nếu cần điều hướng đến SettingFragment
         String navigateTo = getIntent().getStringExtra("navigate_to");
         if ("setting".equals(navigateTo)) {
-            replaceFragment(new SettingFragment());
+            replaceFragment(new SettingFragment(), "SETTING");
             binding.bottomNavigationView.setSelectedItemId(R.id.nav_setting);  // Đánh dấu mục Setting là active
         } else if ("home".equals(navigateTo)) {
-            replaceFragment(new HomeFragment());
+            replaceFragment(new HomeFragment(), "HOME");
             binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);  // Đánh dấu mục Setting là active
         }
-        // Set the listener for bottom navigation item selection
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_home:
-                    replaceFragment(new HomeFragment());
+                    replaceFragment(new HomeFragment(), "HOME");
                     break;
                 case R.id.nav_lich_lam:
-                    replaceFragment(new WorkSchedule());
+                    replaceFragment(new WorkSchedule(), "WORK_SCHEDULE");
                     break;
                 case R.id.nav_ban_tin:
-                    replaceFragment(new NewsletterFragment());
+                    replaceFragment(new NewsletterFragment(), "NEWSLETTER");
                     break;
                 case R.id.nav_setting:
-                    replaceFragment(new SettingFragment());
+                    replaceFragment(new SettingFragment(), "SETTING");
                     break;
             }
             return true;
         });
+
 
         // Handle window insets for padding on system bars (like status bar)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -91,10 +91,17 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     // Method to replace fragment
-    private void replaceFragment(Fragment fragment) {
+    private void replaceFragment(Fragment newFragment, String tag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.frame_layout);
+
+        // Kiểm tra xem fragment mới có giống fragment đang hiển thị không
+        if (currentFragment != null && currentFragment.getClass().equals(newFragment.getClass())) {
+            return; // Nếu giống nhau, không làm gì cả
+        }
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.replace(R.id.frame_layout, newFragment, tag);
         fragmentTransaction.commit();
     }
 }

@@ -614,10 +614,12 @@ public class CreateRequestResignActivity extends BaseActivity {
         // validate
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
+            hideLoading();
             return;
         }
         if (requestDetailData.getReason().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập lý do!");
+            hideLoading();
             return;
         }
 

@@ -1,19 +1,26 @@
 package com.example.appholaagri.view;
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.PlantationListAdapter;
+import com.example.appholaagri.adapter.RecordConditionAdapter;
 import com.example.appholaagri.helper.ApiHelper;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout; // Import thêm thư viện
+import com.example.appholaagri.model.RecordConditionModel.RecordConditionResponse;
 
-public class ListPlantationActivity extends BaseActivity {
+import java.util.List;
+
+public class RecordConditionActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private View progressBar;
     private LinearLayout emptyStateLayout;
@@ -29,7 +36,7 @@ public class ListPlantationActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_list_plantation);
+        setContentView(R.layout.activity_record_condition);
 
         recyclerView = findViewById(R.id.recyclerViewListPlantation);
         progressBar = findViewById(R.id.progressBar);
@@ -105,11 +112,11 @@ public class ListPlantationActivity extends BaseActivity {
                             emptyStateLayout.setVisibility(View.GONE);
                             if (adapter == null) {
                                 adapter = new PlantationListAdapter(data.getData());
-                                adapter.setOnItemClickListener(plantationId -> {
-                                    Intent intent = new Intent(this, PlantationDetailActivity.class);
-                                    intent.putExtra("plantationId", plantationId);
-                                    startActivity(intent);
-                                });
+//                                adapter.setOnItemClickListener(plantationId -> {
+//                                    Intent intent = new Intent(this, PlantationDetailActivity.class);
+//                                    intent.putExtra("plantationId", plantationId);
+//                                    startActivity(intent);
+//                                });
 
                                 recyclerView.setAdapter(adapter);
                             } else {
