@@ -24,6 +24,7 @@ import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.KeyboardUtils;
+import com.example.appholaagri.utils.LoadingDialog;
 import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
@@ -36,6 +37,8 @@ public class ForgotPasswordActivity extends BaseActivity {
     ImageView errorIcon;
     TextView errorMessage;
     TextInputLayout phone_input_layout;
+
+    private LoadingDialog loadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +55,10 @@ public class ForgotPasswordActivity extends BaseActivity {
         errorIcon  = findViewById(R.id.error_icon); // ID của ImageView chứa icon lỗi
         errorMessage  = findViewById(R.id.error_message); // ID của TextView chứa thông báo lỗi
         phone_input_layout = findViewById(R.id.phone_input_layout);
+
+        // khởi tạo loading
+        loadingDialog = new LoadingDialog(this); // Khởi tạo loading dialog
+
         btnBackLogin.setOnClickListener(view -> {
             finish();
         });
@@ -82,6 +89,7 @@ public class ForgotPasswordActivity extends BaseActivity {
 
 
     public void checkPhoneNumber(String deviceId, String phoneNumber) {
+        loadingDialog.show(); // Hiển thị loading khi bắt đầu gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         CheckPhoneRequest checkPhoneRequest = new CheckPhoneRequest(deviceId,phoneNumber);
         Log.d("ForgotPasswordActivity", "Thông tin: " + checkPhoneRequest.getDeviceId() + checkPhoneRequest.getUserName());
@@ -90,6 +98,7 @@ public class ForgotPasswordActivity extends BaseActivity {
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                loadingDialog.hide(); // Ẩn loading khi có phản hồi
                 Log.d("ForgotPasswordActivity", "Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
@@ -111,6 +120,7 @@ public class ForgotPasswordActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                loadingDialog.hide(); // Ẩn loading khi có phản hồi
                 CustomToast.showCustomToast(ForgotPasswordActivity.this,  "Lỗi: " + t.getMessage());
             }
         });

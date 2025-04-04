@@ -22,6 +22,7 @@ import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.LoadingDialog;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +34,7 @@ public class BangCongFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private SalaryTableAdapter adapter;
     private LinearLayout emptyStateLayout;
+    private LoadingDialog loadingDialog;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

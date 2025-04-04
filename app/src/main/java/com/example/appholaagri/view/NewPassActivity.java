@@ -22,6 +22,7 @@ import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.KeyboardUtils;
+import com.example.appholaagri.utils.LoadingDialog;
 import com.example.appholaagri.utils.Utils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,6 +34,7 @@ import retrofit2.Response;
 public class NewPassActivity extends BaseActivity {
     private EditText newPassInput, confirmPassInput;
     Button change_pass_button, back_btn;
+    LoadingDialog loadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +45,9 @@ public class NewPassActivity extends BaseActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // khởi tạo loading
+        loadingDialog = new LoadingDialog(this); // Khởi tạo loading dialog
+
         Intent intent = getIntent();
         String deviceId = intent.getStringExtra("deviceId");
         String phoneNumber = intent.getStringExtra("phoneNumber");
@@ -91,6 +96,7 @@ public class NewPassActivity extends BaseActivity {
     }
 
     private void changePassword(String deviceId, String phoneNumber, String hashedPassword) {
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         int isMobile = 1;  // Giả sử là điện thoại
         int rememberMe = 1;  // Không nhớ mật khẩu
@@ -102,6 +108,7 @@ public class NewPassActivity extends BaseActivity {
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                loadingDialog.hide();
                 Log.d("NewPassActivity", "Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
@@ -119,6 +126,7 @@ public class NewPassActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                loadingDialog.hide();
                 CustomToast.showCustomToast(NewPassActivity.this, "Lỗi: " + t.getMessage());
             }
         });

@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,6 +36,7 @@ public class SettingSecurityActivity extends BaseActivity {
     private EditText oldPassInput, newPassInput, confirmPassInput;
     Button change_pass_button;
     TextInputLayout password_input_layout, confirm_new_pass_layout, new_pass_input_layout;
+    ImageView backBtnReview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +49,7 @@ public class SettingSecurityActivity extends BaseActivity {
         newPassInput = findViewById(R.id.new_password);
         confirmPassInput = findViewById(R.id.confirm_password);
         change_pass_button = findViewById(R.id.change_pass_button);
+        backBtnReview = findViewById(R.id.backBtnReview);
         change_pass_button.setOnClickListener(view -> {
             String oldPassword = oldPassInput.getText().toString().trim();
             String newPassword = newPassInput.getText().toString().trim();
@@ -60,6 +63,9 @@ public class SettingSecurityActivity extends BaseActivity {
                 // Gọi API đổi mật khẩu
                 changePassword(token, hashedConfirmPass, hashedOldPass, hashedPassword);
             }
+        });
+        backBtnReview.setOnClickListener(view -> {
+            finish();
         });
     }
     private boolean validatePasswords(String oldPassword, String newPassword, String confirmPassword) {

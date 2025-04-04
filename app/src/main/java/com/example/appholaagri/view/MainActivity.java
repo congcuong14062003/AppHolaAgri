@@ -156,6 +156,7 @@ public class MainActivity extends BaseActivity {
             loadingDialog.dismiss();
         }
     }
+
     private void login(String phone, String password, String deviceId) {
         showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);

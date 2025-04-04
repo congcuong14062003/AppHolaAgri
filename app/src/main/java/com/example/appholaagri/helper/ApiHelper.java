@@ -269,9 +269,9 @@ public class ApiHelper {
     }
 
     public static void fetchListRecordCondition(Context context,
-                                           int page,
-                                           Consumer<RecordConditionResponse> onSuccess,
-                                           Consumer<String> onError) {
+                                                int page,
+                                                Consumer<RecordConditionResponse> onSuccess,
+                                                Consumer<String> onError) {
         ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
 
         // Tạo request object
@@ -280,6 +280,7 @@ public class ApiHelper {
                 Collections.singletonList(-1), 20, "",
                 Collections.singletonList(-1), Collections.singletonList(-1)
         );
+
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
 

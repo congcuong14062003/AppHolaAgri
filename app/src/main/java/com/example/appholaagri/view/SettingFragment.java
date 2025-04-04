@@ -10,25 +10,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.helper.UserDetailApiHelper;
-import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.UserData.UserData;
-import com.example.appholaagri.service.ApiClient;
-import com.example.appholaagri.service.ApiInterface;
-import com.example.appholaagri.service.NetworkUtil;
 import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SettingFragment extends BaseFragment {
 

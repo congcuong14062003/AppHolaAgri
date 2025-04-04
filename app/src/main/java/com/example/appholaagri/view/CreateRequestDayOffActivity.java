@@ -838,7 +838,12 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             return false;
         });
 
-        btn_cancel.setOnClickListener(view -> dialog.dismiss());
+        btn_cancel.setOnClickListener(view -> {
+            hideLoading(); // Ẩn loading khi nhấn Cancel
+            dialog.dismiss();
+        });
+        // Xử lý khi đóng dialog (bấm nút Back hoặc bên ngoài)
+        dialog.setOnDismissListener(dialogInterface -> hideLoading());
 
         dialog.show();
     }

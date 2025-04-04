@@ -68,13 +68,36 @@
         android:orientation="vertical"
         >
         <TextView
-            android:id="@+id/txt_plant_name"
+            android:id="@+id/txt_name_plant"
             style="@style/TextStyle_14_600"
             android:textColor="@color/textcolor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="09:20 11/03/2024"
+            android:text="AA1H222C123 - Sầu riêng Thái"
             />
-
+        <TextView
+            android:id="@+id/txt_type_plant"
+            style="@style/TextStyle_14_600"
+            android:textColor="@color/textcolor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đồn điền A - Khu vực 1"
+            />
+        <TextView
+            android:id="@+id/problem_plant"
+            style="@style/TextStyle_14_400"
+            android:textColor="@color/textcolor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vấn đề bệnh tật: Lá úa, dự đoán thiếu bia, ..."
+            />
+        <TextView
+            android:id="@+id/infor_plant"
+            style="@style/TextStyle_14_400"
+            android:textColor="@color/textcolor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thông tin phát triển: Cao 1.7m, vòng 1 90cm..."
+            />
     </LinearLayout>
 </LinearLayout>

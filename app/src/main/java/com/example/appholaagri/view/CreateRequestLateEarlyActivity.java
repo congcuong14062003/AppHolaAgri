@@ -861,7 +861,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             });
         } else {
             Log.d("CreateRequestLateActivity", "vào 2" + jsonResponse);
-
             if (groupRequestCreateRequest.getStatus().getId() == 2) {
                 showRejectReasonDialog(apiInterface, token, requestDetailData, groupRequestCreateRequest);
             } else {
@@ -933,8 +932,12 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             return false;
         });
 
-        btn_cancel.setOnClickListener(view -> dialog.dismiss());
-
+        btn_cancel.setOnClickListener(view -> {
+            hideLoading(); // Ẩn loading khi nhấn Cancel
+            dialog.dismiss();
+        });
+        // Xử lý khi đóng dialog (bấm nút Back hoặc bên ngoài)
+        dialog.setOnDismissListener(dialogInterface -> hideLoading());
         dialog.show();
     }
 

@@ -13,8 +13,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -25,18 +25,10 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.appholaagri.R;
 import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.UserData.UserData;
-import com.example.appholaagri.service.ApiClient;
-import com.example.appholaagri.service.ApiInterface;
-import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-
-public class UserDetailActivity extends BaseActivity {
+public class UserDetailActivity extends AppCompatActivity {
     private LinearLayout contentLayout;
     private TextView txtName, txtRole, txtPhone, txtEmail, txtBirthDay, txtIdentityCode, txtTaxCode, txtAddress, tv_don_vi_cong_tac_value, tv_phong_ban,tv_to_doi,tv_chuc_danh_value, tv_vi_tri_cong_viec_value, tv_quan_ly_truc_tiep_value, tv_loai_hop_dong_value, tv_ngay_bat_dau_lam_value, tv_ngay_lam_viec_chinh_thuc_value;
     private ImageView avatarUser, backBtnReview, cameraIcon;
@@ -47,12 +39,14 @@ public class UserDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_detail);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         // Initialize UI elements
         cameraIcon = findViewById(R.id.cameraIcon);
         contentLayout = findViewById(R.id.contentLayout);

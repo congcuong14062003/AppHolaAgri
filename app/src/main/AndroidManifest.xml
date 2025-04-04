@@ -33,13 +33,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.UserDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.RecordConditionActivity"
             android:exported="false" />
         <activity
             android:name=".view.MonitoringMeasurementPointActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.Test"
             android:exported="false" />
         <activity
             android:name=".view.ManagerDetailPlantActivity"
@@ -114,9 +114,6 @@
             android:exported="false" />
         <activity
             android:name=".view.CustomScannerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.UserDetailActivity"
             android:exported="false" />
         <activity
             android:name=".view.HomeActivity"
