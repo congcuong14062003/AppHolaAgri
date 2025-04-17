@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.RecordConditionActivity"
+    tools:context=".view.WorkShiftsActivity"
     android:background="@drawable/bg_home"
     >
     <!-- Toolbar -->
@@ -33,7 +33,7 @@
             android:id="@+id/title_request"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GHI NHẬN TÌNH TRẠNG"
+            android:text="Phân ca làm việc"
             android:textAllCaps="true"
             style="@style/TextStyle_16_600"
             android:textColor="@color/black"
@@ -80,21 +80,7 @@
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/create_request_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="30dp"
-        android:elevation="8dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/add_request_icon"
-            />
-    </LinearLayout>
+<!--    body -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -132,71 +118,5 @@
             app:layout_constraintTop_toBottomOf="@id/tab_layout"
             app:layout_constraintVertical_bias="0.0"
             tools:layout_editor_absoluteX="-68dp" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Overlay background mờ -->
-    <View
-        android:id="@+id/overlay_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black"
-        android:alpha="0.5"
-        android:visibility="gone" />
-
-    <!-- Overlay danh sách trạng thái -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/overlay_filter_status"
-        android:visibility="gone"
-        >
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/overlay_filter_status_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/bg_rounded_10"
-            android:backgroundTint="#F0F0F0"
-            android:layout_gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:elevation="999dp"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/title_filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lọc theo trạng thái"
-                android:textColor="@color/textcolor"
-                style="@style/TextStyle_18_600"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_filter_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/title_filter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:listitem="@layout/item_status_request_recycle_view"
-                android:layout_marginTop="8dp" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/button_close_overlay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Đóng"
-                android:textColor="#ffffff"
-                android:background="@drawable/button_custom"
-                app:layout_constraintTop_toBottomOf="@id/recycler_filter_status"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

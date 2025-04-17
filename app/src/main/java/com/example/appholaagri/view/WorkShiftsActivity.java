@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,6 +22,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.RecordConditionAdapterTabList;
+import com.example.appholaagri.adapter.WorkShiftAdapterTabList;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionTabList;
 import com.example.appholaagri.model.RequestTabListData.RequestTabListData;
@@ -36,10 +38,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RecordConditionActivity extends BaseActivity {
+public class WorkShiftsActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-    private RecordConditionAdapterTabList recordConditionAdapterTabList;
+    private WorkShiftAdapterTabList workShiftAdapterTabList;
     private Calendar selectedDate = Calendar.getInstance(); // Lưu giữ ngày tháng hiện tại
     private TextView tab2Title, title_request;
     private ImageView calendarIcon, backBtnReview, SearchBtnReview;
@@ -53,35 +55,23 @@ public class RecordConditionActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_record_condition);
+        setContentView(R.layout.activity_work_shifts);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(0, 0,0, 0);
             return insets;
         });
-        // Kết nối các view
         tabLayout = findViewById(R.id.tabRecordCondition);
         viewPager = findViewById(R.id.viewPagerRequest);
         backBtnReview = findViewById(R.id.backBtnReview);
-        overlay_background = findViewById(R.id.overlay_background);
         SearchBtnReview = findViewById(R.id.SearchBtnReview);
         title_request = findViewById(R.id.title_request);
         edtSearch = findViewById(R.id.edtSearch);
-        overlay = findViewById(R.id.overlay_filter_status);
-        overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
-        create_request_btn = findViewById(R.id.create_request_btn);
-
-        create_request_btn.setOnClickListener(view -> {
-            // Mở màn hình quét QR
-            Intent intent = new Intent(RecordConditionActivity.this, QRScannerActivity.class);
-            startActivityForResult(intent, 100); // 100 là requestCode, có thể thay đổi tùy theo bạn
-        });
-
         backBtnReview.setOnClickListener(view -> {
             finish();
         });
         // Thiết lập Adapter cho ViewPager
-        viewPager.setAdapter(recordConditionAdapterTabList);
+        viewPager.setAdapter(workShiftAdapterTabList);
         backBtnReview.setOnClickListener(view -> {
             finish();
         });
@@ -91,7 +81,7 @@ public class RecordConditionActivity extends BaseActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 // Xóa nội dung EditText khi tab thay đổi
-                tabId = RecordConditionAdapterTabList.getTabIdAtPosition(position);
+                tabId = WorkShiftAdapterTabList.getTabIdAtPosition(position);
                 Log.d("hahaha", "tabId: "+ tabId);
                 edtSearch.setText("");
 
@@ -114,22 +104,19 @@ public class RecordConditionActivity extends BaseActivity {
     }
 
     private void getInitFormData(String token) {
-        Log.d("RecordConditionActivity", "Vàoooooo");
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
-        Call<ApiResponse<List<RecordConditionTabList>>> call = apiInterface.recordConditionTabList(token);
+        Call<ApiResponse<List<RecordConditionTabList>>> call = apiInterface.workShiftTab(token);
         call.enqueue(new Callback<ApiResponse<List<RecordConditionTabList>>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<List<RecordConditionTabList>>> call, @NonNull Response<ApiResponse<List<RecordConditionTabList>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<RecordConditionTabList>> apiResponse = response.body();
-                    Log.d("RecordConditionActivity", "response: " + apiResponse);
 
                     if (apiResponse.getStatus() == 200) {
                         List<RecordConditionTabList> tabList = apiResponse.getData();
 
                         // Kiểm tra nếu danh sách không có tab thực (chỉ có 1 item rỗng hoặc trống)
                         if (tabList == null || tabList.isEmpty() || (tabList.size() == 1 && tabList.get(0).getId() == -1)) {
-                            Log.d("RecordConditionActivity", "Không có tab hợp lệ => chuyển màn khác");
 
                             // Ẩn giao diện tab
                             tabLayout.setVisibility(View.GONE);
@@ -162,8 +149,8 @@ public class RecordConditionActivity extends BaseActivity {
         }
 
         // Cập nhật adapter với danh sách tab
-        recordConditionAdapterTabList = new RecordConditionAdapterTabList(this, recordConditionTabLists);
-        viewPager.setAdapter(recordConditionAdapterTabList);
+        workShiftAdapterTabList = new WorkShiftAdapterTabList(this, recordConditionTabLists);
+        viewPager.setAdapter(workShiftAdapterTabList);
 
         // Tạo danh sách tên tab từ danh sách requestTabListData
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
@@ -171,28 +158,4 @@ public class RecordConditionActivity extends BaseActivity {
         });
         tabLayoutMediator.attach();
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Kiểm tra nếu là kết quả từ màn hình quét QR
-        if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
-            // Lấy kết quả QR từ Intent
-            String qrResult = data.getStringExtra("QR_RESULT");
-
-            // Xử lý kết quả QR ở đây (ví dụ, bạn có thể gửi nó đến API hoặc cập nhật UI)
-            Log.d("RecordConditionActivity", "qrResult: " + qrResult);
-            if(qrResult != null) {
-                Intent intent = new Intent(this, QrContentRecordCondition.class);
-                RecordConditionTabList currentTab = recordConditionAdapterTabList.getTabList().get(viewPager.getCurrentItem());
-                intent.putExtra("tab_data", currentTab); // Truyền object
-                intent.putExtra("qrResult", qrResult);
-                startActivity(intent);
-            }
-            // Quay lại màn hình trước sau khi nhận kết quả
-            // Bạn có thể thực hiện các thao tác với kết quả QR tại đây
-
-        }
-    }
-
 }

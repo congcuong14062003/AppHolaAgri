@@ -8,6 +8,9 @@ import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.ListPlantModel.ListPlantResponse;
 import com.example.appholaagri.model.ListSensorModel.ListSensorRequest;
 import com.example.appholaagri.model.ListSensorModel.ListSensorResponse;
+import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftRequest;
+import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftResponse;
+import com.example.appholaagri.model.ListWorkShiftModel.WorkShiftListWrapper;
 import com.example.appholaagri.model.PlantationListModel.PlantationListRequest;
 import com.example.appholaagri.model.PlantationListModel.PlantationListResponse;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionRequest;
@@ -28,6 +31,7 @@ import retrofit2.Response;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 public class ApiHelper {
     public static void fetchRequestListData(Context context,
@@ -268,22 +272,26 @@ public class ApiHelper {
         });
     }
 
-    public static void fetchListRecordCondition(Context context,
-                                                int page,
-                                                Consumer<RecordConditionResponse> onSuccess,
-                                                Consumer<String> onError) {
+    public static <T> void fetchRecordCondition(
+            Context context,
+            int page,
+            int status,
+            Consumer<RecordConditionResponse> onSuccess,
+            Consumer<String> onError
+    ) {
         ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
 
         // Tạo request object
         RecordConditionRequest request = new RecordConditionRequest(
-                Collections.singletonList(-1), "", "", 1,
+                Collections.singletonList(-1), "", "", page,
                 Collections.singletonList(-1), 20, "",
-                Collections.singletonList(-1), Collections.singletonList(-1)
+                Collections.singletonList(status), Collections.singletonList(-1)
         );
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
 
+        // Gọi API
         Call<ApiResponse<RecordConditionResponse>> call = apiInterface.recordCondition(token, request);
         call.enqueue(new Callback<ApiResponse<RecordConditionResponse>>() {
             @Override
@@ -291,27 +299,86 @@ public class ApiHelper {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<RecordConditionResponse> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
+                        // Nếu thành công, trả về dữ liệu RecordConditionResponse
                         onSuccess.accept(apiResponse.getData());
                     } else {
+                        // Nếu API trả lỗi, gọi callback với thông báo lỗi
                         String errorMessage = apiResponse.getMessage();
                         onError.accept(errorMessage);
                         CustomToast.showCustomToast(context, errorMessage);
-                        Log.e("ApiHelper", errorMessage);
+                        Log.e("RecordConditionHelper", errorMessage);
                     }
                 } else {
+                    // Nếu API không thành công
                     String errorMessage = "API response failed or is null";
                     onError.accept(errorMessage);
-                    Log.e("ApiHelper", errorMessage);
                     CustomToast.showCustomToast(context, errorMessage);
+                    Log.e("RecordConditionHelper", errorMessage);
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<RecordConditionResponse>> call, Throwable t) {
+                // Xử lý khi gọi API thất bại
                 String errorMessage = t.getMessage();
                 onError.accept(errorMessage);
-                Log.e("ApiHelper", errorMessage);
+                Log.e("RecordConditionHelper", errorMessage);
             }
         });
+    }
+
+    // danh sách phân ca
+    public static <T> void fetchListWorkShift(
+            Context context,
+            String keySearch,
+            int day,
+            int month,
+            int year,
+            int type,
+            int page,
+            int status,
+            Consumer<List<ListWorkShiftResponse.WorkShiftData>> onSuccess,
+            Consumer<String> onError
+    ) {
+        ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
+
+        // Tạo request object
+        ListWorkShiftRequest request = new ListWorkShiftRequest("",null,  null, 1, 20, Collections.singletonList(status), 1, null);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String requestDetailDataJson = gson.toJson(request);
+        Log.d("phanca", "data: " + requestDetailDataJson);
+        // Gọi API
+        Call<ApiResponse<WorkShiftListWrapper>> call = apiInterface.listWokShift(token, request);
+        call.enqueue(new Callback<ApiResponse<WorkShiftListWrapper>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<WorkShiftListWrapper>> call, Response<ApiResponse<WorkShiftListWrapper>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<WorkShiftListWrapper> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        // ✅ Trả về danh sách từ wrapper
+                        onSuccess.accept(apiResponse.getData().getData());
+                    } else {
+                        onError.accept(apiResponse.getMessage());
+                        CustomToast.showCustomToast(context, apiResponse.getMessage());
+                        Log.e("RecordConditionHelper", apiResponse.getMessage());
+                    }
+                } else {
+                    String errorMessage = "API response failed or is null";
+                    onError.accept(errorMessage);
+                    CustomToast.showCustomToast(context, errorMessage);
+                    Log.e("RecordConditionHelper", errorMessage);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<WorkShiftListWrapper>> call, Throwable t) {
+                onError.accept(t.getMessage());
+                Log.e("RecordConditionHelper", t.getMessage());
+            }
+        });
+
     }
 }

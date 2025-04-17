@@ -16,6 +16,9 @@ import com.example.appholaagri.model.IdentificationSensorModel.IdentificationSen
 import com.example.appholaagri.model.ListPlantModel.ListPlantResponse;
 import com.example.appholaagri.model.ListSensorModel.ListSensorRequest;
 import com.example.appholaagri.model.ListSensorModel.ListSensorResponse;
+import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftRequest;
+import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftResponse;
+import com.example.appholaagri.model.ListWorkShiftModel.WorkShiftListWrapper;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
@@ -23,26 +26,24 @@ import com.example.appholaagri.model.PlantDetailModel.PlantDetailResponse;
 import com.example.appholaagri.model.PlantationListModel.PlantationListRequest;
 import com.example.appholaagri.model.PlantationListModel.PlantationListResponse;
 import com.example.appholaagri.model.PlantingDateModel.PlantingDateResponse;
+import com.example.appholaagri.model.RecordConditionModel.InforRecordConditionByQrCode;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionRequest;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionResponse;
+import com.example.appholaagri.model.RecordConditionModel.RecordConditionTabList;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
-import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateResponse;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupRequest;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupResponse;
 import com.example.appholaagri.model.RequestModel.RequestListData;
 import com.example.appholaagri.model.RequestModel.RequestListRequest;
-import com.example.appholaagri.model.RequestStatusModel.RequestStatusData;
 import com.example.appholaagri.model.RequestStatusModel.RequestStatusRequest;
 import com.example.appholaagri.model.RequestStatusModel.RequestStatusResponse;
-import com.example.appholaagri.model.RequestTabListData.RequestTabListData;
 import com.example.appholaagri.model.RequestTabListData.RequestTabListDataResponse;
 import com.example.appholaagri.model.RequestTabListData.RequestTabListRequest;
 import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailData;
 import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailRequest;
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
-import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormRequest;
 import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormResponse;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.model.SoilDetailModel.SoilDetailRespose;
@@ -50,15 +51,19 @@ import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageDat
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageRequest;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsRequest;
+import com.example.appholaagri.model.UploadFileModel.UploadFileResponse;
 import com.example.appholaagri.model.UserData.UserData;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
@@ -238,6 +243,32 @@ public interface ApiInterface {
     Call<ApiResponse<RecordConditionResponse>> recordCondition(@Header("Authorization") String token, @Body RecordConditionRequest recordConditionRequest);
 
 
+    // danh sách tab ghi nhận tình trạng cây trồng
+    @GET("plant-app/status-examination")
+    Call<ApiResponse<List<RecordConditionTabList>>> recordConditionTabList(@Header("Authorization") String token);
+
+
+    // API quét Qr ghi nhận tình trạng cây
+    @GET("plant-app/qr-examination")
+    Call<ApiResponse<InforRecordConditionByQrCode>> qrContentRecordCondition(@Header("Authorization") String token, @Query("qrCode") String qrCode);
+
+    // ghi nhận/ xác nhận tình trạng cây
+    @POST("plant-app/examination")
+    Call<ApiResponse<String>> confirmRecordCondition(@Header("Authorization") String token, @Body InforRecordConditionByQrCode inforRecordConditionByQrCode);
+
+    // API chi tiết tình trạng cây
+    @GET("plant-app/detail-examination")
+    Call<ApiResponse<InforRecordConditionByQrCode>> qrContentDetailRecordCondition(@Header("Authorization") String token, @Query("id") Integer id);
+    // API upload file
+    @Multipart
+    @POST("utility/upload-file")
+    Call<ApiResponse<UploadFileResponse>> uploadFile(
+            @Header("Authorization") String token,
+            @Part MultipartBody.Part file
+    );
+
+
+
     @GET("soil-information/detail-soil")
     Call<ApiResponse<SoilDetailRespose>> detailSoil(
             @Header("Authorization") String token,
@@ -250,5 +281,15 @@ public interface ApiInterface {
     @POST("soil-information/fluctuation-soil")
     Call<ApiResponse<FluctuationSoilResponse>> fluctuationSoil(@Header("Authorization") String token, @Body FluctuationSoilRequest fluctuationSoilRequest);
 
+    // danh sách các tab phân ca
+    @POST("work-shift/get-tab")
+    Call<ApiResponse<List<RecordConditionTabList>>> workShiftTab(@Header("Authorization") String token);
 
+    // danh sách các tab phân ca
+    @POST("work-shift/get-list")
+    Call<ApiResponse<WorkShiftListWrapper>> listWokShift(@Header("Authorization") String token, @Body ListWorkShiftRequest listWorkShiftRequest);
+
+    // danh sách các tab phân ca
+    @POST("work-shift/get-detail")
+    Call<ApiResponse<FluctuationSoilResponse>> detailWokShift(@Header("Authorization") String token, @Body FluctuationSoilRequest fluctuationSoilRequest);
 }

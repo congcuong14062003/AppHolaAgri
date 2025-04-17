@@ -21,7 +21,7 @@ import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
 public class HomeFragment extends BaseFragment {
-    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container, dinhdanh_container, manager_plant, record_condition;
+    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container, dinhdanh_container, manager_plant, record_condition, work_shifts;
     private TextView userName, userInfo;
     private ImageView avtUser;
     private ConstraintLayout container_home;
@@ -36,6 +36,7 @@ public class HomeFragment extends BaseFragment {
         dinhdanh_container = view.findViewById(R.id.dinhdanh_container);
         manager_plant = view.findViewById(R.id.manager_plant);
         record_condition = view.findViewById(R.id.record_condition);
+        work_shifts = view.findViewById(R.id.work_shifts);
         userName = view.findViewById(R.id.user_name);
         userInfo = view.findViewById(R.id.user_info);
         avtUser = view.findViewById(R.id.avtUser);
@@ -67,7 +68,10 @@ public class HomeFragment extends BaseFragment {
             Intent intent = new Intent(getContext(), RecordConditionActivity.class);
             startActivity(intent);
         });
-
+        work_shifts.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), WorkShiftsActivity.class);
+            startActivity(intent);
+        });
         // Get token from SharedPreferences
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);

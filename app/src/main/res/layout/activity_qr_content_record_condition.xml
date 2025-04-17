@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    tools:context=".view.QrContentRecordCondition"
+    android:background="@drawable/bg_home"
+    app:statusBarBackground="@drawable/bg_home"
+    >
+    <!-- AppBarLayout chứa phần tiêu đề và nút back -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+        android:elevation="4dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quản lý thông tin"
+                android:textAllCaps="true"
+                style="@style/TextStyle_16_600"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/backBtnReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintWidth_percent="0.1013"
+                app:srcCompat="@drawable/back_btn" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_rounded"
+        android:backgroundTint="#F0F0F0"
+        android:layout_marginTop="70dp">
+        <LinearLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center_horizontal">
+            <LinearLayout
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_rounded"
+                android:padding="20dp"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_16_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tên đồn điền: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:gravity="end"
+                        android:id="@+id/plantation_name"
+                        style="@style/TextStyle_16_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="SRMTKH3H2C8"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+
+                <!-- Dòng kẻ -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layerType="software"
+                    android:src="@drawable/dashed_line" />
+
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Khu vực: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:id="@+id/area_name"
+                        android:gravity="end"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="SRMT - Sầu riêng Monthong"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Loại cây trồng: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:id="@+id/type_plant"
+                        android:gravity="end"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Vườn A sầu riêng Long Thành"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mã cây trồng: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:gravity="end"
+                        android:id="@+id/code_plant"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Đợt 1 - 12/05/2023"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!--                    Vấn đề, bệnh tật (*)-->
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:id="@+id/problem_disease_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/secon_textcolor"
+                    android:text="Vấn đề, bệnh tật (*)" />
+
+                <EditText
+                    android:id="@+id/edt_problem_disease"
+                    style="@style/TextStyle_14_500"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@drawable/bg_rounded_color_stroke"
+                    android:gravity="top|start"
+                    android:hint="Gõ phím hoặc sử dụng Mic để nhập nội dung"
+                    android:inputType="textMultiLine"
+                    android:minLines="4"
+                    android:padding="16dp"
+                    android:scrollbars="vertical"
+                    android:textColor="@color/textcolor" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/development_information_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/secon_textcolor"
+                    android:text="Thông tin phát triển" />
+
+                <EditText
+                    android:id="@+id/edt_development_information"
+                    style="@style/TextStyle_14_500"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@drawable/bg_rounded_color_stroke"
+                    android:gravity="top|start"
+                    android:padding="16dp"
+                    android:hint="Gõ phím hoặc sử dụng Mic để nhập nội dung"
+                    android:inputType="textMultiLine"
+                    android:minLines="4"
+                    android:scrollbars="vertical"
+                    android:textColor="@color/textcolor" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/file_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/secon_textcolor"
+                    android:text="Tải file lên (nếu có) - tối đa 10 file" />
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/image_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:flexDirection="row"
+                    app:flexWrap="wrap"
+                    app:justifyContent="flex_start"
+                    app:alignItems="flex_start">
+                </com.google.android.flexbox.FlexboxLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/button_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+<!--                <androidx.appcompat.widget.AppCompatButton-->
+<!--                    android:id="@+id/send_information"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:paddingStart="20dp"-->
+<!--                    android:paddingEnd="20dp"-->
+<!--                    android:background="@drawable/button_custom"-->
+<!--                    android:backgroundTint="#e8f7f2"-->
+<!--                    android:elevation="0dp"-->
+<!--                    android:enabled="false"-->
+<!--                    android:stateListAnimator="@null"-->
+<!--                    android:text="Gửi thông tin"-->
+<!--                    android:textAllCaps="false"-->
+<!--                    android:textColor="@color/secondarycolor" />-->
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
