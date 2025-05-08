@@ -39,6 +39,14 @@ public class RecordConditionAdapter extends RecyclerView.Adapter<RecordCondition
         recordDataList.addAll(newData);
         notifyDataSetChanged();
     }
+    // Cập nhật dữ liệu mới khi tải thêm trang
+    public void addData(List<RecordConditionResponse.RecordData> newData) {
+        if (newData != null && !newData.isEmpty()) {
+            int startPosition = recordDataList.size();
+            recordDataList.addAll(newData);
+            notifyItemRangeInserted(startPosition, newData.size());
+        }
+    }
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         RecordConditionResponse.RecordData recordData = recordDataList.get(position);
@@ -69,14 +77,7 @@ public class RecordConditionAdapter extends RecyclerView.Adapter<RecordCondition
         return recordDataList.size();
     }
 
-    // Cập nhật dữ liệu mới khi tải thêm trang
-    public void addData(List<RecordConditionResponse.RecordData> newData) {
-        if (newData != null && !newData.isEmpty()) {
-            int startPosition = recordDataList.size();
-            recordDataList.addAll(newData);
-            notifyItemRangeInserted(startPosition, newData.size());
-        }
-    }
+
 
     // Xóa hết dữ liệu (dùng cho refresh)
     public void clearData() {

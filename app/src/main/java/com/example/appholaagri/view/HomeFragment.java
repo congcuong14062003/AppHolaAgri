@@ -21,7 +21,8 @@ import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
 public class HomeFragment extends BaseFragment {
-    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container, dinhdanh_container, manager_plant, record_condition, work_shifts;
+    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container,
+            dinhdanh_container, manager_plant, record_condition, work_shifts, manual_measurement;
     private TextView userName, userInfo;
     private ImageView avtUser;
     private ConstraintLayout container_home;
@@ -36,6 +37,7 @@ public class HomeFragment extends BaseFragment {
         dinhdanh_container = view.findViewById(R.id.dinhdanh_container);
         manager_plant = view.findViewById(R.id.manager_plant);
         record_condition = view.findViewById(R.id.record_condition);
+        manual_measurement = view.findViewById(R.id.manual_measurement);
         work_shifts = view.findViewById(R.id.work_shifts);
         userName = view.findViewById(R.id.user_name);
         userInfo = view.findViewById(R.id.user_info);
@@ -70,6 +72,10 @@ public class HomeFragment extends BaseFragment {
         });
         work_shifts.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), WorkShiftsActivity.class);
+            startActivity(intent);
+        });
+        manual_measurement.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), ManualMeasurementActivity.class);
             startActivity(intent);
         });
         // Get token from SharedPreferences

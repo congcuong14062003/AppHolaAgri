@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_rounded_10"
+    android:gravity="center">
+
+    <!-- Tiêu đề -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HolaAgri"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/textcolor"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Nội dung -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gửi dữ liệu thành công"
+        android:textSize="16sp"
+        android:textColor="@color/secon_textcolor"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Container cho hai nút -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Nút Hủy -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_back_home"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/button_custom"
+            android:elevation="0dp"
+            android:stateListAnimator="@null"
+            android:text="Về trang chủ"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <!-- Nút OK -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_continue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/button_custom"
+            android:backgroundTint="@color/secondarycolor"
+            android:elevation="0dp"
+            android:stateListAnimator="@null"
+            android:text="Tiếp tục đo"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>

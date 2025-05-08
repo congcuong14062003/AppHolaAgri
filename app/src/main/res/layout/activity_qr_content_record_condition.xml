@@ -26,7 +26,7 @@
                 android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Quản lý thông tin"
+                android:text="GHI NHẬN TÌNH TRẠNG"
                 android:textAllCaps="true"
                 style="@style/TextStyle_16_600"
                 android:textColor="@color/black"
@@ -180,6 +180,212 @@
                 </LinearLayout>
             </LinearLayout>
 
+
+<!--            for detail-->
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/employee_infor_detail"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_rounded"
+                android:padding="20dp"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_16_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Người gửi: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:gravity="end"
+                        android:id="@+id/sender_plantation"
+                        style="@style/TextStyle_16_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nguyễn Thị Chuyên Nghiệp"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+
+                <!-- Dòng kẻ -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layerType="software"
+                    android:src="@drawable/dashed_line" />
+
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mã nhân viên: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:id="@+id/employee_code"
+                        android:gravity="end"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="SRMT - Sầu riêng Monthong"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tổ đội: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:id="@+id/team_code"
+                        android:gravity="end"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Vườn A sầu riêng Long Thành"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thời gian: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:gravity="end"
+                        android:id="@+id/time"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Đợt 1 - 12/05/2023"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/status_infor_detail"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_rounded"
+                android:padding="20dp"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle_16_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ghi nhận tình trạng: "
+                        android:textColor="@color/textcolor"
+                        />
+
+                </LinearLayout>
+
+                <!-- Dòng kẻ -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layerType="software"
+                    android:src="@drawable/dashed_line" />
+
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vấn đề, bệnh tật: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:id="@+id/problem_detail"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="SRMT - Sầu riêng Monthong"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextStyle_14_400"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin phát triển: "
+                        android:textColor="@color/textcolor"
+                        />
+                    <TextView
+                        android:id="@+id/infor_detail"
+                        style="@style/TextStyle_14_600"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vườn A sầu riêng Long Thành"
+                        android:textColor="@color/textcolor"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+
             <!--                    Vấn đề, bệnh tật (*)-->
             <LinearLayout
                 android:layout_marginTop="10dp"
@@ -211,6 +417,7 @@
                     android:scrollbars="vertical"
                     android:textColor="@color/textcolor" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/development_information_layout"
                 android:layout_width="match_parent"
@@ -240,12 +447,12 @@
                     android:scrollbars="vertical"
                     android:textColor="@color/textcolor" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/file_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
                 <TextView
                     android:layout_marginBottom="10dp"
                     android:layout_width="wrap_content"
@@ -262,6 +469,27 @@
                     app:justifyContent="flex_start"
                     app:alignItems="flex_start">
                 </com.google.android.flexbox.FlexboxLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/file_layout_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/secon_textcolor"
+                    android:text="Hình ảnh" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_images_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:scrollbars="horizontal" />
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/button_action"

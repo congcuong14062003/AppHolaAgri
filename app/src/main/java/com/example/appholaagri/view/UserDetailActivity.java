@@ -79,7 +79,7 @@ public class UserDetailActivity extends AppCompatActivity {
             getUserData(token);
         }
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
         cameraIcon.setOnClickListener(v -> checkCameraPermissionAndOpen());
     }

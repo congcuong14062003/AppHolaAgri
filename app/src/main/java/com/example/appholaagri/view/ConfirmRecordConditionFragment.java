@@ -88,7 +88,7 @@ public class ConfirmRecordConditionFragment extends Fragment {
     }
 
     private void getListRecordCondition(int page, int status) {
-
+        Log.d("recordd", "vào");
         RecordConditionHelper.fetchRecordCondition(
                 getContext(),
                 page,

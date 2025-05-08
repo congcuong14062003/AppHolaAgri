@@ -52,6 +52,8 @@ android {
 }
 
 dependencies {
+    implementation ("com.github.mik3y:usb-serial-for-android:3.5.1")
+
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:okhttp:4.9.0")
@@ -77,6 +79,8 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0")
 
     // chart
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

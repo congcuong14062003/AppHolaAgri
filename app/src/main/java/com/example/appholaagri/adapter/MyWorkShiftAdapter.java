@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftResponse;
+import com.example.appholaagri.model.RecordConditionModel.RecordConditionResponse;
 import com.squareup.picasso.Picasso;
 
 
@@ -30,12 +31,19 @@ public class MyWorkShiftAdapter extends RecyclerView.Adapter<MyWorkShiftAdapter.
         workShiftData.addAll(newData);
         notifyDataSetChanged();
     }
-
+    // Cập nhật dữ liệu mới khi tải thêm trang
     public void addData(List<ListWorkShiftResponse.WorkShiftData> newData) {
-        int start = workShiftData.size();
-        workShiftData.addAll(newData);
-        notifyItemRangeInserted(start, newData.size());
+        if (newData != null && !newData.isEmpty()) {
+            int startPosition = workShiftData.size();
+            workShiftData.addAll(newData);
+            notifyItemRangeInserted(startPosition, newData.size());
+        }
     }
+//    public void addData(List<ListWorkShiftResponse.WorkShiftData> newData) {
+//        int start = workShiftData.size();
+//        workShiftData.addAll(newData);
+//        notifyItemRangeInserted(start, newData.size());
+//    }
 
     public void clearData() {
         workShiftData.clear();

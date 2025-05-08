@@ -425,6 +425,43 @@
                         android:text="Phân ca làm việc"
                         android:textColor="@color/white" />
                 </LinearLayout>
+
+
+<!--                đo thủ công-->
+                <LinearLayout
+                    android:id="@+id/manual_measurement"
+                    android:layout_width="0dp"
+                    android:layout_rowWeight="1"
+                    android:layout_columnWeight="1"
+                    android:background="@drawable/item2"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="left"
+                        android:scaleType="centerCrop"
+                        app:cardCornerRadius="50dp"
+                        app:cardElevation="4dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/thongkechamcong_icon" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="Đo thủ công"
+                        android:textColor="@color/white" />
+                </LinearLayout>
             </GridLayout>
         </LinearLayout>
     </ScrollView>

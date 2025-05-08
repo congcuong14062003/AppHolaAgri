@@ -343,7 +343,7 @@ public class ApiHelper {
         ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
 
         // Tạo request object
-        ListWorkShiftRequest request = new ListWorkShiftRequest("",null,  null, 1, 20, Collections.singletonList(status), 1, null);
+        ListWorkShiftRequest request = new ListWorkShiftRequest("",null,  null, page, 20, Collections.singletonList(status), type, null);
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);

@@ -3,42 +3,75 @@ package com.example.appholaagri.model.ListWorkShiftModel;
 import java.util.List;
 
 public class ListWorkShiftResponse {
-    private WorkShiftData data;
-    public WorkShiftData getData() {
+    private DataWrapper data;
+
+    public DataWrapper getData() {
         return data;
     }
-    public void setData(WorkShiftData data) {
+
+    public void setData(DataWrapper data) {
         this.data = data;
     }
-    public static class WorkShiftData {
-            private Employee employee;
-            private Team team;
-            private List<WorkShiftDetail> workShiftListDetail;
 
-            public Employee getEmployee() {
-                return employee;
-            }
+    public static class DataWrapper {
+        private List<WorkShiftData> data;
+        private int numOfRecords;
+        private int totalRecord;
 
-            public void setEmployee(Employee employee) {
-                this.employee = employee;
-            }
-
-            public Team getTeam() {
-                return team;
-            }
-
-            public void setTeam(Team team) {
-                this.team = team;
-            }
-
-            public List<WorkShiftDetail> getWorkShiftListDetail() {
-                return workShiftListDetail;
-            }
-
-            public void setWorkShiftListDetail(List<WorkShiftDetail> workShiftListDetail) {
-                this.workShiftListDetail = workShiftListDetail;
-            }
+        public List<WorkShiftData> getData() {
+            return data;
         }
+
+        public void setData(List<WorkShiftData> data) {
+            this.data = data;
+        }
+
+        public int getNumOfRecords() {
+            return numOfRecords;
+        }
+
+        public void setNumOfRecords(int numOfRecords) {
+            this.numOfRecords = numOfRecords;
+        }
+
+        public int getTotalRecord() {
+            return totalRecord;
+        }
+
+        public void setTotalRecord(int totalRecord) {
+            this.totalRecord = totalRecord;
+        }
+    }
+
+    public static class WorkShiftData {
+        private Employee employee;
+        private Team team;
+        private List<WorkShiftDetail> workShiftListDetail;
+
+        public Employee getEmployee() {
+            return employee;
+        }
+
+        public void setEmployee(Employee employee) {
+            this.employee = employee;
+        }
+
+        public Team getTeam() {
+            return team;
+        }
+
+        public void setTeam(Team team) {
+            this.team = team;
+        }
+
+        public List<WorkShiftDetail> getWorkShiftListDetail() {
+            return workShiftListDetail;
+        }
+
+        public void setWorkShiftListDetail(List<WorkShiftDetail> workShiftListDetail) {
+            this.workShiftListDetail = workShiftListDetail;
+        }
+    }
         public static class Employee {
             private int id;
             private String code;

@@ -6,6 +6,7 @@ import com.example.appholaagri.model.CheckInInitFormData.CheckInInitFormData;
 import com.example.appholaagri.model.CheckInQrCodeModel.CheckInQrCodeRequest;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ColAndRowNumberModel.ColAndRowNumberResponse;
+import com.example.appholaagri.model.DirectMeasurement.DirectMeasurementRequest;
 import com.example.appholaagri.model.FluctuationSoilModel.FluctuationSoilRequest;
 import com.example.appholaagri.model.FluctuationSoilModel.FluctuationSoilResponse;
 import com.example.appholaagri.model.ForgotPasswordModel.ForgotPasswordRequest;
@@ -23,6 +24,7 @@ import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
 import com.example.appholaagri.model.PlantDetailModel.PlantDetailResponse;
+import com.example.appholaagri.model.PlantInforByQrCode.PlantInforResponse;
 import com.example.appholaagri.model.PlantationListModel.PlantationListRequest;
 import com.example.appholaagri.model.PlantationListModel.PlantationListResponse;
 import com.example.appholaagri.model.PlantingDateModel.PlantingDateResponse;
@@ -47,6 +49,7 @@ import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
 import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormResponse;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.model.SoilDetailModel.SoilDetailRespose;
+import com.example.appholaagri.model.SoilManualInitFormModel.SoilManualInitFormResponse;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageData;
 import com.example.appholaagri.model.TimeKeepingManageModel.TimeKeepingManageRequest;
 import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
@@ -292,4 +295,16 @@ public interface ApiInterface {
     // danh sách các tab phân ca
     @POST("work-shift/get-detail")
     Call<ApiResponse<FluctuationSoilResponse>> detailWokShift(@Header("Authorization") String token, @Body FluctuationSoilRequest fluctuationSoilRequest);
+
+
+    // soil-manual
+
+
+    // api đo thông tin cầm tay
+    @POST("soil-manual/direct-measurement")
+    Call<ApiResponse<String>> directMeasurement(@Header("Authorization") String token, @Body DirectMeasurementRequest directMeasurementRequest);
+
+    // API thông tin chi tiết cây thu thập thủ công
+    @GET("soil-manual/init-form")
+    Call<ApiResponse<SoilManualInitFormResponse>> initFormPlantByQrCode(@Header("Authorization") String token, @Query("qrCode") String qrCode);
 }
