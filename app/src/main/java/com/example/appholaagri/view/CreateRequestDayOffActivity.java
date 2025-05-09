@@ -406,6 +406,8 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                         if (apiResponse.getStatus() == 200) {
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         Log.e("CreateRequestDayOffActivity", "API response is unsuccessful");

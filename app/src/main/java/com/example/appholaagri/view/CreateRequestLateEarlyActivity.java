@@ -157,7 +157,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
-            Log.d("CreateRequestLateEarlyActivity", "StatusRequest: " + StatusRequest);
+            Log.d("CreateRequestLateEarlyActivity", "GroupRequestId: " + GroupRequestId);
+            Log.d("CreateRequestLateEarlyActivity", "GroupRequestType: " + GroupRequestType);
         }
 
         if(StatusRequest > 2){
@@ -425,6 +426,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
 
     // init data
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
+        Log.d("haha", "GroupRequestId: "+ GroupRequestId);
+
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
@@ -437,6 +440,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                         if (apiResponse.getStatus() == 200) {
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         Log.e("CreateRequestLateEarlyActivity", "API response is unsuccessful");
@@ -452,6 +457,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
                 String errorMessage = t.getMessage();
                 Log.e("ApiHelper", errorMessage);
+                CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, errorMessage);
             }
         });
     }

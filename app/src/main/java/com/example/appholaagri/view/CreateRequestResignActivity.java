@@ -360,6 +360,8 @@ public class CreateRequestResignActivity extends BaseActivity {
                         if (apiResponse.getStatus() == 200) {
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestResignActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         Log.e("CreateRequestResignActivity", "API response is unsuccessful");

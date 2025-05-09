@@ -72,7 +72,7 @@ public class HomeActivity extends AppCompatActivity {
                     replaceFragment(new WorkSchedule(), "WORK_SCHEDULE");
                     break;
                 case R.id.nav_ban_tin:
-                    replaceFragment(new NewsletterFragment(), "NEWSLETTER");
+                    replaceFragment(new RequestNewFragment(), "NEWSLETTER");
                     break;
                 case R.id.nav_setting:
                     replaceFragment(new SettingFragment(), "SETTING");

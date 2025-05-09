@@ -307,4 +307,12 @@ public interface ApiInterface {
     // API thông tin chi tiết cây thu thập thủ công
     @GET("soil-manual/init-form")
     Call<ApiResponse<SoilManualInitFormResponse>> initFormPlantByQrCode(@Header("Authorization") String token, @Query("qrCode") String qrCode);
+
+    // api chiến dịch
+
+    // api đo thông tin cầm tay
+    @POST("soil-manual/direct-measurement")
+    Call<ApiResponse<String>> listCampaign(@Header("Authorization") String token, @Body DirectMeasurementRequest directMeasurementRequest);
+
+
 }

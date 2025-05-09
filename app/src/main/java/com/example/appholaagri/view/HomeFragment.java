@@ -1,84 +1,52 @@
 package com.example.appholaagri.view;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.appholaagri.R;
+import com.example.appholaagri.adapter.FunctionAdapter;
 import com.example.appholaagri.helper.UserDetailApiHelper;
+import com.example.appholaagri.model.FunctionItemHomeModel.FunctionItemHomeModel;
 import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.utils.CustomToast;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment extends BaseFragment {
-    private LinearLayout thongkechamcong_container, bangcongluong_container, yeucau_dexuat_container,
-            dinhdanh_container, manager_plant, record_condition, work_shifts, manual_measurement;
+    private RecyclerView rvFarmManagement, rvTaskManagement, rvRequestProposal;
     private TextView userName, userInfo;
     private ImageView avtUser;
-    private ConstraintLayout container_home;
+    private ConstraintLayout containerHome;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        thongkechamcong_container = view.findViewById(R.id.thongkechamcong_container);
-        bangcongluong_container = view.findViewById(R.id.bangcongluong_container);
-        yeucau_dexuat_container = view.findViewById(R.id.yeucau_dexuat_container);
-        dinhdanh_container = view.findViewById(R.id.dinhdanh_container);
-        manager_plant = view.findViewById(R.id.manager_plant);
-        record_condition = view.findViewById(R.id.record_condition);
-        manual_measurement = view.findViewById(R.id.manual_measurement);
-        work_shifts = view.findViewById(R.id.work_shifts);
+
+        rvFarmManagement = view.findViewById(R.id.rv_farm_management);
+        rvTaskManagement = view.findViewById(R.id.rv_task_management);
+        rvRequestProposal = view.findViewById(R.id.rv_request_proposal);
+
         userName = view.findViewById(R.id.user_name);
         userInfo = view.findViewById(R.id.user_info);
         avtUser = view.findViewById(R.id.avtUser);
-        container_home = view.findViewById(R.id.container_home);
+        containerHome = view.findViewById(R.id.container_home);
 
-        // sự kiện click
-        thongkechamcong_container.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), TimekeepingStatisticsActivity.class);
-            startActivity(intent);
-        });
-        bangcongluong_container.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), SalaryTableActivity.class);
-            startActivity(intent);
-        });
-        yeucau_dexuat_container.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), RequestActivity.class);
-            startActivity(intent);
-        });
+        setupFarmManagementRecyclerView();
+        setupTaskManagementRecyclerView();
+        setupRequestProposalRecyclerView();
 
-        dinhdanh_container.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), DeclarationIdentifierActivity.class);
-            startActivity(intent);
-        });
-        manager_plant.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), ListPlantationActivity.class);
-            startActivity(intent);
-        });
-        record_condition.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), RecordConditionActivity.class);
-            startActivity(intent);
-        });
-        work_shifts.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), WorkShiftsActivity.class);
-            startActivity(intent);
-        });
-        manual_measurement.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), ManualMeasurementActivity.class);
-            startActivity(intent);
-        });
-        // Get token from SharedPreferences
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
         Log.d("HomeFragment", "token: " + token);
@@ -86,8 +54,51 @@ public class HomeFragment extends BaseFragment {
         if (token != null) {
             getUserData(token);
         }
+
         return view;
     }
+
+    private void setupFarmManagementRecyclerView() {
+        List<FunctionItemHomeModel> farmItems = new ArrayList<>();
+        farmItems.add(new FunctionItemHomeModel("Quản lý cây trồng", R.drawable.qlct, ListPlantationActivity.class));
+        farmItems.add(new FunctionItemHomeModel("Khai báo định danh", R.drawable.ddqt, DeclarationIdentifierActivity.class));
+        farmItems.add(new FunctionItemHomeModel("Ghi nhận tình trạng", R.drawable.gntt, RecordConditionActivity.class));
+
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1, GridLayoutManager.HORIZONTAL, false);
+        rvFarmManagement.setLayoutManager(layoutManager);
+        FunctionAdapter adapter = new FunctionAdapter(getContext(), farmItems, true); // true cho item_farm
+        rvFarmManagement.setAdapter(adapter);
+    }
+
+    private void setupTaskManagementRecyclerView() {
+        List<FunctionItemHomeModel> taskItems = new ArrayList<>();
+        taskItems.add(new FunctionItemHomeModel("Thống kê chấm công", R.drawable.tkcc, TimekeepingStatisticsActivity.class));
+        taskItems.add(new FunctionItemHomeModel("Chiến dịch điều động", R.drawable.cddd, MobilizationCampaignActivity.class));
+        taskItems.add(new FunctionItemHomeModel("Xác nhận báo cáo", R.drawable.tkcc, null));
+        taskItems.add(new FunctionItemHomeModel("Báo cáo công việc", R.drawable.tkcc, null));
+        taskItems.add(new FunctionItemHomeModel("Bảng tính công", R.drawable.btc, SalaryTableActivity.class));
+        taskItems.add(new FunctionItemHomeModel("Đo thủ công", R.drawable.dtc, ManualMeasurementActivity.class));
+        taskItems.add(new FunctionItemHomeModel("Phân ca làm việc", R.drawable.pclv, WorkShiftsActivity.class));
+
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false);
+        rvTaskManagement.setLayoutManager(layoutManager);
+        FunctionAdapter adapter = new FunctionAdapter(getContext(), taskItems, false); // false cho item_home
+        rvTaskManagement.setAdapter(adapter);
+    }
+
+    private void setupRequestProposalRecyclerView() {
+        List<FunctionItemHomeModel> requestItems = new ArrayList<>();
+        requestItems.add(new FunctionItemHomeModel("Đi muộn về sớm", R.drawable.dmvs, CreateRequestLateEarlyActivity.class, 1, 1));
+        requestItems.add(new FunctionItemHomeModel("Đơn xin nghỉ phép", R.drawable.dxnp, CreateRequestDayOffActivity.class, 2, 2));
+        requestItems.add(new FunctionItemHomeModel("Đăng ký làm thêm", R.drawable.dklt, CreateRequestOvertTimeActivity.class, 3, 3));
+        requestItems.add(new FunctionItemHomeModel("Mua sắm vật tư", R.drawable.msvt, CreateRequestBuyNewActivity.class, 4, 4));
+        requestItems.add(new FunctionItemHomeModel("Đơn xin thôi việc", R.drawable.dxtv, CreateRequestResignActivity.class, 5, 5));
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1, GridLayoutManager.HORIZONTAL, false);
+        rvRequestProposal.setLayoutManager(layoutManager);
+        FunctionAdapter adapter = new FunctionAdapter(getContext(), requestItems, false); // false cho item_home
+        rvRequestProposal.setAdapter(adapter);
+    }
+
     private void getUserData(String token) {
         UserDetailApiHelper.getUserData(getContext(), token, new UserDetailApiHelper.UserDataCallback() {
             @Override
@@ -97,27 +108,20 @@ public class HomeFragment extends BaseFragment {
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("SettingFragment", "Error: " + errorMessage);
+                Log.e("HomeFragment", "Error: " + errorMessage);
                 CustomToast.showCustomToast(requireContext(), "Lỗi: " + errorMessage);
             }
         });
     }
+
     private void updateUserUI(UserData userData) {
         try {
-            if (userData == null) {
-                return;
-            }
-            // Check for ContractInfo before using it
+            if (userData == null) return;
             if (userData.getContractInfo() != null) {
-                Picasso.get()
-                        .load(userData.getUserAvatar()) // URL of image
-                        .placeholder(R.drawable.avatar) // Placeholder image while loading
-                        .error(R.drawable.avatar) // Error image if loading fails
-                        .into(avtUser); // Set the image to ImageView
+                Picasso.get().load(userData.getUserAvatar()).placeholder(R.drawable.avatar).error(R.drawable.avatar).into(avtUser);
             } else {
-                avtUser.setImageResource(R.drawable.avatar); // Set default image if contractInfo is null
+                avtUser.setImageResource(R.drawable.avatar);
             }
-            // Check AccountDetail and WorkInfo for null before using them
             if (userData.getAccountDetail() != null) {
                 userName.setText(userData.getAccountDetail().getStaffName());
                 if (userData.getWorkInfo() != null && userData.getWorkInfo().getTitle() != null) {
@@ -129,9 +133,9 @@ public class HomeFragment extends BaseFragment {
                 userName.setText("Tên không có sẵn");
                 userInfo.setText("Mã nhân viên không có sẵn");
             }
-            container_home.setVisibility(View.VISIBLE); // Show layout after data is updated
+            containerHome.setVisibility(View.VISIBLE);
         } catch (Exception e) {
-            CustomToast.showCustomToast(requireContext(),  "Lỗi khi cập nhật giao diện.");
+            CustomToast.showCustomToast(requireContext(), "Lỗi khi cập nhật giao diện.");
         }
     }
 }

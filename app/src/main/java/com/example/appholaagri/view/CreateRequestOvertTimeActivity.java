@@ -276,6 +276,8 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                         if (apiResponse.getStatus() == 200) {
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         }
                     } else {
                         Log.e("CreateRequestOvertTime", "API response is unsuccessful");

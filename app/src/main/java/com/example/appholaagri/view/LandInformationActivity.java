@@ -110,6 +110,8 @@ public class LandInformationActivity extends AppCompatActivity {
 
         // Sự kiện cho nút "Đo lại"
         measure_again_button.setOnClickListener(view -> {
+            Intent intent = new Intent(LandInformationActivity.this, ManualMeasurementActivity.class);
+            startActivity(intent);
             finish();
         });
 

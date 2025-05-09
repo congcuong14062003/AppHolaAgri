@@ -25,10 +25,10 @@ public class SendSuccessData extends BaseActivity {
 
         continue_reporting_btn.setOnClickListener(view -> {
             // Truyền tab_index ngược lại cho DeclarationIdentifierActivity
-            Intent intent = new Intent(SendSuccessData.this, DeclarationIdentifierActivity.class);
-            intent.putExtra("tab_index", tabIndex); // Sử dụng tab đã nhận được
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+//            Intent intent = new Intent(SendSuccessData.this, DeclarationIdentifierActivity.class);
+//            intent.putExtra("tab_index", tabIndex); // Sử dụng tab đã nhận được
+//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(intent);
             finish(); // Đóng SendSuccessData
         });
         back_home_btn.setOnClickListener(view -> {

@@ -39,6 +39,8 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -296,7 +298,10 @@ public class PlantNutritionValueFragment extends BaseFragment {
 
                     if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
                         List<FluctuationSoilResponse.FluctuationValue> fluctuationValues = apiResponse.getData().getFluctuationValue();
+                        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+                        String requestDetailDataJson = gson.toJson(fluctuationValues);
 
+                        Log.d("mappp", "fluctuationValues:" + requestDetailDataJson);
                         if (fluctuationValues != null && !fluctuationValues.isEmpty()) {
                             emptyStateLayout.setVisibility(View.GONE);
                             mChart.setVisibility(View.VISIBLE);

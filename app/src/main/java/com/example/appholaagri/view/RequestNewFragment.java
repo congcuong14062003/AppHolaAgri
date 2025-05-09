@@ -4,23 +4,21 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
@@ -31,9 +29,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ListStatusRequestAdapter;
 import com.example.appholaagri.adapter.RequestAdapterTabList;
-import com.example.appholaagri.adapter.TimekeepingManageAdapterTabList;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
-import com.example.appholaagri.model.CheckInInitFormData.CheckInInitFormData;
 import com.example.appholaagri.model.RequestStatusModel.RequestStatusData;
 import com.example.appholaagri.model.RequestStatusModel.RequestStatusRequest;
 import com.example.appholaagri.model.RequestStatusModel.RequestStatusResponse;
@@ -42,55 +38,56 @@ import com.example.appholaagri.model.RequestTabListData.RequestTabListDataRespon
 import com.example.appholaagri.model.RequestTabListData.RequestTabListRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
-import com.example.appholaagri.utils.CustomToast;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RequestActivity extends AppCompatActivity {
+public class RequestNewFragment extends Fragment {
+
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private RequestAdapterTabList requestAdapterTabList;
-    private Calendar selectedDate = Calendar.getInstance(); // Lưu giữ ngày tháng hiện tại
-    private TextView tab2Title, title_request;
-    private ImageView calendarIcon, backBtnReview, SearchBtnReview;
-    private RequestTabListData requestTabListData;
+    private TextView title_request;
+    private ImageView backBtnReview, SearchBtnReview;
     private View overlay_background;
     private EditText edtSearch;
     private ConstraintLayout overlay, overlay_filter_status_container;
     private LinearLayout create_request_btn;
     private int tabId = 1; // Giá trị mặc định là 0
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_request);
-        // Kết nối các view
-        tabLayout = findViewById(R.id.tabRequest);
-        viewPager = findViewById(R.id.viewPagerRequest);
-        backBtnReview = findViewById(R.id.backBtnReview);
-        overlay_background = findViewById(R.id.overlay_background);
-        SearchBtnReview = findViewById(R.id.SearchBtnReview);
-        title_request = findViewById(R.id.title_request);
-        edtSearch = findViewById(R.id.edtSearch);
-        overlay = findViewById(R.id.overlay_filter_status);
-        overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
-        create_request_btn = findViewById(R.id.create_request_btn);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_request_new, container, false);
 
-        create_request_btn.setOnClickListener(view -> {
-            Intent intent = new Intent(RequestActivity.this, ListRequestToCreateActivity.class);
-            startActivity(intent);
-            finish();
+        // Kết nối các view
+        tabLayout = view.findViewById(R.id.tabRequest);
+        viewPager = view.findViewById(R.id.viewPagerRequest);
+        backBtnReview = view.findViewById(R.id.backBtnReview);
+        overlay_background = view.findViewById(R.id.overlay_background);
+        SearchBtnReview = view.findViewById(R.id.SearchBtnReview);
+        title_request = view.findViewById(R.id.title_request);
+        edtSearch = view.findViewById(R.id.edtSearch);
+        overlay = view.findViewById(R.id.overlay_filter_status);
+        overlay_filter_status_container = view.findViewById(R.id.overlay_filter_status_container);
+        create_request_btn = view.findViewById(R.id.create_request_btn);
+
+        // Áp dụng padding bottom để tránh bị bottom bar che
+        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            v.setPadding(0, 0, 0, bottomInset); // Thêm padding bottom bằng chiều cao bottom bar
+            return insets;
         });
 
+        create_request_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), ListRequestToCreateActivity.class);
+            startActivity(intent);
+        });
 
         edtSearch.setVisibility(View.GONE); // Ban đầu ẩn EditText
         // Sử dụng View.post() để đảm bảo width được đo đạc chính xác
@@ -98,15 +95,12 @@ public class RequestActivity extends AppCompatActivity {
             edtSearch.setTranslationX(edtSearch.getWidth()); // Đặt vị trí ngoài màn hình
         });
 
-        // Add this in your onCreate method after initializing views:
-        overlay_background.setOnTouchListener((view, event) -> {
-            // Check if the touch event is outside the overlay_filter_status_container
+        // Xử lý sự kiện touch cho overlay_background
+        overlay_background.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                // Get the coordinates of the touch
                 float x = event.getX();
                 float y = event.getY();
 
-                // Check if the touch is outside the overlay_filter_status_container
                 int[] location = new int[2];
                 overlay_filter_status_container.getLocationOnScreen(location);
                 int containerX = location[0];
@@ -115,62 +109,52 @@ public class RequestActivity extends AppCompatActivity {
                 int containerHeight = overlay_filter_status_container.getHeight();
 
                 if (x < containerX || x > containerX + containerWidth || y < containerY || y > containerY + containerHeight) {
-                    // Touch is outside the container, so hide the overlay
                     overlay.setVisibility(View.GONE);
                     overlay_background.setVisibility(View.GONE);
                 }
             }
-            return true; // Handle the touch event and prevent further propagation
+            return true;
         });
 
-        // ẩn hiện ô tìm kiếm
-        SearchBtnReview.setOnClickListener(view -> {
+        // Ẩn hiện ô tìm kiếm
+        SearchBtnReview.setOnClickListener(v -> {
             if (title_request.getVisibility() == View.VISIBLE) {
-                // Ẩn tiêu đề và hiển thị EditText với animation
                 title_request.setVisibility(View.GONE);
-
                 edtSearch.setVisibility(View.VISIBLE);
                 edtSearch.animate()
-                        .translationX(0) // Trượt vào màn hình
-                        .setDuration(300) // Thời gian animation
+                        .translationX(0)
+                        .setDuration(300)
                         .start();
             } else {
-                // Ẩn EditText với animation
                 edtSearch.animate()
-                        .translationX(edtSearch.getWidth()) // Trượt ra ngoài màn hình
+                        .translationX(edtSearch.getWidth())
                         .setDuration(300)
                         .withEndAction(() -> {
-                            edtSearch.setVisibility(View.GONE); // Ẩn EditText sau animation
-                            title_request.setVisibility(View.VISIBLE); // Hiển thị lại tiêu đề
+                            edtSearch.setVisibility(View.GONE);
+                            title_request.setVisibility(View.VISIBLE);
                         })
                         .start();
             }
         });
 
-
         edtSearch.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                // Kiểm tra nếu người dùng chạm vào vùng xóa (drawableRight)
                 if (event.getX() >= edtSearch.getWidth() - edtSearch.getCompoundDrawables()[2].getBounds().width()) {
-                    // Xóa nội dung trong EditText
                     edtSearch.setText("");
-                    return true; // Xử lý sự kiện chạm và trả lại true để không tiếp tục xử lý thêm
+                    return true;
                 }
             }
-            return false; // Nếu không chạm vào vùng xóa, không xử lý gì thêm
+            return false;
         });
 
-        // thay đổi theo sự kiện onchange của input
+        // Thay đổi theo sự kiện onchange của input
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String newText = s.toString();
-                // Truy cập và gọi hàm updateStatus
                 int currentPage = viewPager.getCurrentItem();
                 Fragment currentFragment = requestAdapterTabList.getFragmentAtPosition(currentPage);
 
@@ -178,22 +162,20 @@ public class RequestActivity extends AppCompatActivity {
                     ((SendToMeRequestFragment) currentFragment).updateKeySearch(newText);
                 } else if (currentFragment instanceof IsendRequestFragment) {
                     ((IsendRequestFragment) currentFragment).updateKeySearch(newText);
-                } else if (currentFragment instanceof  FollowingRequestFragment) {
+                } else if (currentFragment instanceof FollowingRequestFragment) {
                     ((FollowingRequestFragment) currentFragment).updateKeySearch(newText);
                 }
-
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
-        // Thiết lập Adapter cho ViewPager
-        viewPager.setAdapter(requestAdapterTabList);
-        backBtnReview.setOnClickListener(view -> {
-            finish();
+        // Xử lý nút back
+        backBtnReview.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
         });
 
         // Theo dõi sự kiện chuyển tab
@@ -201,96 +183,88 @@ public class RequestActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                // Xóa nội dung EditText khi tab thay đổi
                 tabId = requestAdapterTabList.getTabIdAtPosition(position);
                 edtSearch.setText("");
 
-                // Ẩn EditText và hiển thị lại tiêu đề nếu đang ở chế độ tìm kiếm
                 if (edtSearch.getVisibility() == View.VISIBLE) {
                     edtSearch.animate()
-                            .translationX(edtSearch.getWidth()) // Trượt EditText ra ngoài màn hình
+                            .translationX(edtSearch.getWidth())
                             .setDuration(300)
                             .withEndAction(() -> {
-                                edtSearch.setVisibility(View.GONE); // Ẩn EditText sau animation
-                                title_request.setVisibility(View.VISIBLE); // Hiển thị lại tiêu đề
+                                edtSearch.setVisibility(View.GONE);
+                                title_request.setVisibility(View.VISIBLE);
                             })
                             .start();
                 }
             }
         });
-        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("AppPreferences", requireContext().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
         getInitFormData(token);
 
-
-        // lọc theo trạng thái
-        ImageView filterIcon = findViewById(R.id.filterIcon);
+        // Lọc theo trạng thái
+        ImageView filterIcon = view.findViewById(R.id.filterIcon);
         filterIcon.setOnClickListener(v -> {
-            getStatusList(token); // Gọi API lấy danh sách trạng thái
+            getStatusList(token);
         });
 
+        return view;
     }
+
     private void getInitFormData(String token) {
-        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(requireContext()).create(ApiInterface.class);
         RequestTabListRequest requestTabListRequest = new RequestTabListRequest(1, 20);
         Call<ApiResponse<RequestTabListDataResponse>> call = apiInterface.requestTabListData(requestTabListRequest);
         call.enqueue(new Callback<ApiResponse<RequestTabListDataResponse>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<RequestTabListDataResponse>> call, Response<ApiResponse<RequestTabListDataResponse>> response) {
-                Log.d("RequestActivity", "respose: " + response);
+                Log.d("RequestNewFragment", "response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<RequestTabListDataResponse> apiResponse = response.body();
-                    if(apiResponse.getStatus() == 200) {
-                        List<RequestTabListData> tabList = apiResponse.getData().getData(); // Lấy danh sách tab
-                        int numOfRecords = apiResponse.getData().getNumOfRecords();
-                        updateTabs(tabList); // Cập nhật danh sách tab vào Activity
+                    if (apiResponse.getStatus() == 200) {
+                        List<RequestTabListData> tabList = apiResponse.getData().getData();
+                        updateTabs(tabList);
                     } else {
-                        Log.e("RequestActivity", "API response unsuccessful");
+                        Log.e("RequestNewFragment", "API response unsuccessful");
                     }
                 } else {
-                    Log.e("RequestActivity", "API response unsuccessful");
+                    Log.e("RequestNewFragment", "API response unsuccessful");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<RequestTabListDataResponse>> call, Throwable t) {
-                Log.e("RequestActivity", "Error: " + t.getMessage());
+                Log.e("RequestNewFragment", "Error: " + t.getMessage());
             }
         });
     }
 
-
-
     private void updateTabs(List<RequestTabListData> requestTabListData) {
-        // Log danh sách tên tab
         for (RequestTabListData tabData : requestTabListData) {
-            Log.d("RequestActivity", "Tab name: " + tabData.getName()); // Log tên của mỗi tab
+            Log.d("RequestNewFragment", "Tab name: " + tabData.getName());
         }
 
-        // Cập nhật adapter với danh sách tab
-        requestAdapterTabList = new RequestAdapterTabList(this, requestTabListData);
+        requestAdapterTabList = new RequestAdapterTabList(getActivity(), requestTabListData);
         viewPager.setAdapter(requestAdapterTabList);
 
-        // Tạo danh sách tên tab từ danh sách requestTabListData
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            tab.setText(requestTabListData.get(position).getName()); // Lấy tên tab từ dữ liệu API
+            tab.setText(requestTabListData.get(position).getName());
         });
         tabLayoutMediator.attach();
     }
 
     private void showStatusOverlay(List<RequestStatusData> statusList) {
-        // Hiển thị overlay
         overlay.setVisibility(View.VISIBLE);
         overlay_background.setVisibility(View.VISIBLE);
 
-        RecyclerView recyclerView = findViewById(R.id.recycler_filter_status);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView recyclerView = overlay.findViewById(R.id.recycler_filter_status);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         ListStatusRequestAdapter adapter = new ListStatusRequestAdapter(statusList, status -> {
-            // Đóng overlay
             overlay.setVisibility(View.GONE);
             overlay_background.setVisibility(View.GONE);
-            Log.d("RequestActivity", "Selected status: " + status.getId());
+            Log.d("RequestNewFragment", "Selected status: " + status.getId());
             int currentPage = viewPager.getCurrentItem();
             Fragment currentFragment = requestAdapterTabList.getFragmentAtPosition(currentPage);
 
@@ -301,13 +275,11 @@ public class RequestActivity extends AppCompatActivity {
             } else if (currentFragment instanceof FollowingRequestFragment) {
                 ((FollowingRequestFragment) currentFragment).updateStatus(status.getId());
             }
-
         });
 
         recyclerView.setAdapter(adapter);
 
-        // Nút đóng
-        Button closeButton = findViewById(R.id.button_close_overlay);
+        Button closeButton = overlay.findViewById(R.id.button_close_overlay);
         closeButton.setOnClickListener(v -> {
             overlay.setVisibility(View.GONE);
             overlay_background.setVisibility(View.GONE);
@@ -315,14 +287,13 @@ public class RequestActivity extends AppCompatActivity {
     }
 
     private void getStatusList(String token) {
-
         RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
         requestStatusRequest.setRequestType(tabId);
         requestStatusRequest.setPage(1);
-        requestStatusRequest.setSize(20); // Bạn có thể chỉnh kích thước nếu cần
+        requestStatusRequest.setSize(20);
         requestStatusRequest.setKeySearch("");
         requestStatusRequest.setStatus(-1);
-        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+        ApiInterface apiInterface = ApiClient.getClient(requireContext()).create(ApiInterface.class);
         Call<ApiResponse<RequestStatusResponse>> call = apiInterface.requestStatusData(token, requestStatusRequest);
         call.enqueue(new Callback<ApiResponse<RequestStatusResponse>>() {
             @Override
@@ -332,13 +303,13 @@ public class RequestActivity extends AppCompatActivity {
                     List<RequestStatusData> statusList = apiResponse.getData().getData();
                     showStatusOverlay(statusList);
                 } else {
-                    Log.e("RequestActivity", "Failed to fetch statuses.");
+                    Log.e("RequestNewFragment", "Failed to fetch statuses.");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<RequestStatusResponse>> call, Throwable t) {
-                Log.e("RequestActivity", "Error: " + t.getMessage());
+                Log.e("RequestNewFragment", "Error: " + t.getMessage());
             }
         });
     }

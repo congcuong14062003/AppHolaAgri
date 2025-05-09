@@ -175,9 +175,12 @@ public class QrContentRecordCondition extends AppCompatActivity {
                         updateUI(inforRecordConditionByQrCode); // Cập nhật danh sách tab vào Activity
                     } else {
                         Log.e("QrContentRecordCondition", "API response unsuccessful");
+                        CustomToast.showCustomToast(QrContentRecordCondition.this, apiResponse.getMessage());
+                        finish();
                     }
                 } else {
                     Log.e("QrContentRecordCondition", "API response unsuccessful");
+                    CustomToast.showCustomToast(QrContentRecordCondition.this, "Lỗi kết nối");
                 }
             }
 

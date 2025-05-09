@@ -96,7 +96,6 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
     private ArrayAdapter<String> adapterColumn;
 
 
-
     private ApiInterface apiInterface;
     private static final int CAMERA_PERMISSION_CODE = 100;
     private static final int REQUEST_CODE_RESEND = 1001;
@@ -109,6 +108,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
     private MeasurementLocationAdapter measurementLocationAdapter;
     private List<IdentificationSensorRequest.MonitoringDetail> monitoringDetails = new ArrayList<>();
     private RecyclerView monitoringDetailsRecyclerView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_declaration_identifier_sensor, container, false);
@@ -127,7 +127,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
 
 
         spinnerAsset = view.findViewById(R.id.spinnerSensorAsset);
-        adapterAsset = new ArrayAdapter<>(requireContext(),  android.R.layout.simple_spinner_dropdown_item, assetListName);
+        adapterAsset = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, assetListName);
         spinnerAsset.setAdapter(adapterAsset);
         spinnerAsset.setOnItemSelectedListener(spinnerAssetListener);
 
@@ -173,23 +173,29 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         });
 
 
-
         addLocation();
 
         // event
         add_measurementLocation_btn.setOnClickListener(view1 -> {
             addLocation();
         });
-
-        next_btn.setOnClickListener(view1 -> {
-            if (isValidMonitoringDetails()) {
+        if (isFixed == 1) {
+            next_btn.setOnClickListener(view1 -> {
+                if (isValidMonitoringDetails()) {
+                    checkCameraPermissionSensor();
+                } else {
+                    CustomToast.showCustomToast(getContext(), "Vui lòng nhập đầy đủ thông tin phạm vi sử dụng");
+                }
+            });
+        } else {
+            next_btn.setOnClickListener(view1 -> {
                 checkCameraPermissionSensor();
-            } else {
-                CustomToast.showCustomToast(getContext(), "Vui lòng nhập đầy đủ thông tin phạm vi sử dụng");
-            }
-        });
+            });
+        }
+
 
     }
+
     private boolean isValidMonitoringDetails() {
         for (IdentificationSensorRequest.MonitoringDetail detail : monitoringDetails) {
             if (detail.getIdCultivationArea() <= 0 ||
@@ -245,7 +251,8 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 
 
@@ -258,7 +265,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
                 selectedAssetId = selectedAsset.getId();
                 isFixed = selectedAsset.getIsFixed(); // Giả sử có phương thức isFixed()
                 Log.d("DeclarationIdentifierSensorFragment", "Selected Asset ID: " + selectedAssetId + ", isFixed: " + isFixed);
-                if(isFixed == 1) {
+                if (isFixed == 1) {
                     checkCameraPermission();
                     container_permanent.setVisibility(View.VISIBLE);
                 } else {
@@ -272,7 +279,8 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 
 
@@ -299,7 +307,8 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 
     // sự kiện click của điểm quan trắc
@@ -313,15 +322,16 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
                 // Tự động chọn hàng và cột
                 int rowIn = selectedMonitoring.getRowIn();
                 int columnIn = selectedMonitoring.getColumnIn();
-                    spinnerRow.setSelection(rowIn);
-                    spinnerColumn.setSelection(columnIn);
+                spinnerRow.setSelection(rowIn);
+                spinnerColumn.setSelection(columnIn);
             } else {
                 selectedMonitoringId = -1;
             }
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 
 
@@ -337,7 +347,8 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 
     // Sự kiện chọn cột
@@ -351,7 +362,8 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
     };
 
     // Hàm lọc điểm quan trắc theo hàng và cột
@@ -407,6 +419,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             }
         });
     }
+
     // đồn điền
     private void updateSpinnerData() {
         plantationNames.clear();
@@ -417,6 +430,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         }
         adapter.notifyDataSetChanged();
     }
+
     // tài sản
     private void updateSpinnerAssetData() {
         assetListName.clear();
@@ -427,6 +441,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         }
         adapterAsset.notifyDataSetChanged();
     }
+
     // khu vực
     private void updateAreaSpinner(List<SensorAppInitFormResponse.Area> areaList) {
         areaNames.clear();
@@ -444,6 +459,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         adapterColumn.notifyDataSetChanged();
         spinnerArea.setSelection(0); // Reset về "--Chọn khu vực--"
     }
+
     // điểm quan trắc
     private void updateMonitoringSpinner(List<SensorAppInitFormResponse.Monitoring> newMonitoringList) {
         monitoringList.clear();  // Xóa dữ liệu cũ
@@ -492,6 +508,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             requestCameraPermission();
         }
     }
+
     private void checkCameraPermissionSensor() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             openQRScannerSensor();
@@ -499,6 +516,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             requestCameraPermission();
         }
     }
+
     private void openQRScanner() {
         Intent intent = new Intent(getContext(), QRScannerActivity.class);
         intent.putExtra("SCAN_INSTRUCTION", "Quét mã qr ở cây gần nhất"); // Truyền nội dung hướng dẫn
@@ -545,7 +563,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
                 container_permanent.setVisibility(View.VISIBLE);
             }
             qrContentIdentificationSensor = data.getStringExtra("QR_RESULT_SENSOR");
-            if(qrContentIdentificationSensor != null) {
+            if (qrContentIdentificationSensor != null) {
                 handleIdentificationSensor(false);
             }
         }
@@ -633,6 +651,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             }
         }, 100);
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -643,6 +662,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         FragmentTransaction ft = getParentFragmentManager().beginTransaction();
         ft.detach(this).attach(this).commit(); // Làm mới chính Fragment hiện tại
     }
+
     private void handleIdentificationSensor(boolean isConfirmed) {
         IdentificationSensorRequest identificationSensorRequest = new IdentificationSensorRequest();
         identificationSensorRequest.setIdPlantation(selectedPlantationId);
@@ -684,6 +704,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
             }
         });
     }
+
     // Log JSON để kiểm tra dữ liệu truyền lên
     private void logIdentificationSensorRequest(IdentificationSensorRequest request) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -707,6 +728,7 @@ public class DeclarationIdentifierSensorFragment extends BaseFragment {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
     // Chuyển sang màn hình thành công
     private void navigateToSuccessActivity() {
         int tabIndex = getCurrentTabIndex(); // Lấy tab hiện tại

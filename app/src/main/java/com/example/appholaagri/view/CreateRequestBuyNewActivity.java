@@ -426,13 +426,15 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                             create_request_container.setVisibility(View.VISIBLE);
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        Log.e("RequestDetailActivity", "API response is unsuccessful");
+                        Log.e("CreateRequestBuyNewActivity", "API response is unsuccessful");
                         CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("RequestDetailActivity", "Error during response handling: " + e.getMessage());
+                    Log.e("CreateRequestBuyNewActivity", "Error during response handling: " + e.getMessage());
                     CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
