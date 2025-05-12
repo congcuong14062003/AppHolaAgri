@@ -73,7 +73,7 @@ public class HomeFragment extends BaseFragment {
     private void setupTaskManagementRecyclerView() {
         List<FunctionItemHomeModel> taskItems = new ArrayList<>();
         taskItems.add(new FunctionItemHomeModel("Thống kê chấm công", R.drawable.tkcc, TimekeepingStatisticsActivity.class));
-        taskItems.add(new FunctionItemHomeModel("Chiến dịch điều động", R.drawable.cddd, MobilizationCampaignActivity.class));
+        taskItems.add(new FunctionItemHomeModel("Chiến dịch điều động", R.drawable.cddd, null));
         taskItems.add(new FunctionItemHomeModel("Xác nhận báo cáo", R.drawable.tkcc, null));
         taskItems.add(new FunctionItemHomeModel("Báo cáo công việc", R.drawable.tkcc, null));
         taskItems.add(new FunctionItemHomeModel("Bảng tính công", R.drawable.btc, SalaryTableActivity.class));

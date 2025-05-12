@@ -1,5 +1,6 @@
 package com.example.appholaagri.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftResponse;
-import com.example.appholaagri.model.RecordConditionModel.RecordConditionResponse;
 import com.squareup.picasso.Picasso;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +20,28 @@ import java.util.List;
 public class MyWorkShiftAdapter extends RecyclerView.Adapter<MyWorkShiftAdapter.ViewHolder> {
 
     private List<ListWorkShiftResponse.WorkShiftData> workShiftData;
+    private OnItemClickListener onItemClickListener;
+
+    // Interface cho callback khi nhấn item
+    public interface OnItemClickListener {
+        void onItemClick(ListWorkShiftResponse.WorkShiftData workShiftData);
+    }
 
     public MyWorkShiftAdapter(List<ListWorkShiftResponse.WorkShiftData> workShiftData) {
-        this.workShiftData = workShiftData;
+        this.workShiftData = workShiftData != null ? workShiftData : new ArrayList<>();
+    }
+
+    // Phương thức để set listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
     }
 
     public void updateData(List<ListWorkShiftResponse.WorkShiftData> newData) {
         workShiftData.clear();
-        workShiftData.addAll(newData);
+        workShiftData.addAll(newData != null ? newData : new ArrayList<>());
         notifyDataSetChanged();
     }
-    // Cập nhật dữ liệu mới khi tải thêm trang
+
     public void addData(List<ListWorkShiftResponse.WorkShiftData> newData) {
         if (newData != null && !newData.isEmpty()) {
             int startPosition = workShiftData.size();
@@ -39,11 +49,6 @@ public class MyWorkShiftAdapter extends RecyclerView.Adapter<MyWorkShiftAdapter.
             notifyItemRangeInserted(startPosition, newData.size());
         }
     }
-//    public void addData(List<ListWorkShiftResponse.WorkShiftData> newData) {
-//        int start = workShiftData.size();
-//        workShiftData.addAll(newData);
-//        notifyItemRangeInserted(start, newData.size());
-//    }
 
     public void clearData() {
         workShiftData.clear();
@@ -59,21 +64,58 @@ public class MyWorkShiftAdapter extends RecyclerView.Adapter<MyWorkShiftAdapter.
     @Override
     public void onBindViewHolder(MyWorkShiftAdapter.ViewHolder holder, int position) {
         ListWorkShiftResponse.WorkShiftData data = workShiftData.get(position);
-        Picasso.get()
-                .load(data.getEmployee().getUrl())  // URL ảnh cần tải
-                .placeholder(R.drawable.avatar)           // Ảnh mặc định khi chưa tải được
-                .error(R.drawable.avatar)                 // Ảnh khi có lỗi tải
-                .into(holder.avatar_work_shift);
+        if (data == null) {
+            Log.e("MyWorkShiftAdapter", "WorkShiftData at position " + position + " is null");
+            return;
+        }
 
-        holder.name_work_shift.setText(data.getEmployee().getCode() + " - " +data.getEmployee().getName());
-        holder.department_work_shift.setText(data.getTeam().getName());
+        // Kiểm tra employee
+        if (data.getEmployee() != null) {
+            Picasso.get()
+                    .load(data.getEmployee().getUrl())
+                    .placeholder(R.drawable.avatar)
+                    .error(R.drawable.avatar)
+                    .into(holder.avatar_work_shift);
+            holder.name_work_shift.setText(data.getEmployee().getCode() + " - " + data.getEmployee().getName());
+        } else {
+            Log.e("MyWorkShiftAdapter", "Employee is null for WorkShiftData at position " + position);
+            holder.name_work_shift.setText("N/A");
+            holder.avatar_work_shift.setImageResource(R.drawable.avatar);
+        }
 
+        // Kiểm tra team
+        if (data.getTeam() != null) {
+            holder.department_work_shift.setText(data.getTeam().getName());
+        } else {
+            Log.e("MyWorkShiftAdapter", "Team is null for WorkShiftData at position " + position);
+            holder.department_work_shift.setText("N/A");
+        }
+
+        // Kiểm tra workShiftListDetail
         List<ListWorkShiftResponse.WorkShiftDetail> detailList = data.getWorkShiftListDetail();
-        if (detailList == null) detailList = new ArrayList<>();
+        if (detailList == null) {
+            Log.w("MyWorkShiftAdapter", "WorkShiftListDetail is null for WorkShiftData at position " + position);
+            detailList = new ArrayList<>();
+        }
 
         ListWorkShiftDetailAdapter childAdapter = new ListWorkShiftDetailAdapter(detailList);
         holder.recyclerView.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.recyclerView.setAdapter(childAdapter);
+
+        // Log dữ liệu để gỡ lỗi
+        Log.d("MyWorkShiftAdapter", "Binding position " + position + ": Employee=" + (data.getEmployee() != null ? data.getEmployee().getName() : "null") +
+                ", Team=" + (data.getTeam() != null ? data.getTeam().getName() : "null") +
+                ", WorkShiftListDetail size=" + detailList.size());
+
+        // Xử lý sự kiện nhấn item
+        holder.itemView.setOnClickListener(v -> {
+            if (onItemClickListener != null && data != null) {
+                Log.d("MyWorkShiftAdapter", "Item clicked at position " + position + ": " + (data.getEmployee() != null ? data.getEmployee().getName() : "null"));
+                onItemClickListener.onItemClick(data);
+            } else {
+                Log.e("MyWorkShiftAdapter", "Item click ignored: data or listener is null at position " + position);
+            }
+        });
     }
 
     @Override
@@ -95,4 +137,3 @@ public class MyWorkShiftAdapter extends RecyclerView.Adapter<MyWorkShiftAdapter.
         }
     }
 }
-

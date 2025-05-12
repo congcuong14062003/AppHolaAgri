@@ -328,7 +328,7 @@ public class ApiHelper {
     }
 
     // danh sách phân ca
-    public static <T> void fetchListWorkShift(
+    public static void fetchListWorkShift(
             Context context,
             String keySearch,
             int day,
@@ -337,48 +337,60 @@ public class ApiHelper {
             int type,
             int page,
             int status,
-            Consumer<List<ListWorkShiftResponse.WorkShiftData>> onSuccess,
+            Consumer<WorkShiftListWrapper> onSuccess,
             Consumer<String> onError
     ) {
         ApiInterface apiInterface = ApiClient.getClient(context).create(ApiInterface.class);
-
-        // Tạo request object
-        ListWorkShiftRequest request = new ListWorkShiftRequest("",null,  null, page, 20, Collections.singletonList(status), type, null);
+        Log.d("page_current", "page" + page);
+        // Create request object
+        ListWorkShiftRequest request = new ListWorkShiftRequest(
+                keySearch,
+                null,
+                null,
+                page,
+                20,
+                Collections.singletonList(status),
+                type,
+                null
+        );
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         String requestDetailDataJson = gson.toJson(request);
-        Log.d("phanca", "data: " + requestDetailDataJson);
-        // Gọi API
+        Log.d("ApiHelper", "Request: " + requestDetailDataJson);
+
+        // Call API
         Call<ApiResponse<WorkShiftListWrapper>> call = apiInterface.listWokShift(token, request);
         call.enqueue(new Callback<ApiResponse<WorkShiftListWrapper>>() {
             @Override
             public void onResponse(Call<ApiResponse<WorkShiftListWrapper>> call, Response<ApiResponse<WorkShiftListWrapper>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<WorkShiftListWrapper> apiResponse = response.body();
-                    if (apiResponse.getStatus() == 200) {
-                        // ✅ Trả về danh sách từ wrapper
-                        onSuccess.accept(apiResponse.getData().getData());
+                    if (apiResponse.getStatus() == 200 && apiResponse.getData() != null) {
+                        // Return the entire wrapper for access to totalRecord
+                        onSuccess.accept(apiResponse.getData());
                     } else {
-                        onError.accept(apiResponse.getMessage());
-                        CustomToast.showCustomToast(context, apiResponse.getMessage());
-                        Log.e("RecordConditionHelper", apiResponse.getMessage());
+                        String errorMessage = apiResponse.getMessage() != null ? apiResponse.getMessage() : "API returned no data";
+                        onError.accept(errorMessage);
+                        CustomToast.showCustomToast(context, errorMessage);
+                        Log.e("ApiHelper", errorMessage);
                     }
                 } else {
                     String errorMessage = "API response failed or is null";
                     onError.accept(errorMessage);
                     CustomToast.showCustomToast(context, errorMessage);
-                    Log.e("RecordConditionHelper", errorMessage);
+                    Log.e("ApiHelper", errorMessage);
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<WorkShiftListWrapper>> call, Throwable t) {
-                onError.accept(t.getMessage());
-                Log.e("RecordConditionHelper", t.getMessage());
+                String errorMessage = t.getMessage() != null ? t.getMessage() : "Network error";
+                onError.accept(errorMessage);
+                CustomToast.showCustomToast(context, errorMessage);
+                Log.e("ApiHelper", "Error: " + errorMessage);
             }
         });
-
     }
 }

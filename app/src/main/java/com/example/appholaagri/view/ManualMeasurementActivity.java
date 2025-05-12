@@ -36,6 +36,8 @@ import com.example.appholaagri.model.SoilManualInitFormModel.SoilManualInitFormR
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.LoadingDialog;
+import com.example.appholaagri.utils.LoadingDialogWithText;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -72,14 +74,15 @@ public class ManualMeasurementActivity extends AppCompatActivity {
     private List<SoilManualInitFormResponse.SensorInfo> sensorList;
     private Spinner spinnerSensor;
     private BroadcastReceiver usbPermissionReceiver;
-    private BroadcastReceiver usbDetachedReceiver; // Receiver cho sự kiện USB bị rút
+    private BroadcastReceiver usbDetachedReceiver;
     private String token;
     private SoilManualInitFormResponse soilManualInitFormResponse;
     private static final String ACTION_USB_PERMISSION = "com.example.soilsensor.USB_PERMISSION";
     private DirectMeasurementRequest directMeasurementRequest;
     private boolean isPermissionRequestPending = false;
-    private boolean isMeasuring = false; // Cờ để kiểm soát trạng thái đo
-    private boolean isDeviceConnected = true; // Cờ để kiểm soát trạng thái thiết bị USB
+    private boolean isMeasuring = false;
+    private boolean isDeviceConnected = true;
+    private LoadingDialogWithText loadingDialog;
 
     public static class UsbPermissionReceiver extends BroadcastReceiver {
         @Override
@@ -147,7 +150,6 @@ public class ManualMeasurementActivity extends AppCompatActivity {
         executor = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
 
-        // Đăng ký BroadcastReceiver cho sự kiện USB permission
         usbPermissionReceiver = new UsbPermissionReceiver();
         IntentFilter permissionFilter = new IntentFilter(ACTION_USB_PERMISSION);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
@@ -156,7 +158,6 @@ public class ManualMeasurementActivity extends AppCompatActivity {
             registerReceiver(usbPermissionReceiver, permissionFilter);
         }
 
-        // Đăng ký BroadcastReceiver cho sự kiện USB bị rút
         usbDetachedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -165,13 +166,16 @@ public class ManualMeasurementActivity extends AppCompatActivity {
                     isDeviceConnected = false;
                     if (isMeasuring) {
                         handler.post(() -> {
+                            if (loadingDialog != null) {
+                                loadingDialog.hide();
+                            }
                             usbStatusText.setText("Thiết bị USB đã bị ngắt kết nối");
                             readButton.setVisibility(View.VISIBLE);
                             isMeasuring = false;
                             Toast.makeText(ManualMeasurementActivity.this, "Thiết bị USB đã bị ngắt kết nối", Toast.LENGTH_LONG).show();
                         });
                     }
-                    checkUsbDevices(); // Kiểm tra lại thiết bị sau khi ngắt
+                    checkUsbDevices();
                 }
             }
         };
@@ -197,7 +201,6 @@ public class ManualMeasurementActivity extends AppCompatActivity {
         checkUsbDevices();
 
         readButton.setOnClickListener(v -> readSensorData());
-
         getDataPlant();
     }
 
@@ -288,7 +291,7 @@ public class ManualMeasurementActivity extends AppCompatActivity {
     }
 
     private void checkUsbDevices() {
-        if (isMeasuring) return; // Không kiểm tra USB khi đang đo
+        if (isMeasuring) return;
         Map<String, UsbDevice> deviceList = usbManager.getDeviceList();
         Log.d("ManualMeasurementActivity", "USB device list size: " + deviceList.size());
         if (deviceList.isEmpty()) {
@@ -329,7 +332,7 @@ public class ManualMeasurementActivity extends AppCompatActivity {
     }
 
     private void setupSerialPort(UsbDevice device) {
-        if (isMeasuring) return; // Không thiết lập lại cổng khi đang đo
+        if (isMeasuring) return;
         if (device == null) {
             handler.post(() -> {
                 usbStatusText.setText("Không tìm thấy thiết bị USB để kết nối");
@@ -411,7 +414,7 @@ public class ManualMeasurementActivity extends AppCompatActivity {
 
     private byte[] sendModbusQuery(byte[] query) {
         if (!isDeviceConnected || usbSerialPort == null) {
-            return null; // Thoát nếu thiết bị đã bị ngắt
+            return null;
         }
 
         byte[] crc = calculateCrc(query);
@@ -432,6 +435,9 @@ public class ManualMeasurementActivity extends AppCompatActivity {
             Log.e("Modbus", "Query failed: " + e.getMessage());
             handler.post(() -> {
                 if (isMeasuring) {
+                    if (loadingDialog != null) {
+                        loadingDialog.hide();
+                    }
                     usbStatusText.setText("Thiết bị USB đã bị ngắt kết nối");
                     readButton.setVisibility(View.VISIBLE);
                     isMeasuring = false;
@@ -451,10 +457,13 @@ public class ManualMeasurementActivity extends AppCompatActivity {
             return;
         }
 
-        // Đặt cờ isMeasuring thành true khi bắt đầu đo
         isMeasuring = true;
-        // Ẩn nút readButton khi bắt đầu đo
-        handler.post(() -> readButton.setVisibility(View.GONE));
+        handler.post(() -> {
+            readButton.setVisibility(View.GONE);
+            loadingDialog = new LoadingDialogWithText(ManualMeasurementActivity.this);
+            loadingDialog.setMessage("Đang thu thập dữ liệu đo");
+            loadingDialog.show();
+        });
 
         executor.execute(() -> {
             List<Map<String, Object>> measurements = new ArrayList<>();
@@ -464,15 +473,10 @@ public class ManualMeasurementActivity extends AppCompatActivity {
 
             for (int i = 0; i < TOTAL_MEASUREMENTS; i++) {
                 if (!isDeviceConnected || !isMeasuring) {
-                    // Thoát vòng lặp nếu thiết bị bị ngắt kết nối
                     break;
                 }
 
-                // Hiển thị trạng thái đo
-                final int measurementNumber = i + 1;
-                handler.post(() -> usbStatusText.setText("Đang đo lần " + measurementNumber));
-
-                Log.d("ManualMeasurementActivity", "Starting measurement " + measurementNumber);
+                Log.d("ManualMeasurementActivity", "Starting measurement " + (i + 1));
                 Map<String, Object> soilData = new HashMap<>();
 
                 byte[] queryTempHumidity = new byte[]{0x01, 0x03, 0x00, 0x12, 0x00, 0x02};
@@ -536,9 +540,9 @@ public class ManualMeasurementActivity extends AppCompatActivity {
 
                 if (!soilData.isEmpty()) {
                     measurements.add(soilData);
-                    Log.d("ManualMeasurementActivity", "Measurement " + measurementNumber + " added: " + soilData);
+                    Log.d("ManualMeasurementActivity", "Measurement " + (i + 1) + " added: " + soilData);
                 } else {
-                    Log.w("ManualMeasurementActivity", "Measurement " + measurementNumber + " failed, no valid data");
+                    Log.w("ManualMeasurementActivity", "Measurement " + (i + 1) + " failed, no valid data");
                 }
 
                 if (i < TOTAL_MEASUREMENTS - 1) {
@@ -546,7 +550,12 @@ public class ManualMeasurementActivity extends AppCompatActivity {
                         Thread.sleep(DELAY_BETWEEN_MEASUREMENTS_MS);
                     } catch (InterruptedException e) {
                         Log.e("ManualMeasurementActivity", "Measurement interrupted: " + e.getMessage());
-                        handler.post(() -> Toast.makeText(ManualMeasurementActivity.this, "Đo bị gián đoạn", Toast.LENGTH_SHORT).show());
+                        handler.post(() -> {
+                            if (loadingDialog != null) {
+                                loadingDialog.hide();
+                            }
+                            Toast.makeText(ManualMeasurementActivity.this, "Đo bị gián đoạn", Toast.LENGTH_SHORT).show();
+                        });
                         isMeasuring = false;
                         return;
                     }
@@ -554,11 +563,19 @@ public class ManualMeasurementActivity extends AppCompatActivity {
             }
 
             if (!isMeasuring) {
-                return; // Thoát nếu đo bị dừng do thiết bị USB bị rút
+                handler.post(() -> {
+                    if (loadingDialog != null) {
+                        loadingDialog.hide();
+                    }
+                });
+                return;
             }
 
             if (measurements.size() < MEASUREMENTS_TO_AVERAGE) {
                 handler.post(() -> {
+                    if (loadingDialog != null) {
+                        loadingDialog.hide();
+                    }
                     Toast.makeText(ManualMeasurementActivity.this, "Không đủ dữ liệu đo (cần ít nhất " + MEASUREMENTS_TO_AVERAGE + " lần đo hợp lệ)", Toast.LENGTH_LONG).show();
                     usbStatusText.setText("Lỗi: Không đủ dữ liệu đo");
                     readButton.setVisibility(View.VISIBLE);
@@ -609,7 +626,10 @@ public class ManualMeasurementActivity extends AppCompatActivity {
             Log.d("ManualMeasurementActivity", "DirectMeasurementRequest with Averaged Sensor Data: " + requestDetailDataJson);
 
             handler.post(() -> {
-                // Update UI
+                if (loadingDialog != null) {
+                    loadingDialog.hide();
+                }
+
                 humidityText.setText("Humidity: " + (averages.get("humidity") != 0 ? averages.get("humidity").intValue() + " %" : "N/A"));
                 temperatureText.setText("Temperature: " + (averages.get("temperature") != 0 ? averages.get("temperature").intValue() + " °C" : "N/A"));
                 ecText.setText("EC: " + (averages.get("electricalConductivity") != 0 ? averages.get("electricalConductivity").intValue() + " µS/cm" : "N/A"));
@@ -622,7 +642,6 @@ public class ManualMeasurementActivity extends AppCompatActivity {
                 readButton.setVisibility(View.VISIBLE);
                 isMeasuring = false;
 
-                // Navigate to LandInformationActivity
                 Intent intent = new Intent(ManualMeasurementActivity.this, LandInformationActivity.class);
                 intent.putExtra("directMeasurementRequest", directMeasurementRequest);
                 startActivity(intent);
@@ -665,5 +684,8 @@ public class ManualMeasurementActivity extends AppCompatActivity {
             }
         }
         executor.shutdown();
+        if (loadingDialog != null) {
+            loadingDialog.hide();
+        }
     }
 }

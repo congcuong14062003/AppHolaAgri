@@ -106,62 +106,68 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
                 android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/humidity_text"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Humidity: --"
-                    android:textSize="18sp" />
+                    >
+                    <TextView
+                        android:id="@+id/humidity_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Humidity: --"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/temperature_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Temperature: --"
-                    android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/temperature_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Temperature: --"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/ec_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="EC: --"
-                    android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/ec_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="EC: --"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/ph_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="pH: --"
-                    android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/ph_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="pH: --"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/nitrogen_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Nitrogen: --"
-                    android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/nitrogen_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Nitrogen: --"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/phosphorus_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Phosphorus: --"
-                    android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/phosphorus_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Phosphorus: --"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/potassium_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="Potassium: --"
-                    android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/potassium_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="Potassium: --"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
 
 
                 <LinearLayout
@@ -180,14 +186,6 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/usb_status_text" />
                 </LinearLayout>
-
-
-                <!--                <Button-->
-<!--                    android:id="@+id/read_button"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Read Sensor Data" />-->
-
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/read_button"
                     android:layout_width="wrap_content"

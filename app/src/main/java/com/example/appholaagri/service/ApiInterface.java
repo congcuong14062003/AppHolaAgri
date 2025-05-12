@@ -47,6 +47,8 @@ import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailReq
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
 import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormResponse;
+import com.example.appholaagri.model.ShiftDetailModel.ShiftDetailRequest;
+import com.example.appholaagri.model.ShiftDetailModel.ShiftDetailResponse;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.model.SoilDetailModel.SoilDetailRespose;
 import com.example.appholaagri.model.SoilManualInitFormModel.SoilManualInitFormResponse;
@@ -294,7 +296,7 @@ public interface ApiInterface {
 
     // danh sách các tab phân ca
     @POST("work-shift/get-detail")
-    Call<ApiResponse<FluctuationSoilResponse>> detailWokShift(@Header("Authorization") String token, @Body FluctuationSoilRequest fluctuationSoilRequest);
+    Call<ApiResponse<WorkShiftListWrapper>> detailWokShift(@Header("Authorization") String token, @Body ShiftDetailRequest shiftDetailRequest);
 
 
     // soil-manual

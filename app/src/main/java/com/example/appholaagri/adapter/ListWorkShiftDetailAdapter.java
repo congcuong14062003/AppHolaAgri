@@ -25,6 +25,13 @@ public class ListWorkShiftDetailAdapter extends RecyclerView.Adapter<ListWorkShi
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_list_shift, parent, false);
         return new ViewHolder(view);
     }
+    public void updateData(List<ListWorkShiftResponse.WorkShiftDetail> newData) {
+        this.dayList.clear();
+        if (newData != null) {
+            this.dayList.addAll(newData);
+        }
+        notifyDataSetChanged();
+    }
 
     @Override
     public void onBindViewHolder(ListWorkShiftDetailAdapter.ViewHolder holder, int position) {
