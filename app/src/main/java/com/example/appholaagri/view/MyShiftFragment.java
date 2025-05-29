@@ -44,7 +44,7 @@ public class MyShiftFragment extends BaseFragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MyWorkShiftAdapter(new ArrayList<>());
+        adapter = new MyWorkShiftAdapter(new ArrayList<>(), false);
         recyclerView.setAdapter(adapter);
 
         // Get tabId from Bundle

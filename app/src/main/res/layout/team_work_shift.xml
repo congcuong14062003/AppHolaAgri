@@ -69,4 +69,20 @@
             android:nestedScrollingEnabled="false"
             />
     </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        >
+        <TextView
+            android:id="@+id/btn_view_detail"
+            android:textStyle="italic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xem đầy đủ tháng >"
+            android:textColor="@color/secondarycolor"
+            />
+    </LinearLayout>
 </LinearLayout>

@@ -45,7 +45,7 @@ public class TeamShiftFragment extends BaseFragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MyWorkShiftAdapter(new ArrayList<>());
+        adapter = new MyWorkShiftAdapter(new ArrayList<>(), true);
         recyclerView.setAdapter(adapter);
 
         // Xử lý sự kiện nhấn item

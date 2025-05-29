@@ -121,7 +121,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
-                    tools:listitem="@layout/my_list_shift" />
+                     />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

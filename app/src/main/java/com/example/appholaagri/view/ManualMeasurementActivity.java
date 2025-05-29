@@ -466,100 +466,90 @@ public class ManualMeasurementActivity extends AppCompatActivity {
         });
 
         executor.execute(() -> {
-            List<Map<String, Object>> measurements = new ArrayList<>();
-            final int TOTAL_MEASUREMENTS = 5;
-            final int MEASUREMENTS_TO_AVERAGE = 3;
-            final long DELAY_BETWEEN_MEASUREMENTS_MS = 10000;
+            Map<String, Object> soilData = new HashMap<>();
+            final long INITIAL_DELAY_MS = 10000;
 
-            for (int i = 0; i < TOTAL_MEASUREMENTS; i++) {
-                if (!isDeviceConnected || !isMeasuring) {
-                    break;
-                }
-
-                Log.d("ManualMeasurementActivity", "Starting measurement " + (i + 1));
-                Map<String, Object> soilData = new HashMap<>();
-
-                byte[] queryTempHumidity = new byte[]{0x01, 0x03, 0x00, 0x12, 0x00, 0x02};
-                byte[] responseTemp = sendModbusQuery(queryTempHumidity);
-                if (responseTemp != null && responseTemp.length >= 7) {
-                    int humidity = ((responseTemp[3] & 0xFF) << 8) | (responseTemp[4] & 0xFF);
-                    int temperature = ((responseTemp[5] & 0xFF) << 8) | (responseTemp[6] & 0xFF);
-                    if ((temperature & 0x8000) != 0) {
-                        temperature = -((~temperature & 0xFFFF) + 1);
+            // Wait for 10 seconds before measurement
+            try {
+                Thread.sleep(INITIAL_DELAY_MS);
+            } catch (InterruptedException e) {
+                Log.e("ManualMeasurementActivity", "Initial delay interrupted: " + e.getMessage());
+                handler.post(() -> {
+                    if (loadingDialog != null) {
+                        loadingDialog.hide();
                     }
-                    soilData.put("humidity", (int) (humidity / 10.0));
-                    soilData.put("temperature", (int) (temperature / 10.0));
-                } else if (!isDeviceConnected) {
-                    break;
-                }
+                    Toast.makeText(ManualMeasurementActivity.this, "Measurement interrupted", Toast.LENGTH_SHORT).show();
+                    readButton.setVisibility(View.VISIBLE);
+                    isMeasuring = false;
+                });
+                return;
+            }
 
-                byte[] queryEc = new byte[]{0x01, 0x03, 0x00, 0x15, 0x00, 0x01};
-                byte[] responseEc = sendModbusQuery(queryEc);
-                if (responseEc != null && responseEc.length >= 7) {
-                    int ecValue = ((responseEc[3] & 0xFF) << 8) | (responseEc[4] & 0xFF);
-                    soilData.put("electricalConductivity", ecValue);
-                } else if (!isDeviceConnected) {
-                    break;
-                }
-
-                byte[] queryPh = new byte[]{0x01, 0x03, 0x00, 0x06, 0x00, 0x01};
-                byte[] responsePh = sendModbusQuery(queryPh);
-                if (responsePh != null && responsePh.length >= 7) {
-                    int phValue = ((responsePh[3] & 0xFF) << 8) | (responsePh[4] & 0xFF);
-                    soilData.put("ph", (int) (phValue / 100.0));
-                } else if (!isDeviceConnected) {
-                    break;
-                }
-
-                byte[] queryNitrogen = new byte[]{0x01, 0x03, 0x00, 0x1E, 0x00, 0x01};
-                byte[] responseNitrogen = sendModbusQuery(queryNitrogen);
-                if (responseNitrogen != null && responseNitrogen.length >= 7) {
-                    int nitrogenValue = ((responseNitrogen[3] & 0xFF) << 8) | (responseNitrogen[4] & 0xFF);
-                    soilData.put("nitrogen", nitrogenValue);
-                } else if (!isDeviceConnected) {
-                    break;
-                }
-
-                byte[] queryPhosphorus = new byte[]{0x01, 0x03, 0x00, 0x1F, 0x00, 0x01};
-                byte[] responsePhosphorus = sendModbusQuery(queryPhosphorus);
-                if (responsePhosphorus != null && responsePhosphorus.length >= 7) {
-                    int phosphorusValue = ((responsePhosphorus[3] & 0xFF) << 8) | (responsePhosphorus[4] & 0xFF);
-                    soilData.put("phosphorus", phosphorusValue);
-                } else if (!isDeviceConnected) {
-                    break;
-                }
-
-                byte[] queryPotassium = new byte[]{0x01, 0x03, 0x00, 0x20, 0x00, 0x01};
-                byte[] responsePotassium = sendModbusQuery(queryPotassium);
-                if (responsePotassium != null && responsePotassium.length >= 7) {
-                    int potassiumValue = ((responsePotassium[3] & 0xFF) << 8) | (responsePotassium[4] & 0xFF);
-                    soilData.put("kalium", potassiumValue);
-                } else if (!isDeviceConnected) {
-                    break;
-                }
-
-                if (!soilData.isEmpty()) {
-                    measurements.add(soilData);
-                    Log.d("ManualMeasurementActivity", "Measurement " + (i + 1) + " added: " + soilData);
-                } else {
-                    Log.w("ManualMeasurementActivity", "Measurement " + (i + 1) + " failed, no valid data");
-                }
-
-                if (i < TOTAL_MEASUREMENTS - 1) {
-                    try {
-                        Thread.sleep(DELAY_BETWEEN_MEASUREMENTS_MS);
-                    } catch (InterruptedException e) {
-                        Log.e("ManualMeasurementActivity", "Measurement interrupted: " + e.getMessage());
-                        handler.post(() -> {
-                            if (loadingDialog != null) {
-                                loadingDialog.hide();
-                            }
-                            Toast.makeText(ManualMeasurementActivity.this, "Đo bị gián đoạn", Toast.LENGTH_SHORT).show();
-                        });
-                        isMeasuring = false;
-                        return;
+            if (!isDeviceConnected || !isMeasuring) {
+                handler.post(() -> {
+                    if (loadingDialog != null) {
+                        loadingDialog.hide();
                     }
+                    readButton.setVisibility(View.VISIBLE);
+                    isMeasuring = false;
+                });
+                return;
+            }
+
+            // Perform single measurement
+            Log.d("ManualMeasurementActivity", "Starting single measurement");
+
+            // Temperature and Humidity
+            byte[] queryTempHumidity = new byte[]{0x01, 0x03, 0x00, 0x12, 0x00, 0x02};
+            byte[] responseTemp = sendModbusQuery(queryTempHumidity);
+            if (responseTemp != null && responseTemp.length >= 7) {
+                int humidity = ((responseTemp[3] & 0xFF) << 8) | (responseTemp[4] & 0xFF);
+                int temperature = ((responseTemp[5] & 0xFF) << 8) | (responseTemp[6] & 0xFF);
+                if ((temperature & 0x8000) != 0) {
+                    temperature = -((~temperature & 0xFFFF) + 1);
                 }
+                soilData.put("humidity", (int) (humidity / 10.0));
+                soilData.put("temperature", (int) (temperature / 10.0));
+            }
+
+            // EC
+            byte[] queryEc = new byte[]{0x01, 0x03, 0x00, 0x15, 0x00, 0x01};
+            byte[] responseEc = sendModbusQuery(queryEc);
+            if (responseEc != null && responseEc.length >= 7) {
+                int ecValue = ((responseEc[3] & 0xFF) << 8) | (responseEc[4] & 0xFF);
+                soilData.put("electricalConductivity", ecValue);
+            }
+
+            // pH
+            byte[] queryPh = new byte[]{0x01, 0x03, 0x00, 0x06, 0x00, 0x01};
+            byte[] responsePh = sendModbusQuery(queryPh);
+            if (responsePh != null && responsePh.length >= 7) {
+                int phValue = ((responsePh[3] & 0xFF) << 8) | (responsePh[4] & 0xFF);
+                soilData.put("ph", (int) (phValue / 100.0));
+            }
+
+            // Nitrogen
+            byte[] queryNitrogen = new byte[]{0x01, 0x03, 0x00, 0x1E, 0x00, 0x01};
+            byte[] responseNitrogen = sendModbusQuery(queryNitrogen);
+            if (responseNitrogen != null && responseNitrogen.length >= 7) {
+                int nitrogenValue = ((responseNitrogen[3] & 0xFF) << 8) | (responseNitrogen[4] & 0xFF);
+                soilData.put("nitrogen", nitrogenValue);
+            }
+
+            // Phosphorus
+            byte[] queryPhosphorus = new byte[]{0x01, 0x03, 0x00, 0x1F, 0x00, 0x01};
+            byte[] responsePhosphorus = sendModbusQuery(queryPhosphorus);
+            if (responsePhosphorus != null && responsePhosphorus.length >= 7) {
+                int phosphorusValue = ((responsePhosphorus[3] & 0xFF) << 8) | (responsePhosphorus[4] & 0xFF);
+                soilData.put("phosphorus", phosphorusValue);
+            }
+
+            // Potassium
+            byte[] queryPotassium = new byte[]{0x01, 0x03, 0x00, 0x20, 0x00, 0x01};
+            byte[] responsePotassium = sendModbusQuery(queryPotassium);
+            if (responsePotassium != null && responsePotassium.length >= 7) {
+                int potassiumValue = ((responsePotassium[3] & 0xFF) << 8) | (responsePotassium[4] & 0xFF);
+                soilData.put("kalium", potassiumValue);
             }
 
             if (!isMeasuring) {
@@ -567,77 +557,61 @@ public class ManualMeasurementActivity extends AppCompatActivity {
                     if (loadingDialog != null) {
                         loadingDialog.hide();
                     }
+                    readButton.setVisibility(View.VISIBLE);
+                    isMeasuring = false;
                 });
                 return;
             }
 
-            if (measurements.size() < MEASUREMENTS_TO_AVERAGE) {
+            if (soilData.isEmpty()) {
                 handler.post(() -> {
                     if (loadingDialog != null) {
                         loadingDialog.hide();
                     }
-                    Toast.makeText(ManualMeasurementActivity.this, "Không đủ dữ liệu đo (cần ít nhất " + MEASUREMENTS_TO_AVERAGE + " lần đo hợp lệ)", Toast.LENGTH_LONG).show();
-                    usbStatusText.setText("Lỗi: Không đủ dữ liệu đo");
+                    Toast.makeText(ManualMeasurementActivity.this, "Failed to collect valid measurement data", Toast.LENGTH_LONG).show();
+                    usbStatusText.setText("Error: No valid measurement data");
                     readButton.setVisibility(View.VISIBLE);
                     isMeasuring = false;
                 });
-                Log.e("ManualMeasurementActivity", "Not enough valid measurements: " + measurements.size());
+                Log.e("ManualMeasurementActivity", "Measurement failed: No valid data");
                 return;
             }
 
-            List<Map<String, Object>> lastThreeMeasurements = measurements.subList(
-                    Math.max(0, measurements.size() - MEASUREMENTS_TO_AVERAGE),
-                    measurements.size()
-            );
-
-            Map<String, Double> averages = new HashMap<>();
-            String[] keys = {"humidity", "temperature", "electricalConductivity", "ph", "nitrogen", "phosphorus", "kalium"};
-            for (String key : keys) {
-                double sum = 0.0;
-                int count = 0;
-                for (Map<String, Object> measurement : lastThreeMeasurements) {
-                    if (measurement.containsKey(key)) {
-                        sum += ((Number) measurement.get(key)).doubleValue();
-                        count++;
-                    }
-                }
-                averages.put(key, count > 0 ? sum / count : 0.0);
-            }
-
+            // Set measurement data to DataWriteSoilManual
             DirectMeasurementRequest.DataWriteSoilManual dataWriteSoilManual = new DirectMeasurementRequest.DataWriteSoilManual();
             dataWriteSoilManual.setHumidityName("Độ ẩm (% RH)");
-            dataWriteSoilManual.setHumidity(averages.get("humidity").intValue());
+            dataWriteSoilManual.setHumidity(soilData.containsKey("humidity") ? ((Number) soilData.get("humidity")).intValue() : 0);
             dataWriteSoilManual.setTemperatureName("Nhiệt độ (°C)");
-            dataWriteSoilManual.setTemperature(averages.get("temperature").intValue());
+            dataWriteSoilManual.setTemperature(soilData.containsKey("temperature") ? ((Number) soilData.get("temperature")).intValue() : 0);
             dataWriteSoilManual.setElectricalConductivityName("Độ dẫn điện EC (mS/m)");
-            dataWriteSoilManual.setElectricalConductivity(averages.get("electricalConductivity").intValue());
+            dataWriteSoilManual.setElectricalConductivity(soilData.containsKey("electricalConductivity") ? ((Number) soilData.get("electricalConductivity")).intValue() : 0);
             dataWriteSoilManual.setPhName("pH");
-            dataWriteSoilManual.setPh(averages.get("ph").intValue());
+            dataWriteSoilManual.setPh(soilData.containsKey("ph") ? ((Number) soilData.get("ph")).intValue() : 0);
             dataWriteSoilManual.setNitrogenName("Đạm (mg/kg)");
-            dataWriteSoilManual.setNitrogen(averages.get("nitrogen").intValue());
+            dataWriteSoilManual.setNitrogen(soilData.containsKey("nitrogen") ? ((Number) soilData.get("nitrogen")).intValue() : 0);
             dataWriteSoilManual.setPhosphorusName("Lân (mg/kg)");
-            dataWriteSoilManual.setPhosphorus(averages.get("phosphorus").intValue());
+            dataWriteSoilManual.setPhosphorus(soilData.containsKey("phosphorus") ? ((Number) soilData.get("phosphorus")).intValue() : 0);
             dataWriteSoilManual.setKaliumName("Kali (mg/kg)");
-            dataWriteSoilManual.setKalium(averages.get("kalium").intValue());
+            dataWriteSoilManual.setKalium(soilData.containsKey("kalium") ? ((Number) soilData.get("kalium")).intValue() : 0);
             directMeasurementRequest.setDataWriteSoilManual(dataWriteSoilManual);
 
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String requestDetailDataJson = gson.toJson(directMeasurementRequest);
-            Log.d("ManualMeasurementActivity", "DirectMeasurementRequest with Averaged Sensor Data: " + requestDetailDataJson);
+            Log.d("ManualMeasurementActivity", "DirectMeasurementRequest with sensor data: " + requestDetailDataJson);
 
             handler.post(() -> {
                 if (loadingDialog != null) {
                     loadingDialog.hide();
                 }
 
-                humidityText.setText("Humidity: " + (averages.get("humidity") != 0 ? averages.get("humidity").intValue() + " %" : "N/A"));
-                temperatureText.setText("Temperature: " + (averages.get("temperature") != 0 ? averages.get("temperature").intValue() + " °C" : "N/A"));
-                ecText.setText("EC: " + (averages.get("electricalConductivity") != 0 ? averages.get("electricalConductivity").intValue() + " µS/cm" : "N/A"));
-                phText.setText("pH: " + (averages.get("ph") != 0 ? averages.get("ph").intValue() : "N/A"));
-                nitrogenText.setText("Nitrogen: " + (averages.get("nitrogen") != 0 ? averages.get("nitrogen").intValue() + " mg/kg" : "N/A"));
-                phosphorusText.setText("Phosphorus: " + (averages.get("phosphorus") != 0 ? averages.get("phosphorus").intValue() + " mg/kg" : "N/A"));
-                potassiumText.setText("Potassium: " + (averages.get("kalium") != 0 ? averages.get("kalium").intValue() + " mg/kg" : "N/A"));
-                usbStatusText.setText("Đo hoàn tất");
+                humidityText.setText("Humidity: " + (soilData.containsKey("humidity") ? ((Number) soilData.get("humidity")).intValue() + " %" : "N/A"));
+                temperatureText.setText("Temperature: " + (soilData.containsKey("temperature") ? ((Number) soilData.get("temperature")).intValue() + " °C" : "N/A"));
+                ecText.setText("EC: " + (soilData.containsKey("electricalConductivity") ? ((Number) soilData.get("electricalConductivity")).intValue() + " µS/cm" : "N/A"));
+                phText.setText("pH: " + (soilData.containsKey("ph") ? ((Number) soilData.get("ph")).intValue() : "N/A"));
+                nitrogenText.setText("Nitrogen: " + (soilData.containsKey("nitrogen") ? ((Number) soilData.get("nitrogen")).intValue() + " mg/kg" : "N/A"));
+                phosphorusText.setText("Phosphorus: " + (soilData.containsKey("phosphorus") ? ((Number) soilData.get("phosphorus")).intValue() + " mg/kg" : "N/A"));
+                potassiumText.setText("Potassium: " + (soilData.containsKey("kalium") ? ((Number) soilData.get("kalium")).intValue() + " mg/kg" : "N/A"));
+                usbStatusText.setText("Measurement completed");
 
                 readButton.setVisibility(View.VISIBLE);
                 isMeasuring = false;

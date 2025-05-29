@@ -25,6 +25,7 @@ import com.example.appholaagri.model.SoilManualInitFormModel.SoilManualInitFormR
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.LoadingDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -43,10 +44,9 @@ public class PlantInformationActivity extends AppCompatActivity {
     private TextView planTypeText;
     private TextView plandCodeText;
     private TextView plantingPeriodText;
-    private TextView plantStatusText;
-    private TextView plantDaysOldText;
     private Button backHomeButton;
     private Button sendInfoButton;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +67,7 @@ public class PlantInformationActivity extends AppCompatActivity {
         plantingPeriodText = findViewById(R.id.planting_period);
         backHomeButton = findViewById(R.id.back_home_button);
         sendInfoButton = findViewById(R.id.send_info_button);
+        loadingDialog = new LoadingDialog(this);
 
         // Get token and QR code
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", this.MODE_PRIVATE);
@@ -74,9 +75,8 @@ public class PlantInformationActivity extends AppCompatActivity {
         soilManualInitFormResponse = new SoilManualInitFormResponse();
         Intent intent = getIntent();
         qrCode = intent.getStringExtra("qrCode");
-        // Nhận DirectMeasurementRequest từ Intent
-        // Nhận DirectMeasurementRequest từ Intent
         directMeasurementRequest = (DirectMeasurementRequest) intent.getSerializableExtra("directMeasurementRequest");
+
         // Set button listeners
         backHomeButton.setOnClickListener(v -> finish());
 
@@ -91,11 +91,13 @@ public class PlantInformationActivity extends AppCompatActivity {
     }
 
     public void getDataPlant() {
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<SoilManualInitFormResponse>> call = apiInterface.initFormPlantByQrCode(token, qrCode);
         call.enqueue(new Callback<ApiResponse<SoilManualInitFormResponse>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<SoilManualInitFormResponse>> call, Response<ApiResponse<SoilManualInitFormResponse>> response) {
+                loadingDialog.hide();
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<SoilManualInitFormResponse> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
@@ -104,14 +106,17 @@ public class PlantInformationActivity extends AppCompatActivity {
                         updateDirectMeasurementRequest();
                     } else {
                         Log.e("PlantInformationActivity", "API response unsuccessful: " + apiResponse.getMessage());
+                        CustomToast.showCustomToast(PlantInformationActivity.this, "Lỗi: " + apiResponse.getMessage());
                     }
                 } else {
                     Log.e("PlantInformationActivity", "API response unsuccessful: " + response.message());
+                    CustomToast.showCustomToast(PlantInformationActivity.this, "Lỗi: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<SoilManualInitFormResponse>> call, Throwable t) {
+                loadingDialog.hide();
                 Log.e("PlantInformationActivity", "Error: " + t.getMessage());
                 CustomToast.showCustomToast(PlantInformationActivity.this, "Lỗi kết nối: " + t.getMessage());
             }
@@ -126,16 +131,17 @@ public class PlantInformationActivity extends AppCompatActivity {
 
         SoilManualInitFormResponse.DataInfoPlant dataInfoPlant = soilManualInitFormResponse.getDataInfoPlant();
 
-        // Cập nhật giao diện với dữ liệu từ API
+        // Update UI with API data
         plantationText.setText(dataInfoPlant.getNamePlantation() != null ? dataInfoPlant.getNamePlantation() : "N/A");
         plantAreaText.setText(dataInfoPlant.getNameCultivationArea() != null ? dataInfoPlant.getNameCultivationArea() : "N/A");
         planTypeText.setText(dataInfoPlant.getNameCropVarieties() != null ? dataInfoPlant.getNameCropVarieties() : "N/A");
         plandCodeText.setText(dataInfoPlant.getCodePlant() != null ? dataInfoPlant.getCodePlant() : "N/A");
 
-        // Vị trí: Hàng và Cột
+        // Position: Row and Column
         String position = "Hàng " + dataInfoPlant.getRowIn() + ", Cột " + dataInfoPlant.getColumnIn();
         plantingPeriodText.setText(position);
     }
+
     private void updateDirectMeasurementRequest() {
         if (soilManualInitFormResponse == null || soilManualInitFormResponse.getDataInfoPlant() == null || directMeasurementRequest == null) {
             Log.e("PlantInformationActivity", "Không thể cập nhật DirectMeasurementRequest: Dữ liệu không đầy đủ");
@@ -145,7 +151,7 @@ public class PlantInformationActivity extends AppCompatActivity {
         SoilManualInitFormResponse.DataInfoPlant sourceData = soilManualInitFormResponse.getDataInfoPlant();
         DirectMeasurementRequest.DataInfoPlant dataInfoPlant = new DirectMeasurementRequest.DataInfoPlant();
 
-        // Chuyển dữ liệu từ SoilManualInitFormResponse.DataInfoPlant sang DirectMeasurementRequest.DataInfoPlant
+        // Transfer data from SoilManualInitFormResponse.DataInfoPlant to DirectMeasurementRequest.DataInfoPlant
         dataInfoPlant.setIdCropVarieties(sourceData.getIdCropVarieties());
         dataInfoPlant.setNameCropVarieties(sourceData.getNameCropVarieties());
         dataInfoPlant.setNamePlantation(sourceData.getNamePlantation());
@@ -157,70 +163,66 @@ public class PlantInformationActivity extends AppCompatActivity {
         dataInfoPlant.setColumnIn(sourceData.getColumnIn());
         dataInfoPlant.setNameCultivationArea(sourceData.getNameCultivationArea());
 
-        // Set DataInfoPlant vào DirectMeasurementRequest
+        // Set DataInfoPlant into DirectMeasurementRequest
         directMeasurementRequest.setDataInfoPlant(dataInfoPlant);
         directMeasurementRequest.setIsWrite(1);
     }
 
     public void handleSenDataToDirectMeasurement() {
-        // Log đối tượng DirectMeasurementRequest đã cập nhật
+        // Log the updated DirectMeasurementRequest
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String updatedRequestJson = gson.toJson(directMeasurementRequest);
-        Log.d("PlantInformationActivity", "finallyyyyyyyyyyyyyy: " + updatedRequestJson);
+        Log.d("PlantInformationActivity", "DirectMeasurementRequest: " + updatedRequestJson);
+
         if (directMeasurementRequest == null) {
-           CustomToast.showCustomToast(this, "Không có dữ liệu cảm biến để gửi");
+            CustomToast.showCustomToast(this, "Không có dữ liệu cảm biến để gửi");
             return;
         }
 
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<String>> call = apiInterface.directMeasurement(token, directMeasurementRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                loadingDialog.hide();
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
-                        Log.d("PlantInformationActivity", "vaooooooooooooooooo");
-
-                        // Tạo modal tùy chỉnh
+                        // Create custom dialog
                         AlertDialog.Builder builder = new AlertDialog.Builder(PlantInformationActivity.this);
                         View dialogView = LayoutInflater.from(PlantInformationActivity.this).inflate(R.layout.dialog_success, null);
                         builder.setView(dialogView);
 
-                        // Tham chiếu đến các nút trong dialog
+                        // Reference dialog buttons
                         Button btnOk = dialogView.findViewById(R.id.btn_continue);
                         Button btnCancel = dialogView.findViewById(R.id.btn_back_home);
 
                         AlertDialog dialog = builder.create();
 
-                        // Xử lý sự kiện cho nút OK
-                        btnCancel.setOnClickListener(v -> {
-                            dialog.dismiss();
-                            Intent intent = new Intent(PlantInformationActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
-//                            finish(); // Quay về trang chủ
-                        });
-
-                        // Xử lý sự kiện cho nút Hủy
+                        // Handle OK button (Continue)
                         btnOk.setOnClickListener(v -> {
-                            dialog.dismiss(); // Chỉ đóng modal, không làm gì thêm
+                            dialog.dismiss();
                             Intent intent = new Intent(PlantInformationActivity.this, ManualMeasurementActivity.class);
                             startActivity(intent);
                             finish();
                         });
 
-                        dialog.setCancelable(false); // Không cho phép đóng bằng nút back
+                        // Handle Cancel button (Back to Home)
+                        btnCancel.setOnClickListener(v -> {
+                            dialog.dismiss();
+                            Intent intent = new Intent(PlantInformationActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                            finish();
+                        });
+
+                        dialog.setCancelable(false); // Prevent closing with back button
                         dialog.show();
                     } else {
-                        Log.d("PlantInformationActivity", "vaooooooooooooooooo1");
-
                         Log.e("PlantInformationActivity", "API response unsuccessful: " + apiResponse.getMessage());
                         CustomToast.showCustomToast(PlantInformationActivity.this, "Gửi dữ liệu thất bại: " + apiResponse.getMessage());
                     }
                 } else {
-                    Log.d("PlantInformationActivity", "vaooooooooooooooooo2");
-
                     Log.e("PlantInformationActivity", "API response unsuccessful: " + response.message());
                     CustomToast.showCustomToast(PlantInformationActivity.this, "Gửi dữ liệu thất bại: " + response.message());
                 }
@@ -228,8 +230,7 @@ public class PlantInformationActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                Log.d("PlantInformationActivity", "vaoooooooooooooooo3");
-
+                loadingDialog.hide();
                 Log.e("PlantInformationActivity", "Error: " + t.getMessage());
                 CustomToast.showCustomToast(PlantInformationActivity.this, "Lỗi kết nối: " + t.getMessage());
             }

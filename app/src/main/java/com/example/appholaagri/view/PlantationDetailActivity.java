@@ -2,6 +2,7 @@ package com.example.appholaagri.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
@@ -42,6 +43,7 @@ public class PlantationDetailActivity extends AppCompatActivity {
         // Nhận plantationId từ Intent
         int plantationId = getIntent().getIntExtra("plantationId", -1);
 
+        Log.d("PlantationDetailActivity: ", "plantationId: " + plantationId);
         // Đặt Fragment mặc định
         if (savedInstanceState == null) {
             replaceFragment(new PlatationDetailMapFragment(), "MAP", plantationId);

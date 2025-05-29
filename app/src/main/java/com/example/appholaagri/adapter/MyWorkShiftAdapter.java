@@ -21,14 +21,15 @@ public class MyWorkShiftAdapter extends RecyclerView.Adapter<MyWorkShiftAdapter.
 
     private List<ListWorkShiftResponse.WorkShiftData> workShiftData;
     private OnItemClickListener onItemClickListener;
-
+    private boolean isTeamShift;
     // Interface cho callback khi nhấn item
     public interface OnItemClickListener {
         void onItemClick(ListWorkShiftResponse.WorkShiftData workShiftData);
     }
 
-    public MyWorkShiftAdapter(List<ListWorkShiftResponse.WorkShiftData> workShiftData) {
+    public MyWorkShiftAdapter(List<ListWorkShiftResponse.WorkShiftData> workShiftData, boolean isTeamShift) {
         this.workShiftData = workShiftData != null ? workShiftData : new ArrayList<>();
+        this.isTeamShift = isTeamShift;
     }
 
     // Phương thức để set listener
@@ -57,7 +58,8 @@ public class MyWorkShiftAdapter extends RecyclerView.Adapter<MyWorkShiftAdapter.
 
     @Override
     public MyWorkShiftAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_work_shift, parent, false);
+        int layoutRes = isTeamShift ? R.layout.team_work_shift : R.layout.my_work_shift;
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
         return new ViewHolder(view);
     }
 
