@@ -42,7 +42,7 @@ public class ListRequestToCreateActivity extends BaseActivity {
 //        adapter = new GroupRequestListAdapter(new ArrayList<>()); // Adapter ban đầu với danh sách rỗng
 //        recyclerView.setAdapter(adapter);
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+           finish();
         });
         // Lấy dữ liệu từ API
         fetchData();
@@ -150,12 +150,5 @@ public class ListRequestToCreateActivity extends BaseActivity {
                 Log.e("FetchData", "API call failed: " + t.getMessage());
             }
         });
-    }
-    public void onBackPressed() {
-        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
-        super.onBackPressed();
-        Intent intent = new Intent(ListRequestToCreateActivity.this, RequestActivity.class);
-        startActivity(intent);
-        finish();  // Kết thúc Activity này
     }
 }

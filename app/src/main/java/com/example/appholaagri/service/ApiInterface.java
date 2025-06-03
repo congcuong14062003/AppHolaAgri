@@ -22,6 +22,7 @@ import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftResponse;
 import com.example.appholaagri.model.ListWorkShiftModel.WorkShiftListWrapper;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
+import com.example.appholaagri.model.MenuHomeModel.MenuHomeResponse;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
 import com.example.appholaagri.model.PlantDetailModel.PlantDetailResponse;
 import com.example.appholaagri.model.PlantInforByQrCode.PlantInforResponse;
@@ -316,5 +317,14 @@ public interface ApiInterface {
     @POST("soil-manual/direct-measurement")
     Call<ApiResponse<String>> listCampaign(@Header("Authorization") String token, @Body DirectMeasurementRequest directMeasurementRequest);
 
+
+
+
+
+    @GET("app-view/list-block")
+    Call<ApiResponse<List<MenuHomeResponse.MenuItem>>> menuHome(
+            @Header("Authorization") String token,
+            @Query("screenCode") String screenCode
+    );
 
 }

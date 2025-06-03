@@ -15,6 +15,8 @@ public class RequestListData {
         private String createdDate;
         private Status status;
         private int groupRequestType;
+        private String groupRequestCode;
+        private int isUrgent;
         private Employee employee;
         private int statusIdx;
 
@@ -73,6 +75,22 @@ public class RequestListData {
 
         public void setEmployee(Employee employee) {
             this.employee = employee;
+        }
+
+        public String getGroupRequestCode() {
+            return groupRequestCode;
+        }
+
+        public void setGroupRequestCode(String groupRequestCode) {
+            this.groupRequestCode = groupRequestCode;
+        }
+
+        public int getIsUrgent() {
+            return isUrgent;
+        }
+
+        public void setIsUrgent(int isUrgent) {
+            this.isUrgent = isUrgent;
         }
 
         public int getStatusIdx() {

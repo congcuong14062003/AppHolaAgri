@@ -143,26 +143,31 @@
                 android:lineSpacingExtra="4dp"
                 android:text="20/09/2024 13:30\nBón phân cho cây sầu riêng lô số: 2, 3, 4"
                 android:textColor="@color/textcolor"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
         </LinearLayout>
     </RelativeLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="50dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/schedule_card">
 
         <LinearLayout
+            android:id="@+id/scroll_view_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="80dp">
 
             <!-- Quản lý trang trại -->
             <TextView
+                android:id="@+id/tv_farm_management_title"
                 style="@style/TextStyle_16_600"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -176,11 +181,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:nestedScrollingEnabled="false"
-                android:orientation="horizontal" />
+                android:nestedScrollingEnabled="false" />
 
             <!-- Quản lý công việc -->
             <TextView
+                android:id="@+id/tv_task_management_title"
                 style="@style/TextStyle_16_600"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -198,6 +203,7 @@
 
             <!-- Yêu cầu - Đề xuất -->
             <TextView
+                android:id="@+id/tv_request_proposal_title"
                 style="@style/TextStyle_16_600"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -211,8 +217,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:nestedScrollingEnabled="false"
-                android:orientation="horizontal" />
+                android:nestedScrollingEnabled="false" />
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

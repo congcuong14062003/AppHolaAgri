@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +31,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -70,7 +70,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestLateEarlyActivity extends BaseActivity  {
+public class CreateRequestLateEarlyActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etNgayKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
             etDurationLateEarly;
@@ -89,6 +89,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
     private LinearLayout layout_action_history_request;
+    private SwitchCompat switchUrgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +109,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
         txt_type_request_create = findViewById(R.id.txt_type_request_create);
         // tên đề xuất
         edt_name_request_create = findViewById(R.id.edt_name_request_create);
+        // khẩn cấp
+        switchUrgent = findViewById(R.id.switch_urgent);
         // người đề xuất
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         // bộ phận
@@ -161,7 +164,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             Log.d("CreateRequestLateEarlyActivity", "GroupRequestType: " + GroupRequestType);
         }
 
-        if(StatusRequest > 2){
+        if (StatusRequest > 2) {
             edt_name_request_create.setEnabled(false);
             edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
             select_method_request.setEnabled(false);
@@ -195,13 +198,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
         txt_status_request_detail.setVisibility(View.GONE);
         layout_action_history_request.setVisibility(View.GONE);
 
-        // Khởi tạo nếu null
-        if (requestDetailData == null) {
-            requestDetailData = new RequestDetailData();
-            requestDetailData.setDuration(30);
-        }
-        etDurationLateEarly.setText("--" + requestDetailData.getDuration() + " phút--");
-
         if (requestId != -1) {
             create_request_container.setVisibility(View.GONE);
             title_request.setText("Chi tiết đề xuất");
@@ -215,14 +211,13 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
         }
 
         // event
-
         etDurationLateEarly.setOnClickListener(v -> showMinutePicker());
 
         Button buttonCloseOverlay = findViewById(R.id.button_close_overlay);
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         // event
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
         buttonCloseOverlay.setOnClickListener(v -> {
             overlayFilterStatus.setVisibility(View.GONE);
@@ -232,7 +227,12 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             overlayFilterStatus.setVisibility(View.VISIBLE);
             overlay_background.setVisibility(View.VISIBLE);
         });
-
+        // Set default value for urgent switch (0 = not urgent)
+        switchUrgent.setChecked(false);
+        // Update requestDetailData when switch changes
+        switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            requestDetailData.setIsUrgent(isChecked ? 1 : 0);
+        });
         overlay_background.setOnTouchListener((view, event) -> {
             // Check if the touch event is outside the overlay_filter_status_container
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -256,7 +256,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             }
             return true; // Handle the touch event and prevent further propagation
         });
-
 
         // Lấy ngày hiện tại
         Calendar currentDate = Calendar.getInstance();
@@ -304,6 +303,44 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             requestDetailData.setType(2);
         });
 
+        // Khởi tạo giá trị mặc định cho duration
+        if (requestDetailData == null) {
+            requestDetailData = new RequestDetailData();
+            requestDetailData.setDuration(30);
+            etDurationLateEarly.setText("--30 phút--");
+        }
+        updateLayoutVisibility();
+    }
+
+    private void updateLayoutVisibility() {
+        LinearLayout formTimeLayout = findViewById(R.id.form_time_layout);
+        LinearLayout tvThoiGianBatDauLayout = findViewById(R.id.tvThoiGianBatDau_layout);
+        LinearLayout tvThoiGianKetThucLayout = findViewById(R.id.tvThoiGianKetThuc_layout);
+        LinearLayout selectReasonLayout = findViewById(R.id.select_reason_layout);
+        LinearLayout reasonRequestLayout = findViewById(R.id.reason_request_layout);
+        LinearLayout managerDirectRequestLayout = findViewById(R.id.manager_direct_request_layout);
+        LinearLayout fixedReviewerRequestLayout = findViewById(R.id.fixed_reviewer_request_layout);
+        LinearLayout followerRequestLayout = findViewById(R.id.follower_request_layout);
+        LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
+
+        boolean hasMethodSelected = select_method_request.getText().toString().trim().length() > 0;
+
+        int visibility = hasMethodSelected ? View.VISIBLE : View.GONE;
+        formTimeLayout.setVisibility(visibility);
+        tvThoiGianBatDauLayout.setVisibility(visibility);
+        selectReasonLayout.setVisibility(visibility);
+        reasonRequestLayout.setVisibility(visibility);
+        managerDirectRequestLayout.setVisibility(visibility);
+        fixedReviewerRequestLayout.setVisibility(visibility);
+        followerRequestLayout.setVisibility(visibility);
+        actionButtonContainer.setVisibility(visibility);
+
+        // Chỉ hiển thị tvThoiGianKetThucLayout nếu dateType là Nhiều ngày (1) và đã chọn hình thức
+        if (hasMethodSelected && requestDetailData.getDateType() == 1) {
+            tvThoiGianKetThucLayout.setVisibility(View.VISIBLE);
+        } else {
+            tvThoiGianKetThucLayout.setVisibility(View.GONE);
+        }
     }
 
     // chọn số phút đi muộn về sớm
@@ -319,8 +356,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
         numberPicker.setMinValue(1);
         numberPicker.setMaxValue(360);
 
-        // Luôn đặt giá trị mặc định là 30 phút nếu requestDetailData null
-        int defaultValue = (requestDetailData != null && requestDetailData.getDuration() > 0)
+        // Lấy giá trị duration từ requestDetailData, nếu null hoặc <= 0 thì mặc định là 30
+        int defaultValue = (requestDetailData != null && requestDetailData.getDuration() != null && requestDetailData.getDuration() > 0)
                 ? requestDetailData.getDuration()
                 : 30;
 
@@ -339,24 +376,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             }
             requestDetailData.setDuration(selectedMinute);
             updateNoticeLately(selectedMinute);
-//            if (requestDetailData != null && requestDetailData.getRequestMethod() != null
-//                    && requestDetailData.getRequestMethod().getThreshold() != null) {
-//                if (selectedMinute > requestDetailData.getRequestMethod().getThreshold().getMinute()) {
-//                    if(requestDetailData.getRequestMethod().getId() == 1) {
-//                        notice_lately_layout.setText("Trừ 0.5 công do muộn > "
-//                                + requestDetailData.getRequestMethod().getThreshold().getMinute() + " phút");
-//                    } else {
-//                        notice_lately_layout.setText("Trừ 0.5 công do sớm > "
-//                                + requestDetailData.getRequestMethod().getThreshold().getMinute() + " phút");
-//                    }
-//
-//                } else {
-//                    notice_lately_layout.setText("");
-//                }
-//            } else {
-//                Log.e("CreateRequestLateEarly", "requestMethod hoặc threshold bị null");
-//            }
-
         });
 
         builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
@@ -423,10 +442,9 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
         datePickerDialog.show();
     }
 
-
     // init data
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
-        Log.d("haha", "GroupRequestId: "+ GroupRequestId);
+        Log.d("haha", "GroupRequestId: " + GroupRequestId);
 
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
@@ -439,6 +457,11 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
                             requestDetailData = apiResponse.getData();
+                            // Kiểm tra và thiết lập duration mặc định
+                            if (requestDetailData.getDuration() == null || requestDetailData.getDuration() <= 0) {
+                                requestDetailData.setDuration(30);
+                                etDurationLateEarly.setText("--30 phút--");
+                            }
                             updateUserUI(requestDetailData);
                         } else {
                             CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
@@ -476,6 +499,11 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                         if (apiResponse.getStatus() == 200) {
                             create_request_container.setVisibility(View.VISIBLE);
                             requestDetailData = apiResponse.getData();
+                            // Kiểm tra và thiết lập duration mặc định
+                            if (requestDetailData.getDuration() == null || requestDetailData.getDuration() <= 0) {
+                                requestDetailData.setDuration(30);
+                                etDurationLateEarly.setText("--30 phút--");
+                            }
                             updateUserUI(requestDetailData);
                             // Đảm bảo cập nhật lại thông báo sau khi có dữ liệu chi tiết
                             if (requestDetailData.getRequestMethod() != null && requestDetailData.getRequestMethod().getThreshold() != null) {
@@ -538,40 +566,38 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                 Log.e("CreateRequestLateEarlyActivity", "requestDetailData is null");
                 return;
             }
-            if (requestId != -1) {
+            // Cập nhật duration và giao diện
+            if (requestDetailData.getDuration() == null) {
+                requestDetailData.setDuration(30);
+                etDurationLateEarly.setText("--30 phút--");
+            } else {
                 etDurationLateEarly.setText("--" + requestDetailData.getDuration() + " phút--");
             }
 
-
-
-            // Kiểm tra từng thuộc tính trước khi gọi
+            // Cập nhật các trường giao diện
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
                 txt_type_request_create.setText(requestDetailData.getRequestGroup().getName());
             }
             if (requestDetailData.getStatus() != null) {
                 txt_status_request_detail.setText(requestDetailData.getStatus().getName());
-
-                String colorCode = requestDetailData.getStatus().getColor(); // Lấy mã màu (dạng #cccccc)
-                int color = Color.parseColor(colorCode); // Chuyển mã màu thành int
-
-                // Đặt màu chữ
+                String colorCode = requestDetailData.getStatus().getColor();
+                int color = Color.parseColor(colorCode);
                 txt_status_request_detail.setTextColor(color);
-
-                // Tạo màu nền nhạt hơn (thêm alpha)
-                int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color)); // Alpha = 50 (~20% độ trong suốt)
-
-                // Đặt màu nền
+                int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color));
                 txt_status_request_detail.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
             }
-
-
 
             if (requestDetailData.getRequestName() != null) {
                 edt_name_request_create.setText(requestDetailData.getRequestName());
             }
+            if (requestDetailData.getIsUrgent() != null) {
+                switchUrgent.setChecked(requestDetailData.getIsUrgent() == 1);
+            }
 
             if (requestDetailData.getRequestMethod() != null && requestDetailData.getRequestMethod().getName() != null) {
                 select_method_request.setText(requestDetailData.getRequestMethod().getName());
+            } else {
+                select_method_request.setText(""); // Đặt rỗng nếu không có phương thức
             }
 
             if (requestDetailData.getEmployee() != null && requestDetailData.getEmployee().getName() != null) {
@@ -599,8 +625,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                 rbWork_create.setImageResource(R.drawable.no_check_radio_create);
             }
 
-
-
             if (requestDetailData.getStartDate() != null) {
                 etNgayBatDau.setText(requestDetailData.getStartDate());
             }
@@ -609,19 +633,16 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                 etNgayKetThuc.setText(requestDetailData.getEndDate());
             }
 
-
             if (requestDetailData.getReason() != null) {
                 edt_reason_request_create.setText(requestDetailData.getReason());
             }
 
-            if (requestDetailData.getDirectManager() != null
-                    && requestDetailData.getDirectManager().getName() != null) {
+            if (requestDetailData.getDirectManager() != null && requestDetailData.getDirectManager().getName() != null) {
                 edt_manager_direct_request_create.setText(requestDetailData.getDirectManager().getName());
             } else {
                 edt_manager_direct_request_create.setText("Chưa có quản lý trực tiếp");
             }
 
-            // Xử lý danh sách Consignee
             List<Consignee> consigneeList = requestDetailData.getConsignee();
             if (consigneeList != null && !consigneeList.isEmpty()) {
                 StringBuilder consigneeNames = new StringBuilder();
@@ -635,7 +656,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                 edt_fixed_reviewer_request_create.setText("Không có người duyệt cố định");
             }
 
-            // Xử lý danh sách Follower
             List<Follower> followerList = requestDetailData.getFollower();
             if (followerList != null && !followerList.isEmpty()) {
                 StringBuilder followerNames = new StringBuilder();
@@ -649,9 +669,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                 edt_follower_request_create.setText("Không có người theo dõi");
             }
 
-
-
-            // Xử lý danh sách RequestMethod
+            // Khởi tạo RequestMethodAdapter
             List<RequestMethod> listMethods = requestDetailData.getListMethod();
             if (listMethods != null && !listMethods.isEmpty()) {
                 RecyclerView recyclerView = findViewById(R.id.recycler_filter_status_create);
@@ -665,12 +683,13 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                         GroupRequestType,
                         selectedMethod -> {
                             requestDetailData.setRequestMethod(selectedMethod);
-                            updateNoticeLately(selectedMinute); // Gọi cập nhật thông báo
+                            updateNoticeLately(requestDetailData.getDuration()); // Cập nhật thông báo với duration hiện tại
+                            updateLayoutVisibility(); // Cập nhật visibility khi chọn phương thức
                         }
                 );
                 recyclerView.setAdapter(adapter);
 
-                // Nếu có requestId, đặt selectedItem từ API
+                // Nếu có requestId, đặt phương thức đã chọn từ API
                 if (requestId != -1 && requestDetailData.getRequestMethod() != null) {
                     int selectedId = requestDetailData.getRequestMethod().getId();
                     adapter.setSelectedMethodById(selectedId);
@@ -680,17 +699,23 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                                     .findFirst()
                                     .orElse(0)
                     );
+                } else {
+                    // Nếu không có requestId, đặt mặc định nhưng không chọn phương thức
+                    adapter.setDefaultSelection(GroupRequestType);
                 }
             } else {
                 Log.e("CreateRequestActivity", "listMethods is null or empty");
+                select_method_request.setText(""); // Đặt rỗng nếu không có phương thức
+                updateLayoutVisibility(); // Cập nhật visibility
             }
+
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-            if(requestDetailData.getApprovalLogs() != null && requestDetailData.getApprovalLogs().size() > 0) {
+            if (requestDetailData.getApprovalLogs() != null && !requestDetailData.getApprovalLogs().isEmpty()) {
                 layout_action_history_request.setVisibility(View.VISIBLE);
             }
-            // các nút hành động
+
             // Xử lý danh sách ListStatus
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
@@ -702,7 +727,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                         button.setText(status.getName());
                         button.setTextColor(Color.WHITE);
                         button.setPadding(24, 12, 24, 12);
-
                         String color = (status.getColor() != null) ? status.getColor() : "#007BFF";
                         button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
                         button.setBackground(ContextCompat.getDrawable(this, R.drawable.button_custom));
@@ -713,19 +737,16 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                         params.setMargins(4, 8, 4, 8);
                         button.setLayoutParams(params);
 
-                        button.setOnClickListener(v ->
-                                {
-//                                    if(requestId == -1) {
-                                        handleCreateRequest(requestDetailData, status);
-//                                    }
-                                }
-                        );
+                        button.setOnClickListener(v -> handleCreateRequest(requestDetailData, status));
                         actionButtonContainer.addView(button);
                     }
                 }
             } else {
                 Log.e("ButtonList", "listStatus is null or empty");
             }
+
+            // Cập nhật visibility sau khi khởi tạo giao diện
+            updateLayoutVisibility();
 
         } catch (Exception e) {
             Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage(), e);
@@ -755,18 +776,18 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
         }
     }
 
-
     // tạo request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
         // Hiển thị loading
         showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-        // Đặt giá trị mặc định cho duration là 30 nếu chưa có
-        if (requestDetailData.getDuration() == 0) {
+        // Đặt giá trị mặc định cho duration nếu null hoặc <= 0
+        if (requestDetailData.getDuration() == null || requestDetailData.getDuration() <= 0) {
             requestDetailData.setDuration(30);
+            etDurationLateEarly.setText("--30 phút--");
         }
-        etDurationLateEarly.setText("--" + requestDetailData.getDuration() + " phút--");
+
         // Lấy dữ liệu từ giao diện nhập vào requestDetailData
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
         requestDetailData.setEndDate(etNgayKetThuc.getText().toString().trim());
@@ -784,7 +805,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             hideLoading();
             return;
         }
-
 
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
@@ -820,7 +840,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             groupRequestCreateRequest.setRequestMethod(requestMethod);
         }
 
-
         // Gán status
         GroupRequestCreateRequest.Status status = new GroupRequestCreateRequest.Status(
                 listStatus1.getCode(),
@@ -832,10 +851,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
 
         groupRequestCreateRequest.setRequestId(requestDetailData.getRequestId());
         groupRequestCreateRequest.setRequestName(requestDetailData.getRequestName());
+        groupRequestCreateRequest.setIsUrgent(requestDetailData.getIsUrgent());
         groupRequestCreateRequest.setStartDate(requestDetailData.getStartDate());
         groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
         groupRequestCreateRequest.setType(requestDetailData.getType());
-        // Tạo JSON log để kiểm tra dữ liệu
         // Tạo JSON log để kiểm tra dữ liệu
         String jsonResponse = gson.toJson(groupRequestCreateRequest);
         Log.d("CreateRequestLateActivity", "data thêm mới" + jsonResponse);
@@ -850,7 +869,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
                             CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestLateEarlyActivity.this, RequestActivity.class));
+                            Intent intent = new Intent(CreateRequestLateEarlyActivity.this, HomeActivity.class);
+                            intent.putExtra("navigate_to", "newsletter");
+                            startActivity(intent);
+                            finish(); // Kết thúc activity hiện tại
                         } else {
                             CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                         }
@@ -873,9 +895,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                 sendModifyRequest(apiInterface, token, groupRequestCreateRequest);
             }
         }
-
     }
-
 
     private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData, GroupRequestCreateRequest groupRequestCreateRequest) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
@@ -900,7 +920,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
         // Lắng nghe thay đổi nội dung nhập
         etReason.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -911,7 +932,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Xử lý khi nhấn nút xác nhận
@@ -959,7 +981,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity  {
                     ApiResponse<String> apiResponse = response.body();
                     CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                     if (apiResponse.getStatus() == 200) {
-                        startActivity(new Intent(CreateRequestLateEarlyActivity.this, RequestActivity.class));
+                        Intent intent = new Intent(CreateRequestLateEarlyActivity.this, HomeActivity.class);
+                        intent.putExtra("navigate_to", "newsletter");
+                        startActivity(intent);
+                        finish(); // Kết thúc activity hiện tại
                     }
                 } else {
                     CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi kết nối, vui lòng thử lại.");

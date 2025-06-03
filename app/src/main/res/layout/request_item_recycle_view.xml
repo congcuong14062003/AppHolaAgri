@@ -57,17 +57,27 @@
             android:orientation="vertical">
             <!-- Thời gian và ngày tháng -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
                 >
                 <TextView
+                    android:layout_weight="1"
                     android:id="@+id/txt_request_name"
                     style="@style/TextStyle_16_600"
                     android:textColor="@color/textcolor"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="Đăng ký mua sắm vật tư"
                      />
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/isurgent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/isurgent"
+                    />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"

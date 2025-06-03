@@ -115,16 +115,19 @@ public class IsendRequestFragment extends BaseFragment {
                             emptyStateLayout.setVisibility(View.GONE);
                             if (adapter == null) {
                                 adapter = new RequestListAdapter(data.getData());
-                                adapter.setOnItemClickListener((requestId, StatusRequest, GroupRequest) -> {
-                                    Log.d("IsendRequestFragment", "GroupRequest" + GroupRequest);
-                                    if (GroupRequest == 1) {
+                                adapter.setOnItemClickListener((requestId, StatusRequest, groupRequestCode, GroupRequest) -> {
+                                    Log.d("IsendRequestFragment", "requestId: " + requestId);
+                                    Log.d("IsendRequestFragment", "StatusRequest: " + StatusRequest);
+                                    Log.d("IsendRequestFragment", "GroupRequest: " + GroupRequest);
+                                    Log.d("IsendRequestFragment", "groupRequestCode: " + groupRequestCode);
+                                    if (groupRequestCode.equals("LATE_EARLY")) {
                                         // đi muộn về sớm
                                         Intent intent = new Intent(getContext(), CreateRequestLateEarlyActivity.class);
                                         intent.putExtra("requestId", requestId);
                                         intent.putExtra("StatusRequest", StatusRequest);
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
-                                    } else if (GroupRequest == 2) {
+                                    } else if (groupRequestCode.equals("DAY_OFF")) {
                                         // xin nghỉ phép
                                         Intent intent = new Intent(getContext(), CreateRequestDayOffActivity.class);
                                         intent.putExtra("requestId", requestId);
@@ -132,7 +135,7 @@ public class IsendRequestFragment extends BaseFragment {
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
                                     }
-                                    else if (GroupRequest == 3) {
+                                    else if (groupRequestCode.equals("OVER_TIME")) {
                                         // xin làm thêm
                                         Intent intent = new Intent(getContext(), CreateRequestOvertTimeActivity.class);
                                         intent.putExtra("requestId", requestId);
@@ -140,16 +143,24 @@ public class IsendRequestFragment extends BaseFragment {
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
                                     }
-                                    else if (GroupRequest == 4) {
+                                    else if (groupRequestCode.equals("BUY_NEW")) {
                                         // mua sắm vật tư
                                         Intent intent = new Intent(getContext(), CreateRequestBuyNewActivity.class);
                                         intent.putExtra("requestId", requestId);
                                         intent.putExtra("StatusRequest", StatusRequest);
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
-                                    } else if (GroupRequest == 5) {
+                                    } else if (groupRequestCode.equals("RESIGN")) {
                                         // xin thôi việc
                                         Intent intent = new Intent(getContext(), CreateRequestResignActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (groupRequestCode.equals("BUSINESS_TRIP")) {
+                                        // Tờ trình công tác
+                                        Intent intent = new Intent(getContext(), CreateRequestWorkReportActivity.class);
                                         intent.putExtra("requestId", requestId);
                                         intent.putExtra("StatusRequest", StatusRequest);
                                         intent.putExtra("GroupRequest", GroupRequest);

@@ -11,7 +11,6 @@ public class ApiClient {
     private static Retrofit retrofit;
 //    private static final String BASE_URL = "https://agriapp.imediatech.com.vn/agri-app/api/";
     private static final String BASE_URL = "https://sb-agri.imediatech.com.vn/agri-app/api/";
-
     public static Retrofit getClient(Context context) {
         if (retrofit == null) {
             OkHttpClient client = new OkHttpClient.Builder()
@@ -20,7 +19,6 @@ public class ApiClient {
                     .writeTimeout(120, TimeUnit.SECONDS)    // Tăng thời gian chờ ghi dữ liệu
                     .addInterceptor(new AuthInterceptor(context))
                     .build();
-
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(client)

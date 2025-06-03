@@ -25,7 +25,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
     private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(Integer requestId, Integer StatusRequest, Integer GroupRequest); // Truyền ID của request khi item được click
+        void onItemClick(Integer requestId, Integer StatusRequest, String groupRequestCode,  Integer GroupRequest); // Truyền ID của request khi item được click
     }
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
@@ -91,12 +91,18 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
                 .placeholder(R.drawable.avatar)           // Ảnh mặc định khi chưa tải được
                 .error(R.drawable.avatar)                 // Ảnh khi có lỗi tải
                 .into(holder.img_avatar_empployee);
+
+        if(dayData.getIsUrgent() == 1) {
+            holder.isurgent.setVisibility(View.VISIBLE);
+        } else {
+            holder.isurgent.setVisibility(View.GONE);
+        }
         // Gắn ID của request vào view
         // Gắn ID và type vào view
         // Sự kiện click
         holder.itemView.setOnClickListener(v -> {
             if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(dayData.getRequestId(), dayData.getStatus().getId(), dayData.getGroupRequestType());
+                onItemClickListener.onItemClick(dayData.getRequestId(), dayData.getStatus().getId(), dayData.getGroupRequestCode(), dayData.getGroupRequestType());
             }
         });
 
@@ -110,7 +116,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView txt_request_name, txt_employee_name, txt_createdDate, txt_status;
-        public ImageView img_avatar_empployee;
+        public ImageView img_avatar_empployee, isurgent;
 
         public ViewHolder(View itemView, OnItemClickListener listener) {
             super(itemView);
@@ -119,6 +125,8 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
             txt_createdDate = itemView.findViewById(R.id.txt_createdDate);
             txt_status = itemView.findViewById(R.id.txt_status);
             img_avatar_empployee = itemView.findViewById(R.id.img_avatar_empployee);
+            isurgent = itemView.findViewById(R.id.isurgent);
+
         }
     }
 }

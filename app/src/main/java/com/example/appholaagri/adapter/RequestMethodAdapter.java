@@ -33,7 +33,8 @@ public class RequestMethodAdapter extends RecyclerView.Adapter<RequestMethodAdap
         this.selectedTextView = selectedTextView;
         this.overlay_background = overlay_background;
         this.overlayFilterStatus = overlayFilterStatus;
-        setDefaultSelection(GroupRequestType);
+        // Không tự động chọn mặc định, để select_method_request rỗng ban đầu
+        // setDefaultSelection(GroupRequestType);
     }
 
     public void setSelectedMethodById(int methodId) {
@@ -42,15 +43,26 @@ public class RequestMethodAdapter extends RecyclerView.Adapter<RequestMethodAdap
                 selectedPosition = i;
                 selectedTextView.setText(methodList.get(i).getName());
                 notifyDataSetChanged();
-                onItemClickListener.onItemClick(methodList.get(i));
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(methodList.get(i));
+                }
                 break;
             }
         }
     }
 
-    private void setDefaultSelection(Integer GroupRequestType) {
+    public void setDefaultSelection(Integer GroupRequestType) {
         int defaultId = (GroupRequestType == 2) ? 3 : (GroupRequestType == 1) ? 1 : -1;
-        setSelectedMethodById(defaultId);
+        if (defaultId != -1) {
+            setSelectedMethodById(defaultId);
+        } else {
+            selectedTextView.setText(""); // Đặt rỗng nếu không có mặc định
+            selectedPosition = -1;
+            notifyDataSetChanged();
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(null); // Gọi callback để cập nhật giao diện
+            }
+        }
     }
 
     @NonNull
@@ -67,7 +79,12 @@ public class RequestMethodAdapter extends RecyclerView.Adapter<RequestMethodAdap
         holder.itemView.setBackgroundResource(position == selectedPosition ? R.drawable.bg_rounded_checked : R.drawable.bg_rounded);
 
         holder.itemView.setOnClickListener(v -> {
-            setSelectedMethodById(method.getId());
+            selectedPosition = position;
+            selectedTextView.setText(method.getName());
+            notifyDataSetChanged();
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(method);
+            }
             if (overlay_background != null) overlay_background.setVisibility(View.GONE);
             if (overlayFilterStatus != null) overlayFilterStatus.setVisibility(View.GONE);
         });
@@ -80,6 +97,7 @@ public class RequestMethodAdapter extends RecyclerView.Adapter<RequestMethodAdap
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.text_method_name);

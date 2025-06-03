@@ -58,10 +58,17 @@ public class HomeActivity extends AppCompatActivity {
         String navigateTo = getIntent().getStringExtra("navigate_to");
         if ("setting".equals(navigateTo)) {
             replaceFragment(new SettingFragment(), "SETTING");
-            binding.bottomNavigationView.setSelectedItemId(R.id.nav_setting);  // Đánh dấu mục Setting là active
+            binding.bottomNavigationView.setSelectedItemId(R.id.nav_setting);
         } else if ("home".equals(navigateTo)) {
             replaceFragment(new HomeFragment(), "HOME");
-            binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);  // Đánh dấu mục Setting là active
+            binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        } else if ("newsletter".equals(navigateTo)) {
+            replaceFragment(new RequestNewFragment(), "NEWSLETTER");
+            binding.bottomNavigationView.setSelectedItemId(R.id.nav_ban_tin);
+        } else {
+            // Mặc định là HomeFragment nếu không có navigate_to
+            replaceFragment(new HomeFragment(), "HOME");
+            binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {

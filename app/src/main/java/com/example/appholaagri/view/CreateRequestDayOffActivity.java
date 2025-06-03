@@ -34,6 +34,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -73,7 +74,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CreateRequestDayOffActivity extends BaseActivity {
-    private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau,etGioBatDau, etNgayKetThuc,etGioKetThuc,
+    private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, edt_duration, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
     private TextView title_request, txt_type_request_create, select_method_request;
     private ImageView backBtnReview;
@@ -90,6 +91,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
     private LinearLayout layout_action_history_request;
+    private SwitchCompat switchUrgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,12 +113,19 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         txt_type_request_create = findViewById(R.id.txt_type_request_create);
         // tên đề xuất
         edt_name_request_create = findViewById(R.id.edt_name_request_create);
+
+        // khẩn cấp
+        switchUrgent = findViewById(R.id.switch_urgent);
+
         // người đề xuất
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         // bộ phận
         edt_part_request_create = findViewById(R.id.edt_part_request_create);
         // hình thức
         select_method_request = findViewById(R.id.select_method_request);
+
+        // số ngày nghỉ
+        edt_duration = findViewById(R.id.edt_duration);
         // ngày bắt đầu
         etNgayBatDau = findViewById(R.id.etNgayBatDau);
         // giờ bắt đầu
@@ -143,8 +152,6 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
 
 
-
-
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
         Intent intent = getIntent();
@@ -156,12 +163,13 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             Log.d("CreateRequestDayOffActivity", "StatusRequest: " + StatusRequest);
         }
 
-        if(StatusRequest > 2){
+        if (StatusRequest > 2) {
             edt_name_request_create.setEnabled(false);
             edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
             select_method_request.setEnabled(false);
             select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
+            edt_duration.setEnabled(false);
+            edt_duration.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
             etNgayBatDau.setEnabled(false);
             etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
@@ -182,11 +190,6 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         layout_action_history_request.setVisibility(View.GONE);
         txt_status_request_detail.setVisibility(View.GONE);
 
-        // Khởi tạo nếu null
-        if (requestDetailData == null) {
-            requestDetailData = new RequestDetailData();
-            requestDetailData.setDuration(30);
-        }
 
         if (requestId != -1) {
             create_request_container.setVisibility(View.GONE);
@@ -207,7 +210,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         // event
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
         buttonCloseOverlay.setOnClickListener(v -> {
             overlayFilterStatus.setVisibility(View.GONE);
@@ -255,8 +258,13 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         etNgayKetThuc.setOnClickListener(v -> showDatePicker(etNgayKetThuc));
         etGioKetThuc.setOnClickListener(v -> showTimePicker(etGioKetThuc));
 
+        // Set default value for urgent switch (0 = not urgent)
+        switchUrgent.setChecked(false);
+        // Update requestDetailData when switch changes
+        switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            requestDetailData.setIsUrgent(isChecked ? 1 : 0);
+        });
     }
-
 
 
     // Hàm hiển thị DatePickerDialog
@@ -392,6 +400,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             return 0;
         }
     }
+
     // init data
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
         // Gọi API
@@ -415,7 +424,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                     }
                 } catch (Exception e) {
                     Log.e("CreateRequestDayOffActivity", "Error during response handling: " + e.getMessage());
-                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+//                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
@@ -449,7 +458,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                     }
                 } catch (Exception e) {
                     Log.e("RequestDetailActivity", "Error during response handling: " + e.getMessage());
-                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+//                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
@@ -460,6 +469,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             }
         });
     }
+
     // cập nhật giao diện
     private void updateUserUI(RequestDetailData requestDetailData) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -496,7 +506,9 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             if (requestDetailData.getRequestName() != null) {
                 edt_name_request_create.setText(requestDetailData.getRequestName());
             }
-
+            if (requestDetailData.getIsUrgent() != null) {
+                switchUrgent.setChecked(requestDetailData.getIsUrgent() == 1);
+            }
             if (requestDetailData.getRequestMethod() != null && requestDetailData.getRequestMethod().getName() != null) {
                 select_method_request.setText(requestDetailData.getRequestMethod().getName());
             }
@@ -505,10 +517,15 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                 edt_name_employye_request_create.setText(requestDetailData.getEmployee().getName());
             }
 
+
             if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
             }
 
+            if (requestDetailData.getDuration() != null) {
+                Log.d("ahaha", "vào");
+                edt_duration.setText(requestDetailData.getDuration().toString());
+            }
             if (requestDetailData.getStartDate() != null) {
                 etNgayBatDau.setText(requestDetailData.getStartDate());
             }
@@ -516,11 +533,11 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             if (requestDetailData.getEndDate() != null) {
                 etNgayKetThuc.setText(requestDetailData.getEndDate());
             }
-            if(requestDetailData.getStartTime() != null) {
+            if (requestDetailData.getStartTime() != null) {
                 etGioBatDau.setText(requestDetailData.getStartTime());
             }
 
-            if(requestDetailData.getEndTime() != null) {
+            if (requestDetailData.getEndTime() != null) {
                 etGioKetThuc.setText(requestDetailData.getEndTime());
             }
 
@@ -600,7 +617,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-            if(requestDetailData.getApprovalLogs() != null && requestDetailData.getApprovalLogs().size() > 0) {
+            if (requestDetailData.getApprovalLogs() != null && requestDetailData.getApprovalLogs().size() > 0) {
                 layout_action_history_request.setVisibility(View.VISIBLE);
             }
             // các nút hành động
@@ -675,6 +692,17 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         // Lấy dữ liệu từ giao diện nhập vào requestDetailData
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
+        String durationText = edt_duration.getText().toString().trim();
+
+        if (!durationText.isEmpty()) {  // Kiểm tra nếu chuỗi không rỗng
+            try {
+                requestDetailData.setDuration(Integer.parseInt(durationText));
+            } catch (NumberFormatException e) {
+                CustomToast.showCustomToast(this, "Số ngày nghỉ không hợp lệ");
+            }
+        } else {
+            requestDetailData.setDuration(0); // Hoặc giá trị mặc định phù hợp
+        }
         requestDetailData.setEndDate(etNgayKetThuc.getText().toString().trim());
         requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
         requestDetailData.setStartTime(etGioBatDau.getText().toString().trim());
@@ -740,6 +768,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
 
         groupRequestCreateRequest.setRequestId(requestDetailData.getRequestId());
         groupRequestCreateRequest.setRequestName(requestDetailData.getRequestName());
+        groupRequestCreateRequest.setIsUrgent(requestDetailData.getIsUrgent());
         groupRequestCreateRequest.setStartDate(requestDetailData.getStartDate());
         groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
         groupRequestCreateRequest.setType(requestDetailData.getType());
@@ -751,12 +780,15 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                     hideLoading(); // Ẩn loading khi hoàn thành
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
-                        CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
-                            startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+//                            startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
+                            Intent intent = new Intent(CreateRequestDayOffActivity.this, HomeActivity.class);
+                            intent.putExtra("navigate_to", "newsletter");
+                            startActivity(intent);
+                            finish(); // Kết thúc activity hiện tại
                         } else {
                             CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
-
                         }
                     } else {
                         CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
@@ -779,6 +811,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
 
 
     }
+
     private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData, GroupRequestCreateRequest groupRequestCreateRequest) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -802,7 +835,8 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         // Lắng nghe thay đổi nội dung nhập
         etReason.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -813,7 +847,8 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // Xử lý khi nhấn nút xác nhận
@@ -862,7 +897,11 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                     ApiResponse<String> apiResponse = response.body();
                     CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
                     if (apiResponse.getStatus() == 200) {
-                        startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+//                        startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+                        Intent intent = new Intent(CreateRequestDayOffActivity.this, HomeActivity.class);
+                        intent.putExtra("navigate_to", "newsletter");
+                        startActivity(intent);
+                        finish(); // Kết thúc activity hiện tại
                     }
                 } else {
                     CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");

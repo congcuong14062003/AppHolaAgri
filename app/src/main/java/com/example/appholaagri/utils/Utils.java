@@ -20,4 +20,12 @@ public class Utils {
         }
         return null;
     }
+    public static String formatCurrency(String amount) {
+        try {
+            long value = Long.parseLong(amount);
+            return String.format("%,d đ", value); // <-- giữ dấu phẩy
+        } catch (NumberFormatException e) {
+            return amount + " đ";
+        }
+    }
 }

@@ -1,5 +1,8 @@
 package com.example.appholaagri.model.RequestGroupCreateRequestModel;
 
+import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
+
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -10,8 +13,10 @@ public class GroupRequestCreateRequest {
     private int duration;
     private String endDate;
     private String endTime;
+    private Integer isUrgent;
+
     private List<ListDayReq> listDayReqs;
-    private List<String> fileAttachment;
+    private List<FileAttachment> fileAttachment;
     private String reason;
     private String rejectReason;
     private RequestGroup requestGroup;
@@ -79,6 +84,14 @@ public class GroupRequestCreateRequest {
         this.endTime = endTime;
     }
 
+    public Integer getIsUrgent() {
+        return isUrgent;
+    }
+
+    public void setIsUrgent(Integer isUrgent) {
+        this.isUrgent = isUrgent;
+    }
+
     public List<ListDayReq> getListDayReqs() {
         return listDayReqs;
     }
@@ -87,11 +100,11 @@ public class GroupRequestCreateRequest {
         this.listDayReqs = listDayReqs;
     }
 
-    public List<String> getFileAttachment() {
+    public List<FileAttachment> getFileAttachment() {
         return fileAttachment;
     }
 
-    public void setFileAttachment(List<String> fileAttachment) {
+    public void setFileAttachment(List<FileAttachment> fileAttachment) {
         this.fileAttachment = fileAttachment;
     }
 
@@ -227,6 +240,34 @@ public class GroupRequestCreateRequest {
             this.endTime = endTime;
         }
     }
+    public static class FileAttachment {
+        private String name;
+        private String path;
+        public FileAttachment() {
+
+        }
+        public FileAttachment(String name, String path) {
+            this.name = name;
+            this.path = path;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+    }
+
     public static class RequestGroup {
         private String code;
         private int id;
@@ -383,4 +424,5 @@ public class GroupRequestCreateRequest {
             this.status = status;
         }
     }
+
 }

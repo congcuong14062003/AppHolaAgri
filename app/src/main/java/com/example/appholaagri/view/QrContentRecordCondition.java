@@ -68,9 +68,9 @@ import retrofit2.Response;
 
 public class QrContentRecordCondition extends AppCompatActivity {
     TextView plantation_name, area_name, type_plant, code_plant,
-            // detail
+    // detail
     sender_plantation, employee_code, team_code, time, problem_detail, infor_detail;
-            ;
+    ;
     private List<Uri> selectedImages = new ArrayList<>();
     private FlexboxLayout imageContainer;
     private final int MAX_IMAGES = 10;
@@ -82,12 +82,11 @@ public class QrContentRecordCondition extends AppCompatActivity {
     private LoadingDialog loadingDialog; // Context là activity hoặc fragment của bạn
     private ImageView backBtnReview;
     EditText edt_problem_disease, edt_development_information;
-    LinearLayout buttonContainer,employee_infor_detail, status_infor_detail, problem_disease_layout, development_information_layout,
-            file_layout, file_layout_detail
-
-    ; // hoặc findViewById nếu là activity
+    LinearLayout buttonContainer, employee_infor_detail, status_infor_detail, problem_disease_layout, development_information_layout,
+            file_layout, file_layout_detail; // hoặc findViewById nếu là activity
     private int recordId;
     private RecyclerView recyclerViewImages;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,7 +122,6 @@ public class QrContentRecordCondition extends AppCompatActivity {
         development_information_layout = findViewById(R.id.development_information_layout);
 
 
-
         edt_problem_disease = findViewById(R.id.edt_problem_disease); // hoặc findViewById nếu là Activity
         edt_development_information = findViewById(R.id.edt_development_information); // hoặc findViewById nếu là Activity
         buttonContainer = findViewById(R.id.button_action);
@@ -140,7 +138,7 @@ public class QrContentRecordCondition extends AppCompatActivity {
         if (getIntent() != null) {
             recordId = getIntent().getIntExtra("record_id", -1); // Lấy id của item
             Log.d("record_id", "record_id" + recordId);
-            if(recordId != -1) {
+            if (recordId != -1) {
                 employee_infor_detail.setVisibility(View.VISIBLE);
                 status_infor_detail.setVisibility(View.VISIBLE);
                 problem_disease_layout.setVisibility(View.GONE);
@@ -151,7 +149,7 @@ public class QrContentRecordCondition extends AppCompatActivity {
             }
         }
 
-        if(qrResult != null) {
+        if (qrResult != null) {
             handleGetInit(qrResult);
         }
         renderImages(); // Hiển thị khởi tạo
@@ -160,6 +158,7 @@ public class QrContentRecordCondition extends AppCompatActivity {
             finish();
         });
     }
+
     public void handleGetInit(String qrResult) {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
@@ -170,7 +169,7 @@ public class QrContentRecordCondition extends AppCompatActivity {
             public void onResponse(@NonNull Call<ApiResponse<InforRecordConditionByQrCode>> call, Response<ApiResponse<InforRecordConditionByQrCode>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<InforRecordConditionByQrCode> apiResponse = response.body();
-                    if(apiResponse.getStatus() == 200) {
+                    if (apiResponse.getStatus() == 200) {
                         inforRecordConditionByQrCode = apiResponse.getData();
                         updateUI(inforRecordConditionByQrCode); // Cập nhật danh sách tab vào Activity
                     } else {
@@ -201,7 +200,7 @@ public class QrContentRecordCondition extends AppCompatActivity {
             public void onResponse(@NonNull Call<ApiResponse<InforRecordConditionByQrCode>> call, Response<ApiResponse<InforRecordConditionByQrCode>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<InforRecordConditionByQrCode> apiResponse = response.body();
-                    if(apiResponse.getStatus() == 200) {
+                    if (apiResponse.getStatus() == 200) {
                         inforRecordConditionByQrCode = apiResponse.getData();
                         updateUI(inforRecordConditionByQrCode); // Cập nhật danh sách tab vào Activity
                     } else {
@@ -229,17 +228,17 @@ public class QrContentRecordCondition extends AppCompatActivity {
         type_plant.setText(inforRecordConditionByQrCode.getCropVarieties().getName());
         code_plant.setText(inforRecordConditionByQrCode.getPlantCode());
 
-        if(inforRecordConditionByQrCode.getProblem() != null) {
+        if (inforRecordConditionByQrCode.getProblem() != null) {
             edt_problem_disease.setText(inforRecordConditionByQrCode.getProblem());
             problem_detail.setText(inforRecordConditionByQrCode.getProblem());
         }
 
-        if(inforRecordConditionByQrCode.getDevelopment() != null) {
+        if (inforRecordConditionByQrCode.getDevelopment() != null) {
             edt_development_information.setText(inforRecordConditionByQrCode.getDevelopment());
             infor_detail.setText(inforRecordConditionByQrCode.getDevelopment());
         }
 
-        if(inforRecordConditionByQrCode.getEmployee() != null) {
+        if (inforRecordConditionByQrCode.getEmployee() != null) {
             sender_plantation.setText(inforRecordConditionByQrCode.getEmployee().getName());
             employee_code.setText(inforRecordConditionByQrCode.getEmployee().getCode());
             team_code.setText(inforRecordConditionByQrCode.getTeam().getName());
@@ -302,57 +301,58 @@ public class QrContentRecordCondition extends AppCompatActivity {
     }
 
 
+    // xử lý ảnh
+    private void renderImages() {
+        imageContainer.removeAllViews();
 
-        // xử lý ảnh
-        private void renderImages() {
-            imageContainer.removeAllViews();
+        for (int i = 0; i < selectedImages.size(); i++) {
+            Uri imageUri = selectedImages.get(i);
 
-            for (int i = 0; i < selectedImages.size(); i++) {
-                Uri imageUri = selectedImages.get(i);
+            // Inflate layout item_image_preview.xml
+            View itemView = getLayoutInflater().inflate(R.layout.item_image_preview, imageContainer, false);
+            ImageView imageView = itemView.findViewById(R.id.image);
+            ImageView btnDelete = itemView.findViewById(R.id.btn_delete);
 
-                // Inflate layout item_image_preview.xml
-                View itemView = getLayoutInflater().inflate(R.layout.item_image_preview, imageContainer, false);
-                ImageView imageView = itemView.findViewById(R.id.image);
-                ImageView btnDelete = itemView.findViewById(R.id.btn_delete);
+            imageView.setImageURI(imageUri);
+            int finalI = i;
+            btnDelete.setOnClickListener(v -> {
+                selectedImages.remove(finalI);
+                renderImages();
+            });
 
-                imageView.setImageURI(imageUri);
-                int finalI = i;
-                btnDelete.setOnClickListener(v -> {
-                    selectedImages.remove(finalI);
-                    renderImages();
-                });
-
-                imageContainer.addView(itemView);
-            }
-
-            // Thêm nút "Thêm ảnh"
-            if (selectedImages.size() < MAX_IMAGES) {
-                View addView = getLayoutInflater().inflate(R.layout.item_add_image, imageContainer, false);
-                addView.setOnClickListener(v -> pickImages());
-                imageContainer.addView(addView);
-            }
+            imageContainer.addView(itemView);
         }
 
-        private void pickImages() {
-            String[] options = {"Chụp ảnh", "Chọn từ thư viện"};
+        // Thêm nút "Thêm ảnh"
+        if (selectedImages.size() < MAX_IMAGES) {
+            View addView = getLayoutInflater().inflate(R.layout.item_add_image, imageContainer, false);
+            addView.setOnClickListener(v -> pickImages());
+            imageContainer.addView(addView);
+        }
+    }
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Thêm ảnh")
-                    .setItems(options, (dialog, which) -> {
-                        if (which == 0) {
-                            openCamera();
-                        } else {
-                            openGallery();
-                        }
-                    })
-                    .show();
-        }
-        private void openGallery() {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            startActivityForResult(Intent.createChooser(intent, "Chọn ảnh"), PICK_IMAGES);
-        }
+    private void pickImages() {
+        String[] options = {"Chụp ảnh", "Chọn từ thư viện"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Thêm ảnh")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        openCamera();
+                    } else {
+                        openGallery();
+                    }
+                })
+                .show();
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(Intent.createChooser(intent, "Chọn ảnh"), PICK_IMAGES);
+    }
+
     private void openCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -383,73 +383,72 @@ public class QrContentRecordCondition extends AppCompatActivity {
     }
 
 
-
     @Override
-        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-            // Xử lý ảnh chọn từ thư viện
-            if (requestCode == PICK_IMAGES && resultCode == RESULT_OK && data != null) {
-                if (data.getClipData() != null) {
-                    int count = data.getClipData().getItemCount();
-                    for (int i = 0; i < count && selectedImages.size() < MAX_IMAGES; i++) {
-                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                        selectedImages.add(imageUri);
-                    }
-                } else if (data.getData() != null) {
-                    if (selectedImages.size() < MAX_IMAGES) {
-                        selectedImages.add(data.getData());
-                    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Xử lý ảnh chọn từ thư viện
+        if (requestCode == PICK_IMAGES && resultCode == RESULT_OK && data != null) {
+            if (data.getClipData() != null) {
+                int count = data.getClipData().getItemCount();
+                for (int i = 0; i < count && selectedImages.size() < MAX_IMAGES; i++) {
+                    Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                    selectedImages.add(imageUri);
                 }
-                renderImages();
-                updateFileAttachments();
-            }
-
-            // Xử lý ảnh từ camera
-            if (requestCode == TAKE_PHOTO && resultCode == RESULT_OK && photoUri != null) {
+            } else if (data.getData() != null) {
                 if (selectedImages.size() < MAX_IMAGES) {
-                    selectedImages.add(photoUri);  // Thêm ảnh từ camera vào selectedImages
-                    renderImages(); // Cập nhật UI để hiển thị ảnh
+                    selectedImages.add(data.getData());
                 }
-                updateFileAttachments();
             }
+            renderImages();
+            updateFileAttachments();
         }
 
-
-        private void updateFileAttachments() {
-            // Duyệt qua danh sách các Uri, chuyển thành đường dẫn URL cho fileAttachment
-            List<String> fileAttachmentUrls = new ArrayList<>();
-            for (Uri uri : selectedImages) {
-                // Giả sử ảnh đã được upload và bạn có URL của ảnh
-                // Thêm URL ảnh vào danh sách
-                fileAttachmentUrls.add(getFileNameFromUri(uri));
+        // Xử lý ảnh từ camera
+        if (requestCode == TAKE_PHOTO && resultCode == RESULT_OK && photoUri != null) {
+            if (selectedImages.size() < MAX_IMAGES) {
+                selectedImages.add(photoUri);  // Thêm ảnh từ camera vào selectedImages
+                renderImages(); // Cập nhật UI để hiển thị ảnh
             }
-            // Cập nhật lại fileAttachment trong đối tượng InforRecordConditionByQrCode
-            inforRecordConditionByQrCode.setFileAttachment(fileAttachmentUrls);
-            // Log ra fileAttachment
-            // Serialize toàn bộ đối tượng inforRecordConditionByQrCode thành chuỗi JSON
-
-            // Log ra toàn bộ đối tượng
+            updateFileAttachments();
         }
+    }
 
-        // Phương thức để lấy tên file từ Uri (giả sử bạn có cách upload ảnh và lấy đường dẫn URL tương ứng)
-        private String getFileNameFromUri(Uri uri) {
-            // Giải pháp đơn giản để lấy tên file từ Uri (cần điều chỉnh cho phù hợp với cấu trúc thực tế)
-            return uri.getLastPathSegment();
+
+    private void updateFileAttachments() {
+        // Duyệt qua danh sách các Uri, chuyển thành đường dẫn URL cho fileAttachment
+        List<String> fileAttachmentUrls = new ArrayList<>();
+        for (Uri uri : selectedImages) {
+            // Giả sử ảnh đã được upload và bạn có URL của ảnh
+            // Thêm URL ảnh vào danh sách
+            fileAttachmentUrls.add(getFileNameFromUri(uri));
         }
+        // Cập nhật lại fileAttachment trong đối tượng InforRecordConditionByQrCode
+        inforRecordConditionByQrCode.setFileAttachment(fileAttachmentUrls);
+        // Log ra fileAttachment
+        // Serialize toàn bộ đối tượng inforRecordConditionByQrCode thành chuỗi JSON
 
-        public void handleSendData() {
-            Log.d("QrContentRecordCondition", "Bắt đầu gửi dữ liệu và upload ảnh");
-            // Hiển thị loading dialog khi bắt đầu upload
-            loadingDialog.show();
-            // Thu thập dữ liệu từ các trường nhập liệu
+        // Log ra toàn bộ đối tượng
+    }
+
+    // Phương thức để lấy tên file từ Uri (giả sử bạn có cách upload ảnh và lấy đường dẫn URL tương ứng)
+    private String getFileNameFromUri(Uri uri) {
+        // Giải pháp đơn giản để lấy tên file từ Uri (cần điều chỉnh cho phù hợp với cấu trúc thực tế)
+        return uri.getLastPathSegment();
+    }
+
+    public void handleSendData() {
+        Log.d("QrContentRecordCondition", "Bắt đầu gửi dữ liệu và upload ảnh");
+        // Hiển thị loading dialog khi bắt đầu upload
+        loadingDialog.show();
+        // Thu thập dữ liệu từ các trường nhập liệu
 
 
-            inforRecordConditionByQrCode.setProblem(edt_problem_disease.getText().toString());
-            inforRecordConditionByQrCode.setDevelopment(edt_development_information.getText().toString());
+        inforRecordConditionByQrCode.setProblem(edt_problem_disease.getText().toString());
+        inforRecordConditionByQrCode.setDevelopment(edt_development_information.getText().toString());
 
-            // Upload từng ảnh trước khi gọi confirmRecordCondition
-            uploadImagesSequentially(0, new ArrayList<>());
-        }
+        // Upload từng ảnh trước khi gọi confirmRecordCondition
+        uploadImagesSequentially(0, new ArrayList<>());
+    }
 
 
     public static File getFileFromUri(Context context, Uri uri) {
@@ -479,78 +478,83 @@ public class QrContentRecordCondition extends AppCompatActivity {
 
 
     public String getRealPathFromURI(Uri uri) {
-            String path = null;
-            String[] projection = {MediaStore.Images.Media.DATA}; // Chỉ lấy cột '_data'
+        String path = null;
+        String[] projection = {MediaStore.Images.Media.DATA}; // Chỉ lấy cột '_data'
 
-            try (Cursor cursor = getContentResolver().query(uri, projection, null, null, null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                    path = cursor.getString(columnIndex);
+        try (Cursor cursor = getContentResolver().query(uri, projection, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                path = cursor.getString(columnIndex);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Trường hợp cột '_data' không tồn tại, xử lý theo cách khác
+        if (path == null) {
+            path = uri.getPath();
+        }
+
+        return path;
+    }
+
+    private void uploadImagesSequentially(int index, List<String> uploadedUrls) {
+        if (index >= selectedImages.size()) {
+            // Upload xong hết => gọi API chính
+            inforRecordConditionByQrCode.setFileAttachment(uploadedUrls);
+            sendRequestToServer(inforRecordConditionByQrCode);
+
+            // Ẩn loading dialog sau khi tất cả file đã được upload
+            loadingDialog.hide();
+            return;
+        }
+
+        Uri imageUri = selectedImages.get(index);
+        File file = getFileFromUri(this, imageUri);
+
+        Log.d("kkkk", "file: " + file);
+        if (file != null) {
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+            Log.d("kkkk", "file: " + "Vào");
+            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
+            String token = sharedPreferences.getString("auth_token", null);
+            ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+
+            // Gọi API upload ảnh
+            Call<ApiResponse<UploadFileResponse>> call = apiInterface.uploadFile(token, body);
+            call.enqueue(new Callback<ApiResponse<UploadFileResponse>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<UploadFileResponse>> call, Response<ApiResponse<UploadFileResponse>> response) {
+                    Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+                    String responseData = gson.toJson(body);
+                    Log.d("CreateRequestBuyNewActivity", "Response Data: " + responseData);
+                    loadingDialog.hide();
+                    Log.d("QrContentRecordCondition", "Response: " + response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        String relativePath = response.body().getData().getFileUrl(); // Trả về dạng imedia/...
+                        String fileUrl = "https://haloship.imediatech.com.vn/" + relativePath;
+                        Log.d("kkkk", "relativePath: " + relativePath);
+                        uploadedUrls.add(fileUrl); // Thêm URL vào danh sách
+                        // Tiếp tục upload ảnh tiếp theo
+                        uploadImagesSequentially(index + 1, uploadedUrls);
+                    } else {
+                        Log.e("Upload Failed", "Server returned error");
+                    }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-            // Trường hợp cột '_data' không tồn tại, xử lý theo cách khác
-            if (path == null) {
-                path = uri.getPath();
-            }
-
-            return path;
+                @Override
+                public void onFailure(Call<ApiResponse<UploadFileResponse>> call, Throwable t) {
+                    loadingDialog.hide();
+                    Log.e("Upload Failed", t.getMessage(), t);
+                }
+            });
+        } else {
+            Log.e("FileError", "Tệp không tồn tại tại: " + file.getAbsolutePath());
+            uploadImagesSequentially(index + 1, uploadedUrls);  // Tiến hành với ảnh tiếp theo ngay cả khi tệp không hợp lệ
         }
-        private void uploadImagesSequentially(int index, List<String> uploadedUrls) {
-            if (index >= selectedImages.size()) {
-                // Upload xong hết => gọi API chính
-                inforRecordConditionByQrCode.setFileAttachment(uploadedUrls);
-                sendRequestToServer(inforRecordConditionByQrCode);
+    }
 
-                // Ẩn loading dialog sau khi tất cả file đã được upload
-                loadingDialog.hide();
-                return;
-            }
-
-            Uri imageUri = selectedImages.get(index);
-            File file = getFileFromUri(this, imageUri);
-
-            Log.d("kkkk", "file: " + file);
-            if (file != null) {
-                RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
-                MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
-                Log.d("kkkk", "file: " + "Vào");
-                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
-                String token = sharedPreferences.getString("auth_token", null);
-                ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
-
-                // Gọi API upload ảnh
-                Call<ApiResponse<UploadFileResponse>> call = apiInterface.uploadFile(token, body);
-                call.enqueue(new Callback<ApiResponse<UploadFileResponse>>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse<UploadFileResponse>> call, Response<ApiResponse<UploadFileResponse>> response) {
-                        loadingDialog.hide();
-                        Log.d("QrContentRecordCondition", "Response: " +response);
-                        if (response.isSuccessful() && response.body() != null) {
-                            String relativePath = response.body().getData().getFileUrl(); // Trả về dạng imedia/...
-                            String fileUrl = "https://haloship.imediatech.com.vn/" + relativePath;
-                            Log.d("kkkk", "relativePath: "+ relativePath);
-                            uploadedUrls.add(fileUrl); // Thêm URL vào danh sách
-                            // Tiếp tục upload ảnh tiếp theo
-                            uploadImagesSequentially(index + 1, uploadedUrls);
-                        } else {
-                            Log.e("Upload Failed", "Server returned error");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ApiResponse<UploadFileResponse>> call, Throwable t) {
-                        loadingDialog.hide();
-                        Log.e("Upload Failed", t.getMessage(), t);
-                    }
-                });
-            } else {
-                Log.e("FileError", "Tệp không tồn tại tại: " + file.getAbsolutePath());
-                uploadImagesSequentially(index + 1, uploadedUrls);  // Tiến hành với ảnh tiếp theo ngay cả khi tệp không hợp lệ
-            }
-        }
     private void sendRequestToServer(InforRecordConditionByQrCode request) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         String inforRecordJson = gson.toJson(request);
@@ -588,6 +592,7 @@ public class QrContentRecordCondition extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         KeyboardUtils.hideKeyboardOnTouchOutside(this, event);

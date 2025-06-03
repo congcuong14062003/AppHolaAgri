@@ -8,6 +8,7 @@
         private RequestGroup requestGroup;
         private int requestId;
         private String requestName;
+        private Integer isUrgent;
         private RequestMethod requestMethod;
         private int dateType;
         private String startDate;
@@ -16,10 +17,10 @@
         private String endDate;
         private String endTime;
         private String endDateDisplay;
-        private int duration;
+        private Integer duration;
         private String reason;
         private Status status;
-        private Object fileAttachment;
+        private List<FileAttachment> fileAttachment; // Sửa thành List
         private String rejectReason;
         private Device device;
         private String contact;
@@ -30,6 +31,7 @@
         private Division division;
         private List<ListDayReq> listDayReqs;
         private List<RequestMethod> listMethod;
+        private BusinessTripFormReq businessTripFormReq;
         private DirectManager directManager;
         private List<Consignee> consignee;
         private List<Follower> follower;
@@ -61,8 +63,24 @@
             return requestName;
         }
 
+        public Integer getIsUrgent() {
+            return isUrgent;
+        }
+
+        public void setIsUrgent(Integer isUrgent) {
+            this.isUrgent = isUrgent;
+        }
+
         public List<ListDayReq> getListDayReqs() {
             return listDayReqs;
+        }
+
+        public BusinessTripFormReq getBusinessTripFormReq() {
+            return businessTripFormReq;
+        }
+
+        public void setBusinessTripFormReq(BusinessTripFormReq businessTripFormReq) {
+            this.businessTripFormReq = businessTripFormReq;
         }
 
         public void setListDayReqs(List<ListDayReq> listDayReqs) {
@@ -137,11 +155,11 @@
             this.endDateDisplay = endDateDisplay;
         }
 
-        public int getDuration() {
+        public Integer getDuration() {
             return duration;
         }
 
-        public void setDuration(int duration) {
+        public void setDuration(Integer duration) {
             this.duration = duration;
         }
 
@@ -161,14 +179,14 @@
             this.status = status;
         }
 
-        public Object getFileAttachment() {
+        // Getter và Setter
+        public List<FileAttachment> getFileAttachment() {
             return fileAttachment;
         }
 
-        public void setFileAttachment(Object fileAttachment) {
+        public void setFileAttachment(List<FileAttachment> fileAttachment) {
             this.fileAttachment = fileAttachment;
         }
-
         public String getRejectReason() {
             return rejectReason;
         }
@@ -312,4 +330,64 @@
         public void setDateTypeName(String dateTypeName) {
             this.dateTypeName = dateTypeName;
         }
+
+        public static class BusinessTripFormReq {
+            private int totalCost;
+            private String totalCostText;
+            private String destination;
+            private String content;
+
+            public int getTotalCost() {
+                return totalCost;
+            }
+
+            public void setTotalCost(int totalCost) {
+                this.totalCost = totalCost;
+            }
+
+            public String getTotalCostText() {
+                return totalCostText;
+            }
+
+            public void setTotalCostText(String totalCostText) {
+                this.totalCostText = totalCostText;
+            }
+
+            public String getDestination() {
+                return destination;
+            }
+
+            public void setDestination(String destination) {
+                this.destination = destination;
+            }
+
+            public String getContent() {
+                return content;
+            }
+
+            public void setContent(String content) {
+                this.content = content;
+            }
+        }
+        public static class FileAttachment {
+           private String name;
+           private String path;
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getPath() {
+                return path;
+            }
+
+            public void setPath(String path) {
+                this.path = path;
+            }
+        }
+
     }

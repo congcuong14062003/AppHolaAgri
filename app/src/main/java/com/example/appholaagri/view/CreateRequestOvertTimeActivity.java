@@ -28,6 +28,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -92,7 +93,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
     private CoordinatorLayout create_request_container;
     private LinearLayout layout_action_history_request;
     private Dialog loadingDialog;
-
+    private SwitchCompat switchUrgent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +115,9 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         txt_type_request_create = findViewById(R.id.txt_type_request_create);
         // tên đề xuất
         edt_name_request_create = findViewById(R.id.edt_name_request_create);
+
+        // khẩn cấp
+        switchUrgent = findViewById(R.id.switch_urgent);
         // người đề xuất
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         // bộ phận
@@ -164,7 +168,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
         }
         // init
-        layout_action_history_request = findViewById(R.id.layout_action_history_request);
+        layout_action_history_request.setVisibility(View.GONE);
         txt_status_request_detail.setVisibility(View.GONE);
 
         dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this, StatusRequest);
@@ -174,11 +178,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         addNewDay();
 
 
-        // Khởi tạo nếu null
-        if (requestDetailData == null) {
-            requestDetailData = new RequestDetailData();
-            requestDetailData.setDuration(30);
-        }
+
 
         if (requestId != -1) {
             create_request_container.setVisibility(View.GONE);
@@ -199,14 +199,19 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
 
         backBtnReview.setOnClickListener(view -> {
-            onBackPressed();
+            finish();
         });
 
         buttonCloseOverlay.setOnClickListener(v -> {
             overlayFilterStatus.setVisibility(View.GONE);
             overlay_background.setVisibility(View.GONE);
         });
-
+        // Set default value for urgent switch (0 = not urgent)
+        switchUrgent.setChecked(false);
+        // Update requestDetailData when switch changes
+        switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            requestDetailData.setIsUrgent(isChecked ? 1 : 0);
+        });
 
         overlay_background.setOnTouchListener((view, event) -> {
             // Check if the touch event is outside the overlay_filter_status_container
@@ -364,6 +369,9 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
             if (requestDetailData.getRequestName() != null) {
                 edt_name_request_create.setText(requestDetailData.getRequestName());
+            }
+            if (requestDetailData.getIsUrgent() != null) {
+                switchUrgent.setChecked(requestDetailData.getIsUrgent() == 1);
             }
 
             if (requestDetailData.getEmployee() != null && requestDetailData.getEmployee().getName() != null) {
@@ -589,6 +597,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         groupRequestCreateRequest.setStatus(status);
 
         groupRequestCreateRequest.setRequestId(requestDetailData.getRequestId());
+        groupRequestCreateRequest.setIsUrgent(requestDetailData.getIsUrgent());
         groupRequestCreateRequest.setRequestName(requestDetailData.getRequestName());
         groupRequestCreateRequest.setType(requestDetailData.getType());
         // Tạo JSON log để kiểm tra dữ liệu
@@ -602,10 +611,13 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                     hideLoading(); // Ẩn loading khi hoàn thành
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
-                        CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
                             CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
-                            startActivity(new Intent(CreateRequestOvertTimeActivity.this, RequestActivity.class));
+//                            startActivity(new Intent(CreateRequestOvertTimeActivity.this, RequestActivity.class));
+                            Intent intent = new Intent(CreateRequestOvertTimeActivity.this, HomeActivity.class);
+                            intent.putExtra("navigate_to", "newsletter");
+                            startActivity(intent);
+                            finish(); // Kết thúc activity hiện tại
                         } else {
                             CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         }
@@ -711,8 +723,13 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                     ApiResponse<String> apiResponse = response.body();
                     CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                     if (apiResponse.getStatus() == 200) {
-                        startActivity(new Intent(CreateRequestOvertTimeActivity.this, RequestActivity.class));
+//                        startActivity(new Intent(CreateRequestOvertTimeActivity.this, RequestActivity.class));
+                        Intent intent = new Intent(CreateRequestOvertTimeActivity.this, HomeActivity.class);
+                        intent.putExtra("navigate_to", "newsletter");
+                        startActivity(intent);
+                        finish(); // Kết thúc activity hiện tại
                     }
+
                 } else {
                     CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                 }
@@ -736,7 +753,6 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
     public void onBackPressed() {
         super.onBackPressed(); // Quay lại trang trước đó
     }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         KeyboardUtils.hideKeyboardOnTouchOutside(this, event);

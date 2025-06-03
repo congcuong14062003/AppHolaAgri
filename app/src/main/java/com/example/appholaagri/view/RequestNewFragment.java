@@ -77,10 +77,20 @@ public class RequestNewFragment extends Fragment {
         overlay_filter_status_container = view.findViewById(R.id.overlay_filter_status_container);
         create_request_btn = view.findViewById(R.id.create_request_btn);
 
-        // Áp dụng padding bottom để tránh bị bottom bar che
+        // Apply padding only to the main content, not the overlay
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-            v.setPadding(0, 0, 0, bottomInset); // Thêm padding bottom bằng chiều cao bottom bar
+            // Apply padding to the main content, excluding the overlay
+            View contentView = view.findViewById(R.id.viewPagerRequest);
+            if (contentView != null) {
+                contentView.setPadding(0, 0, 0, bottomInset);
+            }
+            return insets;
+        });
+
+        // Ensure overlay is full-screen and not affected by insets
+        ViewCompat.setOnApplyWindowInsetsListener(overlay, (v, insets) -> {
+            // Do not apply insets to the overlay to ensure it covers the bottom bar
             return insets;
         });
 

@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.appholaagri"
+        applicationId = "com.imedia.holaagri"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

@@ -11,24 +11,36 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.FunctionAdapter;
 import com.example.appholaagri.helper.UserDetailApiHelper;
+import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.FunctionItemHomeModel.FunctionItemHomeModel;
+import com.example.appholaagri.model.MenuHomeModel.MenuHomeResponse;
 import com.example.appholaagri.model.UserData.UserData;
+import com.example.appholaagri.service.ApiClient;
+import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class HomeFragment extends BaseFragment {
     private RecyclerView rvFarmManagement, rvTaskManagement, rvRequestProposal;
-    private TextView userName, userInfo;
+    private TextView userName, userInfo, tvFarmManagementTitle, tvTaskManagementTitle, tvRequestProposalTitle;
     private ImageView avtUser;
     private ConstraintLayout containerHome;
+    private List<MenuHomeResponse.MenuItem> menuList; // Lưu trữ dữ liệu menu từ API
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,9 +55,10 @@ public class HomeFragment extends BaseFragment {
         avtUser = view.findViewById(R.id.avtUser);
         containerHome = view.findViewById(R.id.container_home);
 
-        setupFarmManagementRecyclerView();
-        setupTaskManagementRecyclerView();
-        setupRequestProposalRecyclerView();
+        // Khai báo TextView cho các tiêu đề
+        tvFarmManagementTitle = view.findViewById(R.id.tv_farm_management_title);
+        tvTaskManagementTitle = view.findViewById(R.id.tv_task_management_title);
+        tvRequestProposalTitle = view.findViewById(R.id.tv_request_proposal_title);
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
@@ -53,50 +66,143 @@ public class HomeFragment extends BaseFragment {
 
         if (token != null) {
             getUserData(token);
+            getMenuData(token, "HOME");
         }
 
         return view;
     }
 
-    private void setupFarmManagementRecyclerView() {
+    private void setupFarmManagementRecyclerView(List<MenuHomeResponse.MenuItem> menuList) {
         List<FunctionItemHomeModel> farmItems = new ArrayList<>();
-        farmItems.add(new FunctionItemHomeModel("Quản lý cây trồng", R.drawable.qlct, ListPlantationActivity.class));
-        farmItems.add(new FunctionItemHomeModel("Khai báo định danh", R.drawable.ddqt, DeclarationIdentifierActivity.class));
-        farmItems.add(new FunctionItemHomeModel("Ghi nhận tình trạng", R.drawable.gntt, RecordConditionActivity.class));
 
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1, GridLayoutManager.HORIZONTAL, false);
+        // Tìm mục "Quản lý trang trại" trong menuList
+        for (MenuHomeResponse.MenuItem menuItem : menuList) {
+            if ("HOME_AGRI_FUNCTION".equals(menuItem.getCode())) {
+                tvFarmManagementTitle.setText(menuItem.getTitle());
+                List<MenuHomeResponse.ChildItem> childItems = menuItem.getChild();
+                if (childItems != null) {
+                    for (MenuHomeResponse.ChildItem child : childItems) {
+                        farmItems.add(new FunctionItemHomeModel(
+                                child.getTitle(),
+                                child.getUrl(),
+                                getActivityClass(child.getNextScreenCode())
+                        ));
+                    }
+                }
+                break;
+            }
+        }
+
+        // Use LinearLayoutManager for horizontal scrolling
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         rvFarmManagement.setLayoutManager(layoutManager);
-        FunctionAdapter adapter = new FunctionAdapter(getContext(), farmItems, true); // true cho item_farm
+
+        // Disable nested scrolling to prevent conflicts with ScrollView
+        rvFarmManagement.setNestedScrollingEnabled(false);
+
+        FunctionAdapter adapter = new FunctionAdapter(getContext(), farmItems, true);
         rvFarmManagement.setAdapter(adapter);
+
+        // Adjust item width in the adapter based on item count
+        if (farmItems.size() <= 3) {
+            rvFarmManagement.setOverScrollMode(View.OVER_SCROLL_NEVER); // Disable scrolling for ≤3 items
+        }
     }
 
-    private void setupTaskManagementRecyclerView() {
+    private void setupTaskManagementRecyclerView(List<MenuHomeResponse.MenuItem> menuList) {
         List<FunctionItemHomeModel> taskItems = new ArrayList<>();
-        taskItems.add(new FunctionItemHomeModel("Thống kê chấm công", R.drawable.tkcc, TimekeepingStatisticsActivity.class));
-        taskItems.add(new FunctionItemHomeModel("Chiến dịch điều động", R.drawable.cddd, null));
-        taskItems.add(new FunctionItemHomeModel("Xác nhận báo cáo", R.drawable.tkcc, null));
-        taskItems.add(new FunctionItemHomeModel("Báo cáo công việc", R.drawable.tkcc, null));
-        taskItems.add(new FunctionItemHomeModel("Bảng tính công", R.drawable.btc, SalaryTableActivity.class));
-        taskItems.add(new FunctionItemHomeModel("Đo thủ công", R.drawable.dtc, ManualMeasurementActivity.class));
-        taskItems.add(new FunctionItemHomeModel("Phân ca làm việc", R.drawable.pclv, WorkShiftsActivity.class));
 
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false);
+        for (MenuHomeResponse.MenuItem menuItem : menuList) {
+            if ("HOME_WORK_FUNCTION".equals(menuItem.getCode())) {
+                tvTaskManagementTitle.setText(menuItem.getTitle());
+                List<MenuHomeResponse.ChildItem> childItems = menuItem.getChild();
+                if (childItems != null) {
+                    for (MenuHomeResponse.ChildItem child : childItems) {
+                        taskItems.add(new FunctionItemHomeModel(
+                                child.getTitle(),
+                                child.getUrl(),
+                                getActivityClass(child.getNextScreenCode())
+                        ));
+                    }
+                }
+                break;
+            }
+        }
+
+        // Use GridLayoutManager with spanCount=4 for 4 items per row
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 4);
         rvTaskManagement.setLayoutManager(layoutManager);
-        FunctionAdapter adapter = new FunctionAdapter(getContext(), taskItems, false); // false cho item_home
+        rvTaskManagement.setNestedScrollingEnabled(false);
+
+        FunctionAdapter adapter = new FunctionAdapter(getContext(), taskItems, false);
         rvTaskManagement.setAdapter(adapter);
     }
 
-    private void setupRequestProposalRecyclerView() {
+    private void setupRequestProposalRecyclerView(List<MenuHomeResponse.MenuItem> menuList) {
         List<FunctionItemHomeModel> requestItems = new ArrayList<>();
-        requestItems.add(new FunctionItemHomeModel("Đi muộn về sớm", R.drawable.dmvs, CreateRequestLateEarlyActivity.class, 1, 1));
-        requestItems.add(new FunctionItemHomeModel("Đơn xin nghỉ phép", R.drawable.dxnp, CreateRequestDayOffActivity.class, 2, 2));
-        requestItems.add(new FunctionItemHomeModel("Đăng ký làm thêm", R.drawable.dklt, CreateRequestOvertTimeActivity.class, 3, 3));
-        requestItems.add(new FunctionItemHomeModel("Mua sắm vật tư", R.drawable.msvt, CreateRequestBuyNewActivity.class, 4, 4));
-        requestItems.add(new FunctionItemHomeModel("Đơn xin thôi việc", R.drawable.dxtv, CreateRequestResignActivity.class, 5, 5));
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1, GridLayoutManager.HORIZONTAL, false);
+
+        for (MenuHomeResponse.MenuItem menuItem : menuList) {
+            if ("HOME_REQUEST_FUNCTION".equals(menuItem.getCode())) {
+                tvRequestProposalTitle.setText(menuItem.getTitle());
+                List<MenuHomeResponse.ChildItem> childItems = menuItem.getChild();
+                if (childItems != null) {
+                    for (MenuHomeResponse.ChildItem child : childItems) {
+                        requestItems.add(new FunctionItemHomeModel(
+                                child.getTitle(),
+                                child.getUrl(),
+                                getActivityClass(child.getNextScreenCode()),
+                                child.getId(),
+                                child.getPosition()
+                        ));
+                    }
+                }
+                break;
+            }
+        }
+
+        // Use GridLayoutManager with spanCount=4 for 4 items per row
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 4);
         rvRequestProposal.setLayoutManager(layoutManager);
-        FunctionAdapter adapter = new FunctionAdapter(getContext(), requestItems, false); // false cho item_home
+        rvRequestProposal.setNestedScrollingEnabled(false);
+
+        FunctionAdapter adapter = new FunctionAdapter(getContext(), requestItems, false);
         rvRequestProposal.setAdapter(adapter);
+    }
+
+    // Ánh xạ nextScreenCode với Activity tương ứng
+    private Class<?> getActivityClass(String nextScreenCode) {
+        switch (nextScreenCode) {
+            case "PLANTATION_PLANT_LIST":
+                return ListPlantationActivity.class;
+            case "PLANT_EXAMINATION":
+                return RecordConditionActivity.class;
+            case "PLANT_SOIL_IDENTIFY":
+                return DeclarationIdentifierActivity.class;
+            case "CHECKIN_RECORD":
+                return TimekeepingStatisticsActivity.class;
+            case "MONTHLY_WORK_COEFFICIENT":
+                return SalaryTableActivity.class;
+            case "CAMPAIGN_MANAGE":
+                return null; // Thay bằng Activity tương ứng nếu có
+            case "WORK_SHIFT_MANAGE":
+                return WorkShiftsActivity.class;
+            case "CONFIRM_REPORT":
+                return null; // Thay bằng Activity tương ứng nếu có
+            case "WORK_REPORT":
+                return null; // Thay bằng Activity tương ứng nếu có
+            case "LATE_EARLY_CREATE":
+                return CreateRequestLateEarlyActivity.class;
+            case "DAY_OFF_CREATE":
+                return CreateRequestDayOffActivity.class;
+            case "OVER_TIME_CREATE":
+                return CreateRequestOvertTimeActivity.class;
+            case "BUY_NEW_CREATE":
+                return CreateRequestBuyNewActivity.class;
+            case "RESIGN_CREATE":
+                return CreateRequestResignActivity.class;
+            default:
+                return null;
+        }
     }
 
     private void getUserData(String token) {
@@ -110,6 +216,47 @@ public class HomeFragment extends BaseFragment {
             public void onFailure(String errorMessage) {
                 Log.e("HomeFragment", "Error: " + errorMessage);
                 CustomToast.showCustomToast(requireContext(), "Lỗi: " + errorMessage);
+            }
+        });
+    }
+
+    private void getMenuData(String token, String screenCode) {
+        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
+        Call<ApiResponse<List<MenuHomeResponse.MenuItem>>> call = apiInterface.menuHome(token, screenCode);
+        call.enqueue(new Callback<ApiResponse<List<MenuHomeResponse.MenuItem>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<MenuHomeResponse.MenuItem>>> call, Response<ApiResponse<List<MenuHomeResponse.MenuItem>>> response) {
+                if (!isAdded()) return;
+
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<List<MenuHomeResponse.MenuItem>> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        menuList = apiResponse.getData();
+
+                        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+                        String requestDetailDataJson = gson.toJson(menuList);
+                        Log.d("HomeFragment", "menu: " + requestDetailDataJson);
+
+                        // Cập nhật các RecyclerView với dữ liệu từ API
+                        setupFarmManagementRecyclerView(menuList);
+                        setupTaskManagementRecyclerView(menuList);
+                        setupRequestProposalRecyclerView(menuList);
+
+                    } else {
+                        CustomToast.showCustomToast(requireContext(), apiResponse.getMessage());
+                    }
+                } else {
+                    Log.e("HomeFragment", "API response is unsuccessful");
+                    CustomToast.showCustomToast(requireContext(), "Lỗi kết nối, vui lòng thử lại.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<MenuHomeResponse.MenuItem>>> call, Throwable t) {
+                Log.e("HomeFragment", "Error: " + t.getMessage());
+                if (isAdded()) {
+                    CustomToast.showCustomToast(requireContext(), "Lỗi: " + t.getMessage());
+                }
             }
         });
     }

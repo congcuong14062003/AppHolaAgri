@@ -4,12 +4,12 @@ import androidx.annotation.DrawableRes;
 
 public class FunctionItemHomeModel {
     private String name;
-    private int iconResId;
+    private String iconResId;
     private Class<?> targetActivity;
     private Integer groupRequestId; // Thêm GroupRequestId
     private Integer groupRequestType; // Thêm GroupRequestType
 
-    public FunctionItemHomeModel(String name, @DrawableRes int iconResId, Class<?> targetActivity) {
+    public FunctionItemHomeModel(String name, String iconResId, Class<?> targetActivity) {
         this.name = name;
         this.iconResId = iconResId;
         this.targetActivity = targetActivity;
@@ -17,7 +17,7 @@ public class FunctionItemHomeModel {
         this.groupRequestType = null;
     }
 
-    public FunctionItemHomeModel(String name, @DrawableRes int iconResId, Class<?> targetActivity, Integer groupRequestId, Integer groupRequestType) {
+    public FunctionItemHomeModel(String name, String iconResId, Class<?> targetActivity, Integer groupRequestId, Integer groupRequestType) {
         this.name = name;
         this.iconResId = iconResId;
         this.targetActivity = targetActivity;
@@ -29,7 +29,7 @@ public class FunctionItemHomeModel {
         return name;
     }
 
-    public int getIconResId() {
+    public String getIconResId() {
         return iconResId;
     }
 
