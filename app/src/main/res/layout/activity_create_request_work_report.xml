@@ -477,6 +477,34 @@
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
 
+<!--                Danh sách ảnh ở đây-->
+                <!-- Danh sách ảnh -->
+                <LinearLayout
+                    android:id="@+id/file_container_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="20dp"
+                    >
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Tệp đính kèm"
+                        android:textColor="@color/secon_textcolor" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewAttachments"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                </LinearLayout>
+
+
 
                 <!--                    quản lý trực tiếp-->
                 <LinearLayout

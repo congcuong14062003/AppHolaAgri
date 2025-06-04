@@ -55,14 +55,11 @@ public class ActionRequestDetailAdapter extends RecyclerView.Adapter<ActionReque
 
         holder.tvName.setText(approvalLog.getName());
         holder.tvStatus.setText(approvalLog.getStatusName());
-        if(approvalLog.getStatusName().equals("Đang chờ duyệt")) {
+        if(approvalLog.getStatusName().equals("Đang chờ duyệt") || approvalLog.getStatusName().equals("Lượt duyệt kế tiếp") ) {
             holder.ivStatus.setImageResource(R.drawable.cho_duyet);
         } else if (approvalLog.getStatusName().equals("Từ chối đề xuất")) {
             holder.ivStatus.setImageResource(R.drawable.no_duyet);
-        } else if (approvalLog.getStatusName().equals("Lượt duyệt kế tiếp")) {
-            holder.ivStatus.setVisibility(View.GONE);
         }
-
 
         // Kiểm tra nếu là item cuối cùng
         if (position == getItemCount() - 1) {

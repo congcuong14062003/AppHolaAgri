@@ -63,6 +63,7 @@
 
         <!-- Notification Icon -->
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_marginStart="8dp"
@@ -82,6 +83,7 @@
 
         <!-- QR Code Icon -->
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_marginStart="8dp"

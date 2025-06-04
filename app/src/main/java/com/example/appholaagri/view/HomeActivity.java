@@ -43,6 +43,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 
+
         binding.bottomNavigationView.setBackground(null);
         checkin_daily = findViewById(R.id.checkin_daily);
         checkin_daily.setOnClickListener(view -> {

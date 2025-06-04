@@ -156,6 +156,14 @@ public class FollowingRequestFragment extends BaseFragment {
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
                                     }
+                                    else if (groupRequestCode.equals("BUSINESS_TRIP")) {
+                                        // Tờ trình công tác
+                                        Intent intent = new Intent(getContext(), CreateRequestWorkReportActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
                                 });
                                 recyclerView.setAdapter(adapter);
                             } else {

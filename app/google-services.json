@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "406014948813",
+    "project_id": "holaagri-2e4cb",
+    "storage_bucket": "holaagri-2e4cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406014948813:android:13d24197ee69db11548084",
+        "android_client_info": {
+          "package_name": "com.imedia.holaagri"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-KQli-56zWa6VBqJbzWoV8GPe_guXLmU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

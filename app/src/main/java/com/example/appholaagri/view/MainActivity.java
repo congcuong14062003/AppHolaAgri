@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -19,7 +18,6 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -40,6 +38,7 @@ import com.example.appholaagri.utils.Utils;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -48,6 +47,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends BaseActivity {
+    private String fcmToken; // Biến lưu FCM Token
     Button btnForgotPass;
     Button btnLogin;
     private EditText txtPhoneNumber;
@@ -58,17 +58,27 @@ public class MainActivity extends BaseActivity {
     TextInputLayout confirm_new_pass_layout, new_pass_input_layout;
 
     private Dialog loadingDialog;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-//            return insets;
-//        });
+
+        // Lấy FCM Token
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        fcmToken = task.getResult();
+                        Log.d("MainActivity", "FCM Token: " + fcmToken);
+                    } else {
+                        Log.e("MainActivity", "Failed to get FCM Token: " + task.getException());
+                        // Không cần fallback về ANDROID_ID vì server cần FCM Token
+                        fcmToken = "";
+                    }
+                });
+
         btnForgotPass = findViewById(R.id.forgot_password);
         btnLogin = findViewById(R.id.login_button);
         // nút quên mật khẩu
@@ -76,7 +86,7 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(MainActivity.this, ForgotPasswordActivity.class);
             startActivity(intent);
         });
-        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         txtPhoneNumber = findViewById(R.id.phone_input);
         txtPassWord = findViewById(R.id.password_input);
         btnLogin.setOnClickListener(view -> {
@@ -112,12 +122,18 @@ public class MainActivity extends BaseActivity {
                 hasError = true;
             }
 
+            // Kiểm tra FCM Token
+            if (fcmToken == null || fcmToken.isEmpty()) {
+                CustomToast.showCustomToast(MainActivity.this, "Không thể lấy FCM Token. Vui lòng thử lại.");
+                hasError = true;
+            }
+
             // Nếu có lỗi, dừng xử lý
             if (hasError) return;
 
             // Nếu không có lỗi, xử lý đăng nhập
             String hashedPassword = Utils.hashPassword(password);
-            login(phone, hashedPassword, deviceId);
+            login(phone, hashedPassword, fcmToken); // Thay deviceId bằng fcmToken
         });
     }
 
@@ -134,6 +150,7 @@ public class MainActivity extends BaseActivity {
             finish();
         }
     }
+
     // Hiển thị loading
     private void showLoading() {
         if (loadingDialog == null) {
@@ -157,7 +174,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void login(String phone, String password, String deviceId) {
+    private void login(String phone, String password, String fcmToken) { // Thay deviceId thành fcmToken
         showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         // Cập nhật các giá trị cho LoginRequest
@@ -165,11 +182,14 @@ public class MainActivity extends BaseActivity {
         int rememberMe = 1;  // Không nhớ mật khẩu
         String requestId = "requestId123";  // Thay bằng giá trị thực tế hoặc tạo UUID
         int serialVersionUID = 1;  // Giả sử giá trị mặc định
-        Log.d("LoginActivity", "deviceId: " + deviceId);
+        Log.d("LoginActivity", "FCM Token: " + fcmToken);
 
-        // Tạo đối tượng LoginRequest
-        LoginRequest loginRequest = new LoginRequest(deviceId, isMobile, password, rememberMe, requestId, serialVersionUID, phone);
+        // Tạo đối tượng LoginRequest với fcmToken
+        LoginRequest loginRequest = new LoginRequest(fcmToken, isMobile, password, rememberMe, requestId, serialVersionUID, phone);
 
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String loginRequests = gson.toJson(loginRequest);
+        Log.d("loginRequest: ", "loginRequest: " + loginRequests);
         Call<ApiResponse<LoginData>> call = apiInterface.login(loginRequest);
         call.enqueue(new Callback<ApiResponse<LoginData>>() {
             @Override
@@ -182,7 +202,6 @@ public class MainActivity extends BaseActivity {
                     String fluctuationValue = gson.toJson(response.body());
                     Log.d("LoginActivity", "dataa: " + fluctuationValue);
                     if (apiResponse.getStatus() == 200) {
-
                         // Lấy dữ liệu đăng nhập
                         LoginData loginData = apiResponse.getData();
                         String token = loginData.getToken();
@@ -193,12 +212,11 @@ public class MainActivity extends BaseActivity {
                         editor.putString("auth_token", token);
                         editor.apply();
                         // Kiểm tra trạng thái đăng nhập lần đầu
-                        if (loginData.isFirstLogin() == true) {
+                        if (loginData.isFirstLogin()) {
                             // Hiển thị popup đổi mật khẩu, gán mật khẩu cũ
                             ChangePassRequest changePassRequest = new ChangePassRequest();
                             changePassRequest.setOldPassword(password); // Gán mật khẩu cũ
                             showChangePasswordDialog(token);
-                            // Lưu mật khẩu (đã băm) vào SharedPreferences
                         } else {
                             Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                             startActivity(intent);
@@ -219,6 +237,7 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
+
     private void showChangePasswordDialog(String token) {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String oldPassword = sharedPreferences.getString("old_password", "");
@@ -251,9 +270,6 @@ public class MainActivity extends BaseActivity {
         });
         alertDialog.show();
     }
-
-
-
 
     private boolean validatePasswords(String newPassword, String confirmPassword) {
         boolean isValid = true;
@@ -313,6 +329,7 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         KeyboardUtils.hideKeyboardOnTouchOutside(this, event);

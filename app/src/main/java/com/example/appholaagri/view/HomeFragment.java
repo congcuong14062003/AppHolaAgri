@@ -233,9 +233,9 @@ public class HomeFragment extends BaseFragment {
                     if (apiResponse.getStatus() == 200) {
                         menuList = apiResponse.getData();
 
-                        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-                        String requestDetailDataJson = gson.toJson(menuList);
-                        Log.d("HomeFragment", "menu: " + requestDetailDataJson);
+//                        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+//                        String requestDetailDataJson = gson.toJson(menuList);
+//                        Log.d("HomeFragment", "menu: " + requestDetailDataJson);
 
                         // Cập nhật các RecyclerView với dữ liệu từ API
                         setupFarmManagementRecyclerView(menuList);
@@ -272,7 +272,7 @@ public class HomeFragment extends BaseFragment {
             if (userData.getAccountDetail() != null) {
                 userName.setText(userData.getAccountDetail().getStaffName());
                 if (userData.getWorkInfo() != null && userData.getWorkInfo().getTitle() != null) {
-                    userInfo.setText(userData.getAccountDetail().getStaffCode() + " - " + userData.getWorkInfo().getTitle().getName());
+                    userInfo.setText(userData.getAccountDetail().getStaffCode() + " - " + userData.getWorkInfo().getDepartment().getName());
                 } else {
                     userInfo.setText("Thông tin công việc không có sẵn");
                 }

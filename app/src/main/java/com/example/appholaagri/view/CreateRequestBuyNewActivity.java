@@ -158,11 +158,15 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
         // file
         fileContainer = findViewById(R.id.file_container);
-        renderFiles(); // Hiển thị danh sách file khởi tạo
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
         Intent intent = getIntent();
+        // Khởi tạo giá trị mặc định
+        GroupRequestId = -1;
+        GroupRequestType = -1;
+        StatusRequest = -1;
+        requestId = -1;
         if (intent != null) {
             GroupRequestId = intent.getIntExtra("GroupRequestId", -1); // Nhận requestId
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
@@ -188,7 +192,11 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
             edt_reason_request_create.setEnabled(false);
             edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+//            switchUrgent.setEnabled(false);
         }
+        renderFiles(); // Hiển thị danh sách file khởi tạo
+
         // init
         layout_action_history_request.setVisibility(View.GONE);
         txt_status_request_detail.setVisibility(View.GONE);
@@ -237,21 +245,48 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             }
             return true;
         });
-
+        // Thiết lập ngày giờ mặc định và vô hiệu hóa chỉnh sửa
+        setDefaultDateTime();
         Calendar currentDate = Calendar.getInstance();
 
-        etNgayBatDau.setOnClickListener(v -> showDatePicker(etNgayBatDau));
-        etGioBatDau.setOnClickListener(v -> showTimePicker(etGioBatDau));
-
-        etNgayKetThuc.setOnClickListener(v -> showDatePicker(etNgayKetThuc));
-        etGioKetThuc.setOnClickListener(v -> showTimePicker(etGioKetThuc));
+        etNgayBatDau.setOnClickListener(null);
+        etGioBatDau.setOnClickListener(null);
+        etNgayKetThuc.setOnClickListener(null);
+        etGioKetThuc.setOnClickListener(null);
 
         switchUrgent.setChecked(false);
         switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
             requestDetailData.setIsUrgent(isChecked ? 1 : 0);
         });
     }
+    private void setDefaultDateTime() {
+        // Lấy ngày giờ hiện tại
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
+        String currentDate = dateFormat.format(calendar.getTime());
+        String currentTime = timeFormat.format(calendar.getTime());
+
+        // Thiết lập giá trị mặc định
+        etNgayBatDau.setText(currentDate);
+        etGioBatDau.setText(currentTime);
+        etNgayKetThuc.setText(currentDate);
+        etGioKetThuc.setText(currentTime);
+
+        // Vô hiệu hóa chỉnh sửa
+        etNgayBatDau.setEnabled(false);
+        etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+        etGioBatDau.setEnabled(false);
+        etGioBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+        etNgayKetThuc.setEnabled(false);
+        etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+        etGioKetThuc.setEnabled(false);
+        etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+    }
     private void showDatePicker(EditText editText) {
         final Calendar calendar = Calendar.getInstance();
 
@@ -440,9 +475,9 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 Log.e("CreateRequestBuyNewActivity", "requestDetailData is null");
                 return;
             }
-            Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-            String groupRequestCreateRequests = gson.toJson(requestDetailData);
-            Log.d("CreateRequestBuyNewActivity", "dataa chi tiet: " + groupRequestCreateRequests);
+//            Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+//            String groupRequestCreateRequests = gson.toJson(requestDetailData);
+//            Log.d("CreateRequestBuyNewActivity", "dataa chi tiet: " + groupRequestCreateRequests);
 
 
             // Làm sạch danh sách trước khi thêm từ API
@@ -803,6 +838,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
     private void syncUploadedFilesWithRequestDetailData() {
         if (requestDetailData != null) {
             List<RequestDetailData.FileAttachment> updatedAttachments = new ArrayList<>();
@@ -818,6 +854,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             Log.e("SyncFiles", "requestDetailData is null");
         }
     }
+
     private void uploadFilesSequentially(int index, List<Uri> newFiles) {
         Log.d("uploadFilesSequentially", "Processing file at index: " + index + ", Total new files: " + newFiles.size());
         if (index >= newFiles.size()) {
@@ -923,19 +960,26 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             final int finalI = i;
             imageView.setOnClickListener(v -> showImageDetailDialog(fileUri, uploadedFiles.get(finalI).getName()));
 
-            btnDelete.setOnClickListener(v -> {
-                String filePath = fileUri.toString();
-                selectedFiles.remove(finalI);
-                uploadedFiles.removeIf(attachment -> attachment.getPath().equals(filePath));
-                syncUploadedFilesWithRequestDetailData();
-                Log.d("RenderFiles", "After delete - selectedFiles size: " + selectedFiles.size() + ", uploadedFiles size: " + uploadedFiles.size());
-                renderFiles();
-            });
+            // Kiểm tra StatusRequest an toàn
+            if (StatusRequest != null && StatusRequest > 2) {
+                btnDelete.setVisibility(View.GONE);
+            } else {
+                btnDelete.setVisibility(View.VISIBLE);
+                btnDelete.setOnClickListener(v -> {
+                    String filePath = fileUri.toString();
+                    selectedFiles.remove(finalI);
+                    uploadedFiles.removeIf(attachment -> attachment.getPath().equals(filePath));
+                    syncUploadedFilesWithRequestDetailData();
+                    Log.d("RenderFiles", "After delete - selectedFiles size: " + selectedFiles.size() + ", uploadedFiles size: " + uploadedFiles.size());
+                    renderFiles();
+                });
+            }
 
             fileContainer.addView(itemView);
         }
 
-        if (selectedFiles.size() < MAX_FILES) {
+        // Kiểm tra StatusRequest an toàn trước khi hiển thị item_add_image
+        if (StatusRequest == null || StatusRequest <= 2 && selectedFiles.size() < MAX_FILES) {
             View addView = getLayoutInflater().inflate(R.layout.item_add_image, fileContainer, false);
             addView.setOnClickListener(v -> openGallery());
             fileContainer.addView(addView);

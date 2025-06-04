@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.AttachmentRequestAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
@@ -64,6 +65,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import com.example.appholaagri.utils.Utils;
+import com.squareup.picasso.Picasso;
+
 public class CreateRequestWorkReportActivity extends AppCompatActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, edt_work_location, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create, edt_content_request_create;
@@ -83,6 +86,9 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
     ConstraintLayout overlayFilterStatus;
     private LinearLayout layout_action_history_request;
     private SwitchCompat switchUrgent;
+
+    private RecyclerView recyclerViewAttachments;
+    private AttachmentRequestAdapter attachmentAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,7 +157,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
-            Log.d("CreateRequestDayOffActivity", "StatusRequest: " + StatusRequest);
+            Log.d("CreateRequestWorkReportActivity", "StatusRequest: " + StatusRequest);
         }
 
         if (StatusRequest > 2) {
@@ -189,7 +195,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
             getDetailRequest(requestId, token);
         } else {
             if (GroupRequestId != null && token != null) {
-                Log.d("CreateRequestDayOffActivity", "Vào");
+                Log.d("CreateRequestWorkReportActivity", "Vào");
                 getInitFormCreateRequest(token, GroupRequestId);
             }
         }
@@ -229,6 +235,10 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
         switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
             requestDetailData.setIsUrgent(isChecked ? 1 : 0);
         });
+
+        // Ánh xạ RecyclerView cho attachments
+        recyclerViewAttachments = findViewById(R.id.recyclerViewAttachments);
+        recyclerViewAttachments.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
 
 
@@ -384,12 +394,12 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                             CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        Log.e("CreateRequestDayOffActivity", "API response is unsuccessful");
+                        Log.e("CreateRequestWorkReportActivity", "API response is unsuccessful");
                         CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("CreateRequestDayOffActivity", "Error during response handling: " + e.getMessage());
-//                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                    Log.e("CreateRequestWorkReportActivity", "Error during response handling: " + e.getMessage());
+//                    CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
@@ -438,11 +448,11 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
     private void updateUserUI(RequestDetailData requestDetailData) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         String requestDetailDataJson = gson.toJson(requestDetailData);
-        Log.d("CreateRequestDayOffActivity", "requestDetailDataJson: " + requestDetailDataJson);
+        Log.d("CreateRequestWorkReportActivity", "requestDetailDataJson: " + requestDetailDataJson);
 
         try {
             if (requestDetailData == null) {
-                Log.e("CreateRequestDayOffActivity", "requestDetailData is null");
+                Log.e("CreateRequestWorkReportActivity", "requestDetailData is null");
                 return;
             }
             if (requestDetailData.getStatus() != null) {
@@ -460,7 +470,15 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                 // Đặt màu nền
                 txt_status_request_detail.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
             }
-
+            // Xử lý danh sách file đính kèm
+            List<RequestDetailData.FileAttachment> fileAttachments = requestDetailData.getFileAttachment();
+            if (fileAttachments != null && !fileAttachments.isEmpty()) {
+                attachmentAdapter = new AttachmentRequestAdapter(this, fileAttachments, this::showImageDetailDialog);
+                recyclerViewAttachments.setAdapter(attachmentAdapter);
+                recyclerViewAttachments.setVisibility(View.VISIBLE);
+            } else {
+                recyclerViewAttachments.setVisibility(View.GONE);
+            }
 
             // Kiểm tra từng thuộc tính trước khi gọi
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
@@ -599,6 +617,45 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
         }
     }
 
+    private void showImageDetailDialog(RequestDetailData.FileAttachment attachment) {
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dialog_image_detail);
+
+        ImageView imageView = dialog.findViewById(R.id.image_detail);
+        TextView textFileName = dialog.findViewById(R.id.text_file_name);
+        ImageView btnClose = dialog.findViewById(R.id.btn_close_dialog);
+
+        // Hiển thị tên file
+        textFileName.setText(attachment.getName());
+
+        // Load ảnh nếu là file hình ảnh
+        if (attachment.getPath() != null && isImageFile(attachment.getPath())) {
+            Picasso.get()
+                    .load(attachment.getPath())
+                    .placeholder(R.drawable.avatar)
+                    .error(R.drawable.avatar)
+                    .into(imageView);
+        } else {
+            // Hiển thị thông báo hoặc icon mặc định cho file không phải ảnh
+            imageView.setImageResource(R.drawable.avatar);
+            CustomToast.showCustomToast(this, "File không phải ảnh, không thể hiển thị chi tiết.");
+        }
+
+        // Đóng dialog khi nhấn nút close
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        // Ngăn đóng dialog khi chạm ngoài
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+
+        dialog.show();
+    }
+
+    private boolean isImageFile(String path) {
+        String lowerPath = path.toLowerCase();
+        return lowerPath.endsWith(".jpg") || lowerPath.endsWith(".jpeg") || lowerPath.endsWith(".png") || lowerPath.endsWith(".gif");
+    }
+
     // Hiển thị loading
     private void showLoading() {
         if (loadingDialog == null) {
@@ -718,7 +775,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
-//                            startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+//                            startActivity(new Intent(CreateRequestWorkReportActivity.this, RequestActivity.class));
                             CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, apiResponse.getMessage());
                             Intent intent = new Intent(CreateRequestWorkReportActivity.this, HomeActivity.class);
                             intent.putExtra("navigate_to", "newsletter");
@@ -834,7 +891,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                     ApiResponse<String> apiResponse = response.body();
                     CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, apiResponse.getMessage());
                     if (apiResponse.getStatus() == 200) {
-//                        startActivity(new Intent(CreateRequestDayOffActivity.this, RequestActivity.class));
+//                        startActivity(new Intent(CreateRequestWorkReportActivity.this, RequestActivity.class));
                         Intent intent = new Intent(CreateRequestWorkReportActivity.this, HomeActivity.class);
                         intent.putExtra("navigate_to", "newsletter");
                         startActivity(intent);
