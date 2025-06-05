@@ -166,6 +166,55 @@ public class IsendRequestFragment extends BaseFragment {
                                         intent.putExtra("GroupRequest", GroupRequest);
                                         startActivity(intent);
                                     }
+
+                                    else if (groupRequestCode.equals("EXPENDITURE")) {
+                                        // Tờ trình khác
+                                        Intent intent = new Intent(getContext(), CreateRequestAnotherSubmissionActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (groupRequestCode.equals("CUSTOMER_CONTRACT")) {
+                                        // Phê duyệt hợp đồng
+                                        Intent intent = new Intent(getContext(), CreateRequestContractApprovalActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (groupRequestCode.equals("CUSTOMER_CONTRACT_BRAND_NAME")) {
+                                        // Phê duyệt hợp đồng SMS
+                                        Intent intent = new Intent(getContext(), CreateRequestContractApprovalSmSActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (groupRequestCode.equals("RECRUITMENT")) {
+                                        // Tờ trình tuyển dụng
+                                        Intent intent = new Intent(getContext(), CreateRequestRecruitmentFlyerActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (groupRequestCode.equals("EMPLOYEE_TRANSITION")) {
+                                        // Tờ trình nhân sự
+                                        Intent intent = new Intent(getContext(), CreateRequestPersonnelReportActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
+                                    else if (groupRequestCode.equals("POLICY")) {
+                                        // Tờ trình chính sách, quy trình, quy định
+                                        Intent intent = new Intent(getContext(), CreateRequestPolicyRegulationSubmissionActivity.class);
+                                        intent.putExtra("requestId", requestId);
+                                        intent.putExtra("StatusRequest", StatusRequest);
+                                        intent.putExtra("GroupRequest", GroupRequest);
+                                        startActivity(intent);
+                                    }
                                 });
                                 recyclerView.setAdapter(adapter);
                             } else {

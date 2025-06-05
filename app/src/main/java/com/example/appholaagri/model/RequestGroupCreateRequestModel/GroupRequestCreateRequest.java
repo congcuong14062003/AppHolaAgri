@@ -14,9 +14,11 @@ public class GroupRequestCreateRequest {
     private String endDate;
     private String endTime;
     private Integer isUrgent;
-
+    private BusinessTripFormReq businessTripFormReq;
     private List<ListDayReq> listDayReqs;
     private List<FileAttachment> fileAttachment;
+
+
     private String reason;
     private String rejectReason;
     private RequestGroup requestGroup;
@@ -27,6 +29,29 @@ public class GroupRequestCreateRequest {
     private String startTime;
     private Status status;
     private int type;
+    // Thêm thuộc tính customerContractReq
+    private CustomerContractReq customerContractReq;
+
+    // Phương thức gán customerContractReq từ RequestDetailData
+    public void assignCustomerContractReq(RequestDetailData requestDetailData) {
+        if (requestDetailData.getCustomerContractReq() != null) {
+            CustomerContractReq customerContractReq = new CustomerContractReq(
+                    requestDetailData.getCustomerContractReq().getCustomerContract(),
+                    requestDetailData.getCustomerContractReq().getCustomerName(),
+                    requestDetailData.getCustomerContractReq().getNote()
+            );
+            this.setCustomerContractReq(customerContractReq);
+        }
+    }
+    // Getter và Setter cho customerContractReq
+    public CustomerContractReq getCustomerContractReq() {
+        return customerContractReq;
+    }
+
+    public void setCustomerContractReq(CustomerContractReq customerContractReq) {
+        this.customerContractReq = customerContractReq;
+    }
+
     // Getters and Setters
     public String getContact() {
         return contact;
@@ -98,6 +123,13 @@ public class GroupRequestCreateRequest {
 
     public void setListDayReqs(List<ListDayReq> listDayReqs) {
         this.listDayReqs = listDayReqs;
+    }
+    public BusinessTripFormReq getBusinessTripFormReq() {
+        return businessTripFormReq;
+    }
+
+    public void setBusinessTripFormReq(BusinessTripFormReq businessTripFormReq) {
+        this.businessTripFormReq = businessTripFormReq;
     }
 
     public List<FileAttachment> getFileAttachment() {
@@ -424,5 +456,135 @@ public class GroupRequestCreateRequest {
             this.status = status;
         }
     }
+    public static class BusinessTripFormReq {
+        private int totalCost;
+        private String totalCostText;
+        private String destination;
+        private String content;
 
+        public BusinessTripFormReq(int totalCost, String totalCostText, String destination, String content) {
+            this.totalCost = totalCost;
+            this.totalCostText = totalCostText;
+            this.destination = destination;
+            this.content = content;
+        }
+
+        public int getTotalCost() {
+            return totalCost;
+        }
+
+        public void setTotalCost(int totalCost) {
+            this.totalCost = totalCost;
+        }
+
+        public String getTotalCostText() {
+            return totalCostText;
+        }
+
+        public void setTotalCostText(String totalCostText) {
+            this.totalCostText = totalCostText;
+        }
+
+        public String getDestination() {
+            return destination;
+        }
+
+        public void setDestination(String destination) {
+            this.destination = destination;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+    }
+
+    // Lớp CustomerContractReq
+    public static class CustomerContractReq {
+        private CustomerContract customerContract;
+        private String customerName;
+        private String note;
+
+        public CustomerContractReq(CustomerContract customerContract, String customerName, String note) {
+            this.customerContract = customerContract;
+            this.customerName = customerName;
+            this.note = note;
+        }
+
+        public CustomerContract getCustomerContract() {
+            return customerContract;
+        }
+
+        public void setCustomerContract(CustomerContract customerContract) {
+            this.customerContract = customerContract;
+        }
+
+        public String getCustomerName() {
+            return customerName;
+        }
+
+        public void setCustomerName(String customerName) {
+            this.customerName = customerName;
+        }
+
+        public String getNote() {
+            return note;
+        }
+
+        public void setNote(String note) {
+            this.note = note;
+        }
+    }
+
+    // Lớp CustomerContract
+    public static class CustomerContract {
+        private int id;
+        private String code;
+        private String name;
+        private int status;
+        private int index;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+    }
 }

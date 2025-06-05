@@ -1,5 +1,6 @@
 package com.example.appholaagri.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -33,13 +34,14 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
-
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
-import com.example.appholaagri.adapter.AttachmentRequestAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
@@ -59,21 +61,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.IntStream;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import com.example.appholaagri.utils.Utils;
-import com.squareup.picasso.Picasso;
-
-public class CreateRequestWorkReportActivity extends AppCompatActivity {
+public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
-            edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
-            edt_work_location, edt_purpose_request_create, edt_content_request_create, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
-            edt_totalCost_request_create, edt_totalCost_text_request_create;
-    private TextView title_request, txt_type_request_create;
+            edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
+    private TextView title_request, txt_type_request_create, edt_reason_request_create;
     private ImageView backBtnReview;
     private RequestDetailData requestDetailData;
     private Integer GroupRequestType, GroupRequestId, requestId, StatusRequest;
@@ -84,13 +81,11 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
     private LinearLayout layout_action_history_request;
     private Dialog loadingDialog;
     private SwitchCompat switchUrgent;
-    private RecyclerView recyclerViewAttachments;
-    private AttachmentRequestAdapter attachmentAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_create_request_work_report);
+        setContentView(R.layout.activity_create_request_another_submission);
 
         // Ánh xạ
         create_request_container = findViewById(R.id.create_request_container);
@@ -109,26 +104,8 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
 
-        edt_work_location = findViewById(R.id.edt_work_location);
-        edt_purpose_request_create = findViewById(R.id.edt_purpose_request_create);
-        edt_content_request_create = findViewById(R.id.edt_content_request_create);
-        // ngày bắt đầu
-        etNgayBatDau = findViewById(R.id.etNgayBatDau);
-        // giờ bắt đầu
-        etGioBatDau = findViewById(R.id.etGioBatDau);
-        // ngày kết thúc
-        etNgayKetThuc = findViewById(R.id.etNgayKetThuc);
-        // giờ kết thúc
-        etGioKetThuc = findViewById(R.id.etGioKetThuc);
-
-        edt_totalCost_request_create = findViewById(R.id.edt_totalCost_request_create);
-        edt_totalCost_text_request_create = findViewById(R.id.edt_totalCost_text_request_create);
-
-
-        // Ánh xạ RecyclerView cho attachments
-        recyclerViewAttachments = findViewById(R.id.recyclerViewAttachments);
-        recyclerViewAttachments.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
+        // lí do
+        edt_reason_request_create = findViewById(R.id.edt_reason_request_create);
 
         // Lấy dữ liệu từ Intent
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -139,7 +116,6 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1);
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
-            Log.d("CreateRequestWorkReportActivity", "StatusRequest: " + StatusRequest);
         }
 
         // Khởi tạo
@@ -188,21 +164,21 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
                         } else {
-                            CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, apiResponse.getMessage());
+                            CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("CreateRequestWorkReportActivity", "Error: " + e.getMessage());
-                    CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                    Log.e("CreateRequestAnotherSubmissionActivity", "Error: " + e.getMessage());
+                    CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
                 hideLoading();
-                CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi: " + t.getMessage());
+                CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi: " + t.getMessage());
             }
         });
     }
@@ -223,21 +199,21 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                             requestDetailData = apiResponse.getData();
                             updateUserUI(requestDetailData);
                         } else {
-                            CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, apiResponse.getMessage());
+                            CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 } catch (Exception e) {
-                    Log.e("CreateRequestWorkReportActivity", "Error: " + e.getMessage());
-                    CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
+                    Log.e("CreateRequestAnotherSubmissionActivity", "Error: " + e.getMessage());
+                    CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Có lỗi xảy ra. Vui lòng thử lại.");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
                 hideLoading();
-                CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi: " + t.getMessage());
+                CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi: " + t.getMessage());
             }
         });
     }
@@ -245,7 +221,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
     private void updateUserUI(RequestDetailData requestDetailData) {
         try {
             if (requestDetailData == null) {
-                Log.e("CreateRequestWorkReportActivity", "requestDetailData is null");
+                Log.e("CreateRequestAnotherSubmissionActivity", "requestDetailData is null");
                 return;
             }
 
@@ -283,49 +259,10 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
             if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
             }
-
-
-            if (requestDetailData.getBusinessTripFormReq() != null) {
-                edt_work_location.setText(requestDetailData.getBusinessTripFormReq().getDestination());
-                edt_content_request_create.setText(requestDetailData.getBusinessTripFormReq().getContent());
-                edt_totalCost_request_create.setText(
-                        Utils.formatCurrency(String.valueOf(requestDetailData.getBusinessTripFormReq().getTotalCost()))
-                );
-
-                edt_totalCost_text_request_create.setText(requestDetailData.getBusinessTripFormReq().getTotalCostText());
-            }
-
-            if (requestDetailData.getStartDate() != null) {
-                etNgayBatDau.setText(requestDetailData.getStartDate());
-            }
-
-            if (requestDetailData.getEndDate() != null) {
-                etNgayKetThuc.setText(requestDetailData.getEndDate());
-            }
-            if (requestDetailData.getStartTime() != null) {
-                etGioBatDau.setText(requestDetailData.getStartTime());
-            }
-
-            if (requestDetailData.getEndTime() != null) {
-                etGioKetThuc.setText(requestDetailData.getEndTime());
-            }
-
+            // ghi chú
             if (requestDetailData.getReason() != null) {
-                edt_purpose_request_create.setText(requestDetailData.getReason());
+                edt_reason_request_create.setText(requestDetailData.getReason());
             }
-
-
-            // Xử lý danh sách file đính kèm
-            List<RequestDetailData.FileAttachment> fileAttachments = requestDetailData.getFileAttachment();
-            if (fileAttachments != null && !fileAttachments.isEmpty()) {
-                attachmentAdapter = new AttachmentRequestAdapter(this, fileAttachments, this::showImageDetailDialog);
-                recyclerViewAttachments.setAdapter(attachmentAdapter);
-                recyclerViewAttachments.setVisibility(View.VISIBLE);
-            } else {
-                recyclerViewAttachments.setVisibility(View.GONE);
-            }
-
-
             // Quản lý trực tiếp
             if (requestDetailData.getDirectManager() != null && requestDetailData.getDirectManager().getName() != null) {
                 edt_manager_direct_request_create.setText(requestDetailData.getDirectManager().getName());
@@ -393,52 +330,29 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                 }
             }
         } catch (Exception e) {
-            Log.e("CreateRequestWorkReportActivity", "Error updating UI: " + e.getMessage());
+            Log.e("CreateRequestAnotherSubmissionActivity", "Error updating UI: " + e.getMessage());
         }
     }
 
-
-
-
-    private void showImageDetailDialog(RequestDetailData.FileAttachment attachment) {
-        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        dialog.setContentView(R.layout.dialog_image_detail);
-
-        ImageView imageView = dialog.findViewById(R.id.image_detail);
-        TextView textFileName = dialog.findViewById(R.id.text_file_name);
-        ImageView btnClose = dialog.findViewById(R.id.btn_close_dialog);
-
-        // Hiển thị tên file
-        textFileName.setText(attachment.getName());
-
-        // Load ảnh nếu là file hình ảnh
-        if (attachment.getPath() != null && isImageFile(attachment.getPath())) {
-            Picasso.get()
-                    .load(attachment.getPath())
-                    .placeholder(R.drawable.avatar)
-                    .error(R.drawable.avatar)
-                    .into(imageView);
-        } else {
-            // Hiển thị thông báo hoặc icon mặc định cho file không phải ảnh
-            imageView.setImageResource(R.drawable.avatar);
-            CustomToast.showCustomToast(this, "File không phải ảnh, không thể hiển thị chi tiết.");
+    private void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = new Dialog(this);
+            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            loadingDialog.setContentView(R.layout.dialog_loading);
+            loadingDialog.setCancelable(false);
+            if (loadingDialog.getWindow() != null) {
+                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            }
         }
-
-        // Đóng dialog khi nhấn nút close
-        btnClose.setOnClickListener(v -> dialog.dismiss());
-
-        // Ngăn đóng dialog khi chạm ngoài
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
-
-        dialog.show();
+        loadingDialog.show();
     }
 
-    private boolean isImageFile(String path) {
-        String lowerPath = path.toLowerCase();
-        return lowerPath.endsWith(".jpg") || lowerPath.endsWith(".jpeg") || lowerPath.endsWith(".png") || lowerPath.endsWith(".gif");
+    private void hideLoading() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
     }
-
 
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus) {
         showLoading();
@@ -456,7 +370,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
         }
         // Log JSON để kiểm tra
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-        Log.d("CreateRequestWorkReportActivity", "Data: " + gson.toJson(requestDetailData));
+        Log.d("CreateRequestAnotherSubmissionActivity", "Data: " + gson.toJson(requestDetailData));
 
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
@@ -470,22 +384,22 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                     hideLoading();
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
-                        CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, apiResponse.getMessage());
+                        CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, apiResponse.getMessage());
                         if (apiResponse.getStatus() == 200) {
-                            Intent intent = new Intent(CreateRequestWorkReportActivity.this, HomeActivity.class);
+                            Intent intent = new Intent(CreateRequestAnotherSubmissionActivity.this, HomeActivity.class);
                             intent.putExtra("navigate_to", "newsletter");
                             startActivity(intent);
                             finish();
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
                     hideLoading();
-                    CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi: " + t.getMessage());
+                    CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
         } else {
@@ -518,8 +432,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
 
         etReason.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -530,8 +443,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
         btn_confirm.setOnClickListener(view -> {
@@ -541,7 +453,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                 sendModifyRequest(apiInterface, token, requestDetailData);
                 dialog.dismiss();
             } else {
-                CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Vui lòng nhập lý do");
+                CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Vui lòng nhập lý do");
             }
         });
 
@@ -573,45 +485,24 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
                 hideLoading();
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
-                    CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, apiResponse.getMessage());
+                    CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, apiResponse.getMessage());
                     if (apiResponse.getStatus() == 200) {
-                        Intent intent = new Intent(CreateRequestWorkReportActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(CreateRequestAnotherSubmissionActivity.this, HomeActivity.class);
                         intent.putExtra("navigate_to", "newsletter");
                         startActivity(intent);
                         finish();
                     }
                 } else {
-                    CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                    CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi kết nối, vui lòng thử lại.");
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
                 hideLoading();
-                CustomToast.showCustomToast(CreateRequestWorkReportActivity.this, "Lỗi: " + t.getMessage());
+                CustomToast.showCustomToast(CreateRequestAnotherSubmissionActivity.this, "Lỗi: " + t.getMessage());
             }
         });
-    }
-
-
-    private void showLoading() {
-        if (loadingDialog == null) {
-            loadingDialog = new Dialog(this);
-            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            loadingDialog.setContentView(R.layout.dialog_loading);
-            loadingDialog.setCancelable(false);
-            if (loadingDialog.getWindow() != null) {
-                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            }
-        }
-        loadingDialog.show();
-    }
-
-    private void hideLoading() {
-        if (loadingDialog != null && loadingDialog.isShowing()) {
-            loadingDialog.dismiss();
-        }
     }
 
     public void hideKeyboard(View view) {

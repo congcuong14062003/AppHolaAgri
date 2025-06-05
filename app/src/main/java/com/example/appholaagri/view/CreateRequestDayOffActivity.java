@@ -160,7 +160,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
-            Log.d("CreateRequestDayOffActivity", "StatusRequest: " + StatusRequest);
+            Log.d("CreateRequestDayOffActivity", "GroupRequestType: " + GroupRequestType);
         }
 
         if (StatusRequest > 2) {

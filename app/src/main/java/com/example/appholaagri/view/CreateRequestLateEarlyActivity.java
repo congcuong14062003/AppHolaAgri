@@ -161,7 +161,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
             Log.d("CreateRequestLateEarlyActivity", "GroupRequestId: " + GroupRequestId);
-            Log.d("CreateRequestLateEarlyActivity", "GroupRequestType: " + GroupRequestType);
         }
 
         if (StatusRequest > 2) {
@@ -776,7 +775,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         }
     }
 
-    // tạo request
+
+    // Tạo hoặc chỉnh sửa request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
         // Hiển thị loading
         showLoading();
@@ -794,7 +794,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
         requestDetailData.setReason(edt_reason_request_create.getText().toString().trim());
 
-        // validate
+        // Validate
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
             hideLoading();
@@ -810,61 +810,17 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
 
-        // Tạo object để gửi request
-        GroupRequestCreateRequest groupRequestCreateRequest = new GroupRequestCreateRequest();
-        groupRequestCreateRequest.setContact(requestDetailData.getContact());
-        groupRequestCreateRequest.setDateType(requestDetailData.getDateType());
-        groupRequestCreateRequest.setDuration(requestDetailData.getDuration());
-        groupRequestCreateRequest.setEndDate(requestDetailData.getEndDate());
-        groupRequestCreateRequest.setEndTime(requestDetailData.getEndTime());
-        groupRequestCreateRequest.setReason(requestDetailData.getReason());
-        groupRequestCreateRequest.setRejectReason("");
+        // Log dữ liệu để kiểm tra
+        String jsonResponse = gson.toJson(requestDetailData);
+        Log.d("CreateRequestLateActivity", "Data gửi lên: " + jsonResponse);
 
-        // Gán requestGroup
-        GroupRequestCreateRequest.RequestGroup requestGroup = new GroupRequestCreateRequest.RequestGroup(
-                requestDetailData.getRequestGroup().getCode(),
-                requestDetailData.getRequestGroup().getId(),
-                requestDetailData.getRequestGroup().getName(),
-                requestDetailData.getRequestGroup().getStatus()
-        );
-        groupRequestCreateRequest.setRequestGroup(requestGroup);
-
-        // Gán requestMethod
-        if (requestDetailData.getRequestMethod() != null) {
-            GroupRequestCreateRequest.RequestMethod requestMethod = new GroupRequestCreateRequest.RequestMethod(
-                    requestDetailData.getRequestMethod().getCode(),
-                    requestDetailData.getRequestMethod().getId(),
-                    requestDetailData.getRequestMethod().getName(),
-                    requestDetailData.getRequestMethod().getStatus()
-            );
-            groupRequestCreateRequest.setRequestMethod(requestMethod);
-        }
-
-        // Gán status
-        GroupRequestCreateRequest.Status status = new GroupRequestCreateRequest.Status(
-                listStatus1.getCode(),
-                listStatus1.getId(),
-                listStatus1.getName(),
-                listStatus1.getStatus()
-        );
-        groupRequestCreateRequest.setStatus(status);
-
-        groupRequestCreateRequest.setRequestId(requestDetailData.getRequestId());
-        groupRequestCreateRequest.setRequestName(requestDetailData.getRequestName());
-        groupRequestCreateRequest.setIsUrgent(requestDetailData.getIsUrgent());
-        groupRequestCreateRequest.setStartDate(requestDetailData.getStartDate());
-        groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
-        groupRequestCreateRequest.setType(requestDetailData.getType());
-        // Tạo JSON log để kiểm tra dữ liệu
-        String jsonResponse = gson.toJson(groupRequestCreateRequest);
-        Log.d("CreateRequestLateActivity", "data thêm mới" + jsonResponse);
         if (requestId == -1) {
-            Log.d("CreateRequestLateActivity", "vào ");
-            Call<ApiResponse<String>> call = apiInterface.lateEarlyCreateRequest(token, groupRequestCreateRequest);
+            // Thêm mới
+            Call<ApiResponse<String>> call = apiInterface.lateEarlyCreateRequestNew(token, requestDetailData);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                    hideLoading(); // Ẩn loading khi hoàn thành
+                    hideLoading();
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
@@ -872,7 +828,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                             Intent intent = new Intent(CreateRequestLateEarlyActivity.this, HomeActivity.class);
                             intent.putExtra("navigate_to", "newsletter");
                             startActivity(intent);
-                            finish(); // Kết thúc activity hiện tại
+                            finish();
                         } else {
                             CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
                         }
@@ -883,21 +839,21 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    hideLoading(); // Ẩn loading khi hoàn thành
+                    hideLoading();
                     CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
         } else {
-            Log.d("CreateRequestLateActivity", "vào 2" + jsonResponse);
-            if (groupRequestCreateRequest.getStatus().getId() == 2) {
-                showRejectReasonDialog(apiInterface, token, requestDetailData, groupRequestCreateRequest);
+            // Chỉnh sửa
+            if (listStatus1.getId() == 2) {
+                showRejectReasonDialog(apiInterface, token, requestDetailData);
             } else {
-                sendModifyRequest(apiInterface, token, groupRequestCreateRequest);
+                sendModifyRequest(apiInterface, token, requestDetailData);
             }
         }
     }
 
-    private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData, GroupRequestCreateRequest groupRequestCreateRequest) {
+    private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_reject_reason, null);
@@ -941,8 +897,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             String reason = etReason.getText().toString().trim();
             if (!reason.isEmpty()) {
                 requestDetailData.setRejectReason(reason);
-                groupRequestCreateRequest.setRejectReason(reason);
-                sendModifyRequest(apiInterface, token, groupRequestCreateRequest);
+                sendModifyRequest(apiInterface, token, requestDetailData);
                 dialog.dismiss();
             } else {
                 CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Vui lòng nhập lý do");
@@ -961,22 +916,21 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         });
 
         btn_cancel.setOnClickListener(view -> {
-            hideLoading(); // Ẩn loading khi nhấn Cancel
+            hideLoading();
             dialog.dismiss();
         });
-        // Xử lý khi đóng dialog (bấm nút Back hoặc bên ngoài)
+
         dialog.setOnDismissListener(dialogInterface -> hideLoading());
         dialog.show();
     }
 
-    private void sendModifyRequest(ApiInterface apiInterface, String token, GroupRequestCreateRequest groupRequestCreateRequest) {
-        // Hiển thị loading
+    private void sendModifyRequest(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         showLoading();
-        Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
+        Call<ApiResponse<String>> call = apiInterface.modifyRequestBase(token, requestDetailData);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                hideLoading(); // Ẩn loading khi hoàn thành
+                hideLoading();
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, apiResponse.getMessage());
@@ -984,7 +938,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                         Intent intent = new Intent(CreateRequestLateEarlyActivity.this, HomeActivity.class);
                         intent.putExtra("navigate_to", "newsletter");
                         startActivity(intent);
-                        finish(); // Kết thúc activity hiện tại
+                        finish();
                     }
                 } else {
                     CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi kết nối, vui lòng thử lại.");
@@ -994,7 +948,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
                 CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Lỗi: " + t.getMessage());
-                hideLoading(); // Ẩn loading khi hoàn thành
+                hideLoading();
             }
         });
     }

@@ -187,6 +187,19 @@ public interface ApiInterface {
     Call<ApiResponse<String>> modifyRequest(@Header("Authorization") String token, @Body GroupRequestCreateRequest groupRequestCreateRequest);
 
 
+    // request new
+
+    @POST("request/resign")
+    Call<ApiResponse<String>> createBaseRequest(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
+
+    // đơn xin đi muộn về sớm
+    @POST("request/late-early")
+    Call<ApiResponse<String>> lateEarlyCreateRequestNew(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
+
+    // chỉnh sửa đề xuất
+    @POST("request/modify")
+    Call<ApiResponse<String>> modifyRequestBase(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
+
 
     // định danh
     // init form

@@ -8,11 +8,18 @@ import android.content.Intent;
 import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
+import com.example.appholaagri.view.CreateRequestAnotherSubmissionActivity;
 import com.example.appholaagri.view.CreateRequestBuyNewActivity;
+import com.example.appholaagri.view.CreateRequestContractApprovalActivity;
+import com.example.appholaagri.view.CreateRequestContractApprovalSmSActivity;
 import com.example.appholaagri.view.CreateRequestDayOffActivity;
 import com.example.appholaagri.view.CreateRequestLateEarlyActivity;
 import com.example.appholaagri.view.CreateRequestOvertTimeActivity;
+import com.example.appholaagri.view.CreateRequestPersonnelReportActivity;
+import com.example.appholaagri.view.CreateRequestPolicyRegulationSubmissionActivity;
+import com.example.appholaagri.view.CreateRequestRecruitmentFlyerActivity;
 import com.example.appholaagri.view.CreateRequestResignActivity;
+import com.example.appholaagri.view.CreateRequestWorkReportActivity;
 import com.example.appholaagri.view.HomeActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -131,53 +138,69 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private Intent getIntentForTypeScreen(String typeScreen, String id) {
         Intent intent;
         switch (typeScreen != null ? typeScreen : "") {
+            // Đi muộn - về sớm
             case "LATE_EARLY":
                 intent = new Intent(this, CreateRequestLateEarlyActivity.class);
                 break;
+            // Nghỉ phép
             case "DAY_OFF":
                 intent = new Intent(this, CreateRequestDayOffActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đăng ký làm thêm
             case "OVER_TIME":
                 intent = new Intent(this, CreateRequestOvertTimeActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đăng ký mua sắm vật tư
             case "BUY_NEW":
                 intent = new Intent(this, CreateRequestBuyNewActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đơn xin thôi việc
             case "RESIGN":
                 intent = new Intent(this, CreateRequestResignActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề nghị tạm ứng
             case "SUBSIDIZE":
                 intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề nghị thanh toán tạm ứng
             case "SUBSIDIZE_PAY":
                 intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề nghị thanh toán
             case "REQUEST_PAYMENT":
                 intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Tờ trình công tác
             case "BUSINESS_TRIP":
-                intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
+                intent = new Intent(this, CreateRequestWorkReportActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Yêu cầu chuyển thiết bị
             case "SWITCH_DEVICE":
                 intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề xuất tuyển dụng
             case "RECRUITMENT":
-                intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
+                intent = new Intent(this, CreateRequestRecruitmentFlyerActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề xuất phê duyệt hợp đồng
             case "CUSTOMER_CONTRACT":
-                intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
+                intent = new Intent(this, CreateRequestContractApprovalActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề xuất phê duyệt hợp đồng - SMS brand name
             case "CUSTOMER_CONTRACT_BRAND_NAME":
-                intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
+                intent = new Intent(this, CreateRequestContractApprovalSmSActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề xuất tờ trình chi phí, ngân sách
             case "EXPENDITURE":
-                intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
+                intent = new Intent(this, CreateRequestAnotherSubmissionActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề xuất tờ trình chính sách, chế độ, quy định, nội quy
             case "POLICY":
-                intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
+                intent = new Intent(this, CreateRequestPolicyRegulationSubmissionActivity.class); // Thay bằng Activity tương ứng
                 break;
+            // Đề xuất tờ trình nhân sự
             case "EMPLOYEE_TRANSITION":
-                intent = new Intent(this, HomeActivity.class); // Thay bằng Activity tương ứng
+                intent = new Intent(this, CreateRequestPersonnelReportActivity.class); // Thay bằng Activity tương ứng
                 break;
             default:
                 intent = new Intent(this, HomeActivity.class); // Mặc định nếu không khớp

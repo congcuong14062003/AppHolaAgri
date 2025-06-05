@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_home"
-    tools:context=".view.CreateRequestWorkReportActivity">
+    tools:context=".view.CreateRequestBaseActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="Tờ trình công tác"
+                    android:text="Tờ trình khác"
                     android:textColor="@color/secon_textcolor" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -219,303 +219,37 @@
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
 
-                <!--Địa điểm công tác-->
+                <!--Ghi chú-->
                 <LinearLayout
-                    android:id="@+id/number_of_days_notice_layout"
+                    android:id="@+id/reason_request_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Địa điểm công tác"
-                        android:textColor="@color/secon_textcolor" />
-
-                    <EditText
-                        android:id="@+id/edt_work_location"
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/input_infor"
-                        android:backgroundTint="#dee0df"
-                        android:gravity="center_vertical"
-                        android:imeOptions="actionNext"
-                        android:inputType="number"
-                        android:maxLines="1"
-                        android:padding="35px"
-                        android:textColor="@color/textcolor" />
-                </LinearLayout>
-
-                <!--Mục đich công tác/ kết quả-->
-                <LinearLayout
-                    android:id="@+id/purpose_request_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Mục đích công tác/ Kết quả dự kiến"
+                        android:text="Ghi chú"
                         android:textColor="@color/secon_textcolor" />
 
                     <EditText
-                        android:id="@+id/edt_purpose_request_create"
+                        android:id="@+id/edt_reason_request_create"
                         style="@style/TextStyle_14_500"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
-                        android:background="@drawable/input_infor"
                         android:backgroundTint="#dee0df"
+                        android:enabled="false"
+                        android:layout_marginBottom="15dp"
+                        android:background="@drawable/bg_rounded_color_stroke"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"
                         android:padding="16dp"
                         android:scrollbars="vertical"
                         android:textColor="@color/textcolor" />
 
                 </LinearLayout>
 
-                <!--nội dung-->
-                <LinearLayout
-                    android:id="@+id/content_request_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Nội dung"
-                        android:textColor="@color/secon_textcolor" />
-
-                    <EditText
-                        android:enabled="false"
-                        android:id="@+id/edt_content_request_create"
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
-                        android:background="@drawable/input_infor"
-                        android:backgroundTint="#dee0df"
-                        android:padding="16dp"
-                        android:scrollbars="vertical"
-                        android:textColor="@color/textcolor" />
-                </LinearLayout>
-
-                <!--Ngày bắt đầu-->
-                <LinearLayout
-                    android:id="@+id/tvThoiGianBatDau_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvThoiGianBatDau"
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="Ngày bắt đầu"
-                        android:textColor="@color/secon_textcolor" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <!-- Chọn ngày -->
-                        <EditText
-                            android:id="@+id/etNgayBatDau"
-                            style="@style/TextStyle_14_500"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/rounded_background"
-                            android:clickable="true"
-                            android:backgroundTint="#dee0df"
-                            android:enabled="false"
-                            android:drawableEnd="@drawable/lich_icon2"
-                            android:focusable="false"
-                            android:hint="Chọn ngày"
-                            android:padding="10dp"
-                            android:textColor="@color/textcolor" />
-
-                        <!-- Chọn giờ -->
-                        <EditText
-                            android:id="@+id/etGioBatDau"
-                            style="@style/TextStyle_14_500"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/rounded_background_right"
-                            android:clickable="true"
-                            android:drawableEnd="@drawable/icon_lock"
-                            android:focusable="false"
-                            android:hint="Chọn giờ"
-                            android:backgroundTint="#dee0df"
-                            android:enabled="false"
-                            android:padding="10dp"
-                            android:textColor="@color/textcolor" />
-
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!--Ngày kết thúc -->
-                <LinearLayout
-                    android:id="@+id/tvThoiGianKetThuc_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvThoiGianKetThuc"
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="Ngày kết thúc"
-                        android:textColor="@color/secon_textcolor" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <!-- Chọn ngày kết thúc -->
-                        <EditText
-                            android:id="@+id/etNgayKetThuc"
-                            style="@style/TextStyle_14_500"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/rounded_background"
-                            android:clickable="true"
-                            android:drawableEnd="@drawable/lich_icon2"
-                            android:focusable="false"
-                            android:hint="Chọn ngày"
-                            android:backgroundTint="#dee0df"
-                            android:enabled="false"
-                            android:padding="10dp"
-                            android:textColor="@color/textcolor" />
-
-                        <!-- Chọn giờ kết thúc -->
-                        <EditText
-                            android:id="@+id/etGioKetThuc"
-                            style="@style/TextStyle_14_500"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/rounded_background_right"
-                            android:clickable="true"
-                            android:drawableEnd="@drawable/icon_lock"
-                            android:focusable="false"
-                            android:backgroundTint="#dee0df"
-                            android:enabled="false"
-                            android:hint="Chọn giờ"
-                            android:padding="10dp"
-                            android:textColor="@color/textcolor" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!--Chi phí dự tính -->
-                <LinearLayout
-                    android:id="@+id/totalCost_request_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Tổng chi phí dự tính (VND)"
-                        android:textColor="@color/secon_textcolor" />
-
-                    <EditText
-                        android:id="@+id/edt_totalCost_request_create"
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
-                        android:background="@drawable/input_infor"
-                        android:backgroundTint="#dee0df"
-                        android:enabled="false"
-                        android:gravity="center_vertical"
-                        android:padding="35px"
-                        android:textColor="@color/textcolor" />
-                </LinearLayout>
-
-                <!--Chi phí dự tính = chữ -->
-                <LinearLayout
-                    android:id="@+id/totalCost_text_request_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Tổng chi phí dự tính bằng chữ"
-                        android:textColor="@color/secon_textcolor" />
-
-                    <EditText
-                        android:id="@+id/edt_totalCost_text_request_create"
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
-                        android:background="@drawable/input_infor"
-                        android:backgroundTint="#dee0df"
-                        android:enabled="false"
-                        android:gravity="center_vertical"
-                        android:padding="35px"
-                        android:textColor="@color/textcolor" />
-                </LinearLayout>
-
-                <!--Danh sách ảnh -->
-                <LinearLayout
-                    android:id="@+id/file_container_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingBottom="20dp"
-                    >
-
-                    <TextView
-                        style="@style/TextStyle_14_500"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="Tệp đính kèm"
-                        android:textColor="@color/secon_textcolor" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerViewAttachments"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-                </LinearLayout>
 
                 <!--quản lý trực tiếp-->
                 <LinearLayout

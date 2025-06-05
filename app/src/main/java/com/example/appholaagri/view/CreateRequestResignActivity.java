@@ -92,6 +92,7 @@ public class CreateRequestResignActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_resign);
+
         // ánh xạ
 
         // container

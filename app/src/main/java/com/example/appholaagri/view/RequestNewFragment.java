@@ -310,13 +310,17 @@ public class RequestNewFragment extends Fragment {
             public void onResponse(Call<ApiResponse<RequestStatusResponse>> call, Response<ApiResponse<RequestStatusResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<RequestStatusResponse> apiResponse = response.body();
-                    List<RequestStatusData> statusList = apiResponse.getData().getData();
-                    showStatusOverlay(statusList);
+                    RequestStatusResponse responseData = apiResponse.getData();
+                    if (responseData != null && responseData.getData() != null) {
+                        List<RequestStatusData> statusList = responseData.getData();
+                        showStatusOverlay(statusList);
+                    } else {
+                        Log.e("RequestNewFragment", "Response data or status list is null.");
+                    }
                 } else {
                     Log.e("RequestNewFragment", "Failed to fetch statuses.");
                 }
             }
-
             @Override
             public void onFailure(Call<ApiResponse<RequestStatusResponse>> call, Throwable t) {
                 Log.e("RequestNewFragment", "Error: " + t.getMessage());

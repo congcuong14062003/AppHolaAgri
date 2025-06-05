@@ -39,6 +39,27 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.CreateRequestPolicyRegulationSubmissionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestPersonnelReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestBaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestRecruitmentFlyerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestContractApprovalSmSActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestContractApprovalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.CreateRequestAnotherSubmissionActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.CreateRequestWorkReportActivity"
             android:exported="false" />
         <activity
@@ -189,6 +210,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
