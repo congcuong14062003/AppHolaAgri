@@ -17,7 +17,7 @@ public class RequestDetailData {
     private String endDate;
     private String endTime;
     private String endDateDisplay;
-    private Integer duration;
+    private Double duration;
     private String reason;
     private Status status;
     private List<FileAttachment> fileAttachment; // Sửa thành List
@@ -171,11 +171,11 @@ public class RequestDetailData {
         this.endDateDisplay = endDateDisplay;
     }
 
-    public Integer getDuration() {
+    public Double getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Double duration) {
         this.duration = duration;
     }
 

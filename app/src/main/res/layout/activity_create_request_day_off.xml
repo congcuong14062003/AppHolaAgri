@@ -284,7 +284,7 @@
                         android:background="@drawable/input_infor"
                         android:gravity="center_vertical"
                         android:imeOptions="actionNext"
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
                         android:maxLines="1"
                         android:padding="35px"
                         android:textColor="@color/textcolor" />

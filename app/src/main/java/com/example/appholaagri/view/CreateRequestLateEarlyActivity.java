@@ -60,6 +60,7 @@ import com.google.gson.GsonBuilder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -69,7 +70,7 @@ import java.util.stream.IntStream;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+import com.google.gson.reflect.TypeToken;
 public class CreateRequestLateEarlyActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etNgayKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
@@ -90,7 +91,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
     ConstraintLayout overlayFilterStatus;
     private LinearLayout layout_action_history_request;
     private SwitchCompat switchUrgent;
-
+    private static final int REQUEST_CODE_FOLLOWER = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,33 +164,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             Log.d("CreateRequestLateEarlyActivity", "GroupRequestId: " + GroupRequestId);
         }
 
-        if (StatusRequest > 2) {
-            edt_name_request_create.setEnabled(false);
-            edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-            select_method_request.setEnabled(false);
-            select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-            rbMotNgay_create.setEnabled(false);
-            rbNhieuNgay_create.setEnabled(false);
-            etNgayBatDau.setEnabled(false);
-            etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-            etNgayKetThuc.setEnabled(false);
-            etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-            etDurationLateEarly.setEnabled(false);
-            etDurationLateEarly.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-            rbMotNgay_create.setBackgroundResource(R.drawable.unchecked_radio);
-            rbNhieuNgay_create.setBackgroundResource(R.drawable.unchecked_radio);
-            rbIndividual_create.setBackgroundResource(R.drawable.unchecked_radio);
-            rbWork_create.setBackgroundResource(R.drawable.unchecked_radio);
-
-            rbIndividual_create.setEnabled(false);
-            rbWork_create.setEnabled(false);
-            edt_reason_request_create.setEnabled(false);
-            edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-        }
         // init
         tvThoiGianKetThuc_layout.setVisibility(View.GONE);
         rbMotNgay_create.setImageResource(R.drawable.checked_radio);
@@ -305,12 +279,61 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         // Khởi tạo giá trị mặc định cho duration
         if (requestDetailData == null) {
             requestDetailData = new RequestDetailData();
-            requestDetailData.setDuration(30);
+            requestDetailData.setDuration(30.0);
             etDurationLateEarly.setText("--30 phút--");
         }
         updateLayoutVisibility();
-    }
 
+
+        // Sự kiện nhấn cho EditText người theo dõi
+        edt_follower_request_create.setOnClickListener(view -> {
+            Intent intent1 = new Intent(CreateRequestLateEarlyActivity.this, SelectFollowerActivity.class);
+            // Truyền danh sách người theo dõi hiện tại
+            if (requestDetailData != null && requestDetailData.getFollower() != null) {
+                intent1.putExtra("current_followers", new ArrayList<>(requestDetailData.getFollower()));
+            }
+            startActivityForResult(intent1, REQUEST_CODE_FOLLOWER);
+        });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_FOLLOWER && resultCode == RESULT_OK && data != null) {
+            // Lấy danh sách người theo dõi đã chọn
+            String selectedFollowersJson = data.getStringExtra("selected_followers");
+            if (selectedFollowersJson != null && !selectedFollowersJson.isEmpty()) {
+                try {
+                    Gson gson = new Gson();
+                    List<Follower> selectedFollowers = gson.fromJson(selectedFollowersJson, new TypeToken<List<Follower>>(){}.getType());
+
+                    // Cập nhật requestDetailData
+                    if (requestDetailData == null) {
+                        requestDetailData = new RequestDetailData();
+                    }
+                    requestDetailData.setFollower(selectedFollowers);
+
+                    // Cập nhật giao diện EditText
+                    StringBuilder followerNames = new StringBuilder();
+                    for (Follower follower : selectedFollowers) {
+                        if (follower != null && follower.getName() != null) {
+                            followerNames.append(follower.getName()).append(", ");
+                        }
+                    }
+                    // Xóa dấu phẩy cuối nếu có
+                    String followerText = followerNames.length() > 0 ? followerNames.substring(0, followerNames.length() - 2) : "Không có người theo dõi";
+                    edt_follower_request_create.setText(followerText);
+
+                    Log.d("CreateRequestLateEarlyActivity", "Selected followers updated: " + followerText);
+                } catch (Exception e) {
+                    Log.e("CreateRequestLateEarlyActivity", "Error parsing followers JSON: " + e.getMessage());
+                    CustomToast.showCustomToast(this, "Lỗi khi cập nhật người theo dõi.");
+                }
+            } else {
+                Log.w("CreateRequestLateEarlyActivity", "Selected followers JSON is null or empty");
+                edt_follower_request_create.setText("Không có người theo dõi");
+            }
+        }
+    }
     private void updateLayoutVisibility() {
         LinearLayout formTimeLayout = findViewById(R.id.form_time_layout);
         LinearLayout tvThoiGianBatDauLayout = findViewById(R.id.tvThoiGianBatDau_layout);
@@ -357,11 +380,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
         // Lấy giá trị duration từ requestDetailData, nếu null hoặc <= 0 thì mặc định là 30
         int defaultValue = (requestDetailData != null && requestDetailData.getDuration() != null && requestDetailData.getDuration() > 0)
-                ? requestDetailData.getDuration()
+                ? requestDetailData.getDuration().intValue()
                 : 30;
 
         numberPicker.setValue(defaultValue);
-
         numberPicker.setWrapSelectorWheel(true);
         layout.addView(numberPicker);
         builder.setView(layout);
@@ -373,7 +395,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             if (requestDetailData == null) {
                 requestDetailData = new RequestDetailData();
             }
-            requestDetailData.setDuration(selectedMinute);
+            requestDetailData.setDuration((double) selectedMinute); // Store as double
             updateNoticeLately(selectedMinute);
         });
 
@@ -458,7 +480,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                             requestDetailData = apiResponse.getData();
                             // Kiểm tra và thiết lập duration mặc định
                             if (requestDetailData.getDuration() == null || requestDetailData.getDuration() <= 0) {
-                                requestDetailData.setDuration(30);
+                                requestDetailData.setDuration(30.0);
                                 etDurationLateEarly.setText("--30 phút--");
                             }
                             updateUserUI(requestDetailData);
@@ -498,17 +520,14 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                         if (apiResponse.getStatus() == 200) {
                             create_request_container.setVisibility(View.VISIBLE);
                             requestDetailData = apiResponse.getData();
-                            // Kiểm tra và thiết lập duration mặc định
+                            // Set default duration as double
                             if (requestDetailData.getDuration() == null || requestDetailData.getDuration() <= 0) {
-                                requestDetailData.setDuration(30);
+                                requestDetailData.setDuration(30.0);
                                 etDurationLateEarly.setText("--30 phút--");
                             }
                             updateUserUI(requestDetailData);
-                            // Đảm bảo cập nhật lại thông báo sau khi có dữ liệu chi tiết
                             if (requestDetailData.getRequestMethod() != null && requestDetailData.getRequestMethod().getThreshold() != null) {
-                                updateNoticeLately(requestDetailData.getDuration());
-                            } else {
-                                Log.e("Notice", "RequestMethod hoặc Threshold bị null sau khi gọi API");
+                                updateNoticeLately(requestDetailData.getDuration().intValue());
                             }
                         }
                     } else {
@@ -567,10 +586,12 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             }
             // Cập nhật duration và giao diện
             if (requestDetailData.getDuration() == null) {
-                requestDetailData.setDuration(30);
+                requestDetailData.setDuration(30.0);
                 etDurationLateEarly.setText("--30 phút--");
             } else {
-                etDurationLateEarly.setText("--" + requestDetailData.getDuration() + " phút--");
+                // Display as integer for UI consistency
+                int durationInt = requestDetailData.getDuration().intValue();
+                etDurationLateEarly.setText("--" + durationInt + " phút--");
             }
 
             // Cập nhật các trường giao diện
@@ -584,6 +605,36 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                 txt_status_request_detail.setTextColor(color);
                 int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color));
                 txt_status_request_detail.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
+
+                StatusRequest = requestDetailData.getStatus().getId();
+
+                if (StatusRequest > 1) {
+                    edt_name_request_create.setEnabled(false);
+                    edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    select_method_request.setEnabled(false);
+                    select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    rbMotNgay_create.setEnabled(false);
+                    rbNhieuNgay_create.setEnabled(false);
+                    etNgayBatDau.setEnabled(false);
+                    etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+                    etNgayKetThuc.setEnabled(false);
+                    etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+                    etDurationLateEarly.setEnabled(false);
+                    etDurationLateEarly.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+                    rbMotNgay_create.setBackgroundResource(R.drawable.unchecked_radio);
+                    rbNhieuNgay_create.setBackgroundResource(R.drawable.unchecked_radio);
+                    rbIndividual_create.setBackgroundResource(R.drawable.unchecked_radio);
+                    rbWork_create.setBackgroundResource(R.drawable.unchecked_radio);
+
+                    rbIndividual_create.setEnabled(false);
+                    rbWork_create.setEnabled(false);
+                    edt_reason_request_create.setEnabled(false);
+                    edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+                }
             }
 
             if (requestDetailData.getRequestName() != null) {
@@ -682,7 +733,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                         GroupRequestType,
                         selectedMethod -> {
                             requestDetailData.setRequestMethod(selectedMethod);
-                            updateNoticeLately(requestDetailData.getDuration()); // Cập nhật thông báo với duration hiện tại
+                            updateNoticeLately(requestDetailData.getDuration().intValue()); // Cập nhật thông báo với duration hiện tại
                             updateLayoutVisibility(); // Cập nhật visibility khi chọn phương thức
                         }
                 );
@@ -736,7 +787,20 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                         params.setMargins(4, 8, 4, 8);
                         button.setLayoutParams(params);
 
-                        button.setOnClickListener(v -> handleCreateRequest(requestDetailData, status));
+                        // Gán sự kiện onClick để cập nhật status trước khi gọi handleCreateRequest
+                        button.setOnClickListener(v -> {
+                            // Chuyển ListStatus thành Status và gán vào requestDetailData
+                            RequestDetailData.Status statusObj = new  RequestDetailData.Status(
+                                    status.getId(),
+                                    status.getCode(),
+                                    status.getName(),
+                                    status.getStatus(),
+                                    status.getColor(),
+                                    status.getIndex()
+                            );
+                            requestDetailData.setStatus(statusObj);
+                            handleCreateRequest(requestDetailData, status);
+                        });
                         actionButtonContainer.addView(button);
                     }
                 }
@@ -784,7 +848,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
         // Đặt giá trị mặc định cho duration nếu null hoặc <= 0
         if (requestDetailData.getDuration() == null || requestDetailData.getDuration() <= 0) {
-            requestDetailData.setDuration(30);
+            requestDetailData.setDuration(30.0);
             etDurationLateEarly.setText("--30 phút--");
         }
 
@@ -793,6 +857,14 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         requestDetailData.setEndDate(etNgayKetThuc.getText().toString().trim());
         requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
         requestDetailData.setReason(edt_reason_request_create.getText().toString().trim());
+
+        // Kiểm tra status có được gán không
+        if (requestDetailData.getStatus() == null) {
+            Log.e("CreateRequestLateEarlyActivity", "Status is null before sending request");
+            CustomToast.showCustomToast(this, "Vui lòng chọn trạng thái!");
+            hideLoading();
+            return;
+        }
 
         // Validate
         if (requestDetailData.getRequestName().isEmpty()) {
@@ -926,6 +998,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
     private void sendModifyRequest(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         showLoading();
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String jsonResponse = gson.toJson(requestDetailData);
+        Log.d("CreateRequestLateActivity", "Data chỉnh sửa: " + jsonResponse);
+
         Call<ApiResponse<String>> call = apiInterface.modifyRequestBase(token, requestDetailData);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override

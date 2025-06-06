@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-permission android:name="android.hardware.usb.host" />
@@ -38,6 +38,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".view.SelectFollowerActivity"
+            android:exported="false" />
         <activity
             android:name=".view.CreateRequestPolicyRegulationSubmissionActivity"
             android:exported="false" />
@@ -160,9 +163,6 @@
             android:exported="false" />
         <activity
             android:name=".view.ListRequestToCreateActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.CreateRequestActivity"
             android:exported="false" />
         <activity
             android:name=".view.RequestActivity"

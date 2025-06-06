@@ -274,11 +274,12 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="15dp"
-                        android:background="@drawable/input_infor"
                         android:backgroundTint="#dee0df"
+                        android:background="@drawable/bg_rounded_color_stroke"
+                        android:inputType="textMultiLine"
+                        android:minLines="2"
                         android:enabled="false"
                         android:gravity="center_vertical"
-                        android:inputType="text"
                         android:padding="35px"
                         android:textColor="@color/textcolor" />
                 </LinearLayout>

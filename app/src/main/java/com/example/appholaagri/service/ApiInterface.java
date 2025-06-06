@@ -17,6 +17,8 @@ import com.example.appholaagri.model.IdentificationSensorModel.IdentificationSen
 import com.example.appholaagri.model.ListPlantModel.ListPlantResponse;
 import com.example.appholaagri.model.ListSensorModel.ListSensorRequest;
 import com.example.appholaagri.model.ListSensorModel.ListSensorResponse;
+import com.example.appholaagri.model.ListUserModel.ListUserRequest;
+import com.example.appholaagri.model.ListUserModel.ListUserResponse;
 import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftRequest;
 import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftResponse;
 import com.example.appholaagri.model.ListWorkShiftModel.WorkShiftListWrapper;
@@ -33,6 +35,7 @@ import com.example.appholaagri.model.RecordConditionModel.InforRecordConditionBy
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionRequest;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionResponse;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionTabList;
+import com.example.appholaagri.model.RequestDetailModel.Follower;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
 import com.example.appholaagri.model.RequestGroupModel.RequestGroupRequest;
@@ -195,7 +198,23 @@ public interface ApiInterface {
     // đơn xin đi muộn về sớm
     @POST("request/late-early")
     Call<ApiResponse<String>> lateEarlyCreateRequestNew(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
+    // Đơn xin nghỉ phép
+    @POST("request/day-off")
+    Call<ApiResponse<String>> dayOffCreateRequestNew(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
 
+    // Đăng ký mua sắm vật tư
+    @POST("request/buy-new")
+    Call<ApiResponse<String>> buyNewCreateRequestNew(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
+
+
+    // Đơn xin làm thêm
+    @POST("request/over-time")
+    Call<ApiResponse<String>> overTimeCreateRequestNew(@Header("Authorization") String token, @Body  RequestDetailData requestDetailData);
+
+    // đơn xin thôi việc
+
+    @POST("request/resign")
+    Call<ApiResponse<String>> resignCreateRequestNew(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
     // chỉnh sửa đề xuất
     @POST("request/modify")
     Call<ApiResponse<String>> modifyRequestBase(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
@@ -339,5 +358,10 @@ public interface ApiInterface {
             @Header("Authorization") String token,
             @Query("screenCode") String screenCode
     );
+
+
+    // list user
+    @POST("user/list-user")
+    Call<ApiResponse<List<Follower>>> listUser(@Header("Authorization") String token, @Body ListUserRequest listUserRequest);
 
 }

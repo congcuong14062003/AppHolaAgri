@@ -5,9 +5,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,8 +23,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -58,6 +63,7 @@ public class MainActivity extends BaseActivity {
     TextInputLayout confirm_new_pass_layout, new_pass_input_layout;
 
     private Dialog loadingDialog;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -65,6 +71,22 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // Khởi tạo ActivityResultLauncher để xử lý quyền thông báo
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            if (isGranted) {
+                editor.putBoolean("notifications_enabled", true);
+                CustomToast.showCustomToast(this, "Thông báo đã được bật.");
+            } else {
+                editor.putBoolean("notifications_enabled", false);
+                CustomToast.showCustomToast(this, "Thông báo đã bị từ chối.");
+            }
+            editor.apply();
+            // Tiếp tục xử lý sau khi yêu cầu quyền
+            proceedAfterNotificationDialog(sharedPreferences.getString("auth_token", ""), getLoginData());
+        });
 
         // Lấy FCM Token
         FirebaseMessaging.getInstance().getToken()
@@ -74,7 +96,6 @@ public class MainActivity extends BaseActivity {
                         Log.d("MainActivity", "FCM Token: " + fcmToken);
                     } else {
                         Log.e("MainActivity", "Failed to get FCM Token: " + task.getException());
-                        // Không cần fallback về ANDROID_ID vì server cần FCM Token
                         fcmToken = "";
                     }
                 });
@@ -133,8 +154,19 @@ public class MainActivity extends BaseActivity {
 
             // Nếu không có lỗi, xử lý đăng nhập
             String hashedPassword = Utils.hashPassword(password);
-            login(phone, hashedPassword, fcmToken); // Thay deviceId bằng fcmToken
+            login(phone, hashedPassword, fcmToken);
         });
+    }
+
+    // Biến tạm để lưu LoginData
+    private LoginData tempLoginData;
+
+    private void setLoginData(LoginData loginData) {
+        this.tempLoginData = loginData;
+    }
+
+    private LoginData getLoginData() {
+        return this.tempLoginData;
     }
 
     @Override
@@ -174,7 +206,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void login(String phone, String password, String fcmToken) { // Thay deviceId thành fcmToken
+    private void login(String phone, String password, String fcmToken) {
         showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         // Cập nhật các giá trị cho LoginRequest
@@ -211,16 +243,19 @@ public class MainActivity extends BaseActivity {
                         editor.putString("old_password", password);
                         editor.putString("auth_token", token);
                         editor.apply();
-                        // Kiểm tra trạng thái đăng nhập lần đầu
-                        if (loginData.isFirstLogin()) {
-                            // Hiển thị popup đổi mật khẩu, gán mật khẩu cũ
-                            ChangePassRequest changePassRequest = new ChangePassRequest();
-                            changePassRequest.setOldPassword(password); // Gán mật khẩu cũ
-                            showChangePasswordDialog(token);
+                        // Lưu LoginData tạm thời
+                        setLoginData(loginData);
+                        // Kiểm tra xem popup thông báo đã được hiển thị chưa
+                        boolean hasShownNotificationDialog = sharedPreferences.getBoolean("has_shown_notification_dialog", false);
+                        if (!hasShownNotificationDialog) {
+                            // Hiển thị popup hỏi về thông báo lần đầu
+                            showNotificationPermissionDialog(token, loginData);
+                            // Đánh dấu đã hiển thị popup
+                            editor.putBoolean("has_shown_notification_dialog", true);
+                            editor.apply();
                         } else {
-                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
+                            // Nếu đã hiển thị trước đó, tiếp tục xử lý
+                            proceedAfterNotificationDialog(token, loginData);
                         }
                     } else {
                         CustomToast.showCustomToast(MainActivity.this, apiResponse.getMessage());
@@ -236,6 +271,61 @@ public class MainActivity extends BaseActivity {
                 CustomToast.showCustomToast(MainActivity.this, "Error: " + t.getMessage());
             }
         });
+    }
+
+    private void showNotificationPermissionDialog(String token, LoginData loginData) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cho phép thông báo");
+        builder.setMessage("Bạn có muốn nhận thông báo từ ứng dụng?");
+        builder.setPositiveButton("Có", (dialog, which) -> {
+            // Kiểm tra và yêu cầu quyền POST_NOTIFICATIONS
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+                    // Yêu cầu quyền
+                    requestPermissionLauncher.launch("android.permission.POST_NOTIFICATIONS");
+                } else {
+                    // Quyền đã được cấp, lưu trạng thái
+                    SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putBoolean("notifications_enabled", true);
+                    editor.apply();
+                    proceedAfterNotificationDialog(token, loginData);
+                }
+            } else {
+                // Dưới Android 13, không cần quyền rõ ràng
+                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("notifications_enabled", true);
+                editor.apply();
+                proceedAfterNotificationDialog(token, loginData);
+            }
+        });
+        builder.setNegativeButton("Không", (dialog, which) -> {
+            // Lưu trạng thái từ chối thông báo
+            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("notifications_enabled", false);
+            editor.apply();
+            // Tiếp tục xử lý sau khi người dùng từ chối
+            proceedAfterNotificationDialog(token, loginData);
+        });
+        builder.setCancelable(false); // Không cho phép đóng dialog bằng nút back
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void proceedAfterNotificationDialog(String token, LoginData loginData) {
+        // Kiểm tra trạng thái đăng nhập lần đầu
+        if (loginData != null && loginData.isFirstLogin()) {
+            // Hiển thị popup đổi mật khẩu, gán mật khẩu cũ
+            ChangePassRequest changePassRequest = new ChangePassRequest();
+            changePassRequest.setOldPassword(getSharedPreferences("AppPreferences", MODE_PRIVATE).getString("old_password", ""));
+            showChangePasswordDialog(token);
+        } else {
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void showChangePasswordDialog(String token) {

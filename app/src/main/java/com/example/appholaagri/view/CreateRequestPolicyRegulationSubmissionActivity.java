@@ -108,7 +108,7 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
         }
 
         // Khởi tạo
-        if (StatusRequest != null && StatusRequest > 2) {
+        if (StatusRequest != null && StatusRequest > 1) {
             edt_name_request_create.setEnabled(false);
             edt_name_request_create.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#dee0df")));
         }

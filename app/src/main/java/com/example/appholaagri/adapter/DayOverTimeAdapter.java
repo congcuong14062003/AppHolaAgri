@@ -31,13 +31,16 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
     private CreateRequestOvertTimeActivity createRequestOvertTimeActivity;
     private BreakTimeOverTimeAdapter breakTimeAdapter;
     private int statusRequest;
-    public DayOverTimeAdapter(List<ListDayReq> dayReqs, Context context, CreateRequestOvertTimeActivity activity, int statusRequest) {
+    public DayOverTimeAdapter(List<ListDayReq> dayReqs, Context context, CreateRequestOvertTimeActivity activity, Integer statusRequest) {
         this.dayReqs = dayReqs;
         this.context = context;
         this.createRequestOvertTimeActivity = activity;
         this.statusRequest = statusRequest;
     }
-
+    public void setStatusRequest(Integer statusRequest) {
+        this.statusRequest = statusRequest;
+        notifyDataSetChanged(); // Làm mới adapter để cập nhật giao diện
+    }
     @NonNull
     @Override
     public DayViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -59,7 +62,7 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
 
 
         // Kiểm tra statusRequest để bật/tắt các trường nhập
-        if( statusRequest > 2) {
+        if( statusRequest > 1) {
             holder.etDateOvertime.setEnabled(false);
             holder.etDateOvertime.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
             holder.etTimeOvertime.setEnabled(false);

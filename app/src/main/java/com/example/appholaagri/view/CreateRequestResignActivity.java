@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -48,7 +46,6 @@ import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
 import com.example.appholaagri.model.RequestDetailModel.ListStatus;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
-import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
@@ -73,14 +70,13 @@ public class CreateRequestResignActivity extends BaseActivity {
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
     private TextView title_request, txt_type_request_create, edt_number_of_day_notices;
     private ImageView backBtnReview;
-    private RequestDetailData requestDetailData; // Biến toàn cục
+    private RequestDetailData requestDetailData;
     private Integer GroupRequestType, GroupRequestId, requestId, StatusRequest;
     private RecyclerView recyclerViewApprovalLogs;
     private ActionRequestDetailAdapter adapter;
     private AppCompatButton txt_status_request_detail;
     private CoordinatorLayout create_request_container;
-    // over lay
-    View overlay_background;
+    private View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     private ConstraintLayout overlayFilterStatus;
     private LinearLayout layout_action_history_request;
@@ -93,57 +89,31 @@ public class CreateRequestResignActivity extends BaseActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_resign);
 
-        // ánh xạ
-
-        // container
+        // Ánh xạ
         create_request_container = findViewById(R.id.create_request_container);
-        // nút back
         backBtnReview = findViewById(R.id.backBtnReview_create);
-        // tiêu đề
         title_request = findViewById(R.id.title_request);
-
-        // khẩn cấp
         switchUrgent = findViewById(R.id.switch_urgent);
-
-        // trạng thái
         txt_status_request_detail = findViewById(R.id.txt_status_request_detail);
-
-        // loại đề xuất
         txt_type_request_create = findViewById(R.id.txt_type_request_create);
-        // tên đề xuất
         edt_name_request_create = findViewById(R.id.edt_name_request_create);
-        // người đề xuất
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
-        // bộ phận
         edt_part_request_create = findViewById(R.id.edt_part_request_create);
-        // ngày bắt đầu
         etNgayBatDau = findViewById(R.id.etNgayBatDau);
-        // giờ bắt đầu
         etGioBatDau = findViewById(R.id.etGioBatDau);
-        // ngày kết thúc
         etNgayKetThuc = findViewById(R.id.etNgayKetThuc);
-        // giờ kết thúc
         etGioKetThuc = findViewById(R.id.etGioKetThuc);
-
-        // số ngày báo trước
         edt_number_of_day_notices = findViewById(R.id.edt_number_of_day_notices);
-        // lí do
         edt_reason_request_create = findViewById(R.id.edt_reason_request_create);
-        // quản ly trực tiếp
         edt_manager_direct_request_create = findViewById(R.id.edt_manager_direct_request_create);
-        // người duyệt cố định
         edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
-        // người theo dõi
         edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
-
         layout_action_history_request = findViewById(R.id.layout_action_history_request);
-        // over lay
         overlayFilterStatus = findViewById(R.id.overlay_filter_status);
         overlay_background = findViewById(R.id.overlay_background);
         overlay_filter_status_container = findViewById(R.id.overlay_filter_status_container);
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
-
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
@@ -157,38 +127,14 @@ public class CreateRequestResignActivity extends BaseActivity {
             Log.d("CreateRequestResignActivity", "StatusRequest: " + StatusRequest);
         }
 
-        if (StatusRequest > 2) {
-            edt_name_request_create.setEnabled(false);
-            edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
-            etNgayBatDau.setEnabled(false);
-            etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
-            etGioBatDau.setEnabled(false);
-            etGioBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-            etNgayKetThuc.setEnabled(false);
-            etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-            etGioKetThuc.setEnabled(false);
-            etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-            edt_number_of_day_notices.setEnabled(false);
-            edt_number_of_day_notices.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-            edt_reason_request_create.setEnabled(false);
-            edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-        }
-        // init
         layout_action_history_request.setVisibility(View.GONE);
         txt_status_request_detail.setVisibility(View.GONE);
-
 
         if (requestId != -1) {
             create_request_container.setVisibility(View.GONE);
             txt_status_request_detail.setVisibility(View.VISIBLE);
-
             title_request.setText("Chi tiết đề xuất");
             getDetailRequest(requestId, token);
         } else {
@@ -198,89 +144,58 @@ public class CreateRequestResignActivity extends BaseActivity {
             }
         }
 
-
-        // event
+        // Sự kiện
         Button buttonCloseOverlay = findViewById(R.id.button_close_overlay);
-        overlayFilterStatus = findViewById(R.id.overlay_filter_status);
-        // event
-        backBtnReview.setOnClickListener(view -> {
-            finish();
-        });
+        backBtnReview.setOnClickListener(view -> finish());
         buttonCloseOverlay.setOnClickListener(v -> {
             overlayFilterStatus.setVisibility(View.GONE);
             overlay_background.setVisibility(View.GONE);
         });
 
-
         overlay_background.setOnTouchListener((view, event) -> {
-            // Check if the touch event is outside the overlay_filter_status_container
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                // Get the coordinates of the touch
                 float x = event.getX();
                 float y = event.getY();
-
-                // Check if the touch is outside the overlay_filter_status_container
                 int[] location = new int[2];
                 overlay_filter_status_container.getLocationOnScreen(location);
                 int containerX = location[0];
                 int containerY = location[1];
                 int containerWidth = overlay_filter_status_container.getWidth();
                 int containerHeight = overlay_filter_status_container.getHeight();
-
                 if (x < containerX || x > containerX + containerWidth || y < containerY || y > containerY + containerHeight) {
-                    // Touch is outside the container, so hide the overlay
                     overlayFilterStatus.setVisibility(View.GONE);
                     overlay_background.setVisibility(View.GONE);
                 }
             }
-            return true; // Handle the touch event and prevent further propagation
+            return true;
         });
 
-
-        // Chọn ngày & giờ bắt đầu
-//        etNgayBatDau.setOnClickListener(v -> showDatePicker(etNgayBatDau));
         etGioBatDau.setOnClickListener(v -> showTimePicker(etGioBatDau));
-
-        // Chọn ngày & giờ kết thúc
-//        etNgayKetThuc.setOnClickListener(v -> showDatePicker(etNgayKetThuc));
         etGioKetThuc.setOnClickListener(v -> showTimePicker(etGioKetThuc));
 
-
-        // Set default value for urgent switch (0 = not urgent)
         switchUrgent.setChecked(false);
-        // Update requestDetailData when switch changes
         switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
             requestDetailData.setIsUrgent(isChecked ? 1 : 0);
         });
 
-        // Đặt giá trị mặc định cho ngày làm việc cuối cùng và ngày chấm dứt hợp đồng
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
         String currentDate = sdf.format(calendar.getTime());
-        etNgayBatDau.setText(currentDate); // Ngày làm việc cuối cùng = hôm nay
-
-        calendar.add(Calendar.DAY_OF_MONTH, 1); // Ngày hôm sau
+        etNgayBatDau.setText(currentDate);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
         String nextDate = sdf.format(calendar.getTime());
-        etNgayKetThuc.setText(nextDate); // Ngày chấm dứt hợp đồng = hôm sau
-        // Tính số ngày báo trước mặc định
+        etNgayKetThuc.setText(nextDate);
         updateNoticeDays();
-        // Đặt số ngày báo trước mặc định là 1
         edt_number_of_day_notices.setText("1");
 
-        // Event lắng nghe thay đổi ngày làm việc cuối cùng
         etNgayBatDau.setOnClickListener(v -> showDatePicker(etNgayBatDau, true));
-
-        // Event lắng nghe thay đổi ngày chấm dứt hợp đồng
         etNgayKetThuc.setOnClickListener(v -> showDatePicker(etNgayKetThuc, false));
     }
 
-
-    // Hàm hiển thị DatePickerDialog với giới hạn ngày
     private void showDatePicker(EditText editText, boolean isStartDate) {
         final Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-        // Nếu EditText đã có sẵn ngày, đặt vào DatePicker
         if (!editText.getText().toString().isEmpty()) {
             try {
                 Date selectedDate = sdf.parse(editText.getText().toString());
@@ -299,22 +214,17 @@ public class CreateRequestResignActivity extends BaseActivity {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
                 (view, year1, month1, dayOfMonth) -> {
-                    // Định dạng ngày đã chọn
                     String selectedDateStr = String.format("%02d/%02d/%d", dayOfMonth, month1 + 1, year1);
                     editText.setText(selectedDateStr);
 
                     if (isStartDate) {
-                        // Cập nhật số ngày báo trước khi thay đổi ngày làm việc cuối cùng
                         updateNoticeDays();
-
-                        // Kiểm tra và điều chỉnh ngày chấm dứt hợp đồng nếu cần
                         try {
                             String endDateStr = etNgayKetThuc.getText().toString();
                             if (!endDateStr.isEmpty()) {
                                 Date startDate = sdf.parse(selectedDateStr);
                                 Date endDate = sdf.parse(endDateStr);
                                 if (startDate != null && endDate != null && endDate.compareTo(startDate) <= 0) {
-                                    // Nếu ngày chấm dứt <= ngày làm việc cuối, đặt ngày chấm dứt = ngày làm việc cuối + 1
                                     Calendar cal = Calendar.getInstance();
                                     cal.setTime(startDate);
                                     cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -325,14 +235,12 @@ public class CreateRequestResignActivity extends BaseActivity {
                             e.printStackTrace();
                         }
                     } else {
-                        // Nếu thay đổi ngày chấm dứt hợp đồng, kiểm tra và cập nhật
                         try {
                             String startDateStr = etNgayBatDau.getText().toString();
                             if (!startDateStr.isEmpty()) {
                                 Date startDate = sdf.parse(startDateStr);
                                 Date endDate = sdf.parse(selectedDateStr);
                                 if (startDate != null && endDate != null && endDate.compareTo(startDate) <= 0) {
-                                    // Nếu ngày chấm dứt <= ngày làm việc cuối, đặt ngày chấm dứt = ngày làm việc cuối + 1
                                     Calendar cal = Calendar.getInstance();
                                     cal.setTime(startDate);
                                     cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -347,18 +255,15 @@ public class CreateRequestResignActivity extends BaseActivity {
                 year, month, day
         );
 
-        // Chỉ cho phép chọn ngày lớn hơn hoặc bằng hôm nay
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
-    // Hàm tính và cập nhật số ngày báo trước
     private void updateNoticeDays() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         try {
             String startDateStr = etNgayBatDau.getText().toString();
             if (!startDateStr.isEmpty()) {
-                // Lấy ngày hiện tại
                 Calendar currentCal = Calendar.getInstance();
                 String currentDateStr = sdf.format(currentCal.getTime());
                 Date currentDate = sdf.parse(currentDateStr);
@@ -366,11 +271,10 @@ public class CreateRequestResignActivity extends BaseActivity {
 
                 if (currentDate != null && startDate != null) {
                     long diffInMillis = startDate.getTime() - currentDate.getTime();
-                    long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis) + 1; // +1 để tính cả ngày cuối
+                    long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis) + 1;
                     if (diffInDays >= 0) {
                         edt_number_of_day_notices.setText(String.valueOf(diffInDays));
                     } else {
-                        // Nếu ngày làm việc cuối cùng nhỏ hơn ngày hiện tại, đặt lại ngày làm việc cuối cùng = ngày hiện tại
                         etNgayBatDau.setText(currentDateStr);
                         edt_number_of_day_notices.setText("1");
                     }
@@ -396,28 +300,24 @@ public class CreateRequestResignActivity extends BaseActivity {
                 (view, hourOfDay, minute1) -> {
                     String selectedTime = String.format("%02d:%02d", hourOfDay, minute1);
                     editText.setText(selectedTime);
-
                 },
                 hour, minute, true);
 
         timePickerDialog.show();
     }
 
-    // Hàm so sánh 2 ngày (dd/MM/yyyy)
     private int compareDates(String date1, String date2) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         try {
             Date d1 = sdf.parse(date1);
             Date d2 = sdf.parse(date2);
-            return d1.compareTo(d2); // Trả về <0 nếu d1 < d2, >0 nếu d1 > d2, =0 nếu bằng nhau
+            return d1.compareTo(d2);
         } catch (ParseException e) {
             e.printStackTrace();
             return 0;
         }
     }
 
-
-    // Hàm so sánh 2 giờ (HH:mm)
     private int compareTimes(String time1, String time2) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         try {
@@ -430,9 +330,7 @@ public class CreateRequestResignActivity extends BaseActivity {
         }
     }
 
-    // init data
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
-        // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
@@ -459,15 +357,12 @@ public class CreateRequestResignActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
-                String errorMessage = t.getMessage();
-                Log.e("ApiHelper", errorMessage);
+                Log.e("ApiHelper", t.getMessage());
             }
         });
     }
 
-    // nếu có id lấy data chi tiết của nháp và từ chối
     private void getDetailRequest(int requestId, String token) {
-        // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
@@ -493,13 +388,11 @@ public class CreateRequestResignActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
-                String errorMessage = t.getMessage();
-                Log.e("ApiHelper", errorMessage);
+                Log.e("ApiHelper", t.getMessage());
             }
         });
     }
 
-    // cập nhật giao diện
     @SuppressLint("SetTextI18n")
     private void updateUserUI(RequestDetailData requestDetailData) {
         try {
@@ -508,24 +401,31 @@ public class CreateRequestResignActivity extends BaseActivity {
                 return;
             }
 
-            // Kiểm tra từng thuộc tính trước khi gọi
-
             if (requestDetailData.getStatus() != null) {
                 txt_status_request_detail.setText(requestDetailData.getStatus().getName());
-
-                String colorCode = requestDetailData.getStatus().getColor(); // Lấy mã màu (dạng #cccccc)
-                int color = Color.parseColor(colorCode); // Chuyển mã màu thành int
-
-                // Đặt màu chữ
+                String colorCode = requestDetailData.getStatus().getColor();
+                int color = Color.parseColor(colorCode);
                 txt_status_request_detail.setTextColor(color);
-
-                // Tạo màu nền nhạt hơn (thêm alpha)
-                int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color)); // Alpha = 50 (~20% độ trong suốt)
-
-                // Đặt màu nền
+                int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color));
                 txt_status_request_detail.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
+                StatusRequest = requestDetailData.getStatus().getId();
+                if (StatusRequest > 1) {
+                    edt_name_request_create.setEnabled(false);
+                    edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    etNgayBatDau.setEnabled(false);
+                    etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    etGioBatDau.setEnabled(false);
+                    etGioBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    etNgayKetThuc.setEnabled(false);
+                    etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    etGioKetThuc.setEnabled(false);
+                    etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    edt_number_of_day_notices.setEnabled(false);
+                    edt_number_of_day_notices.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    edt_reason_request_create.setEnabled(false);
+                    edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                }
             }
-
 
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
                 txt_type_request_create.setText(requestDetailData.getRequestGroup().getName());
@@ -562,7 +462,8 @@ public class CreateRequestResignActivity extends BaseActivity {
             if (requestDetailData.getEndTime() != null) {
                 etGioKetThuc.setText(requestDetailData.getEndTime());
             }
-            if(requestDetailData.getDuration() != null) {
+
+            if (requestDetailData.getDuration() != null) {
                 edt_number_of_day_notices.setText(requestDetailData.getDuration().toString());
             }
 
@@ -570,14 +471,12 @@ public class CreateRequestResignActivity extends BaseActivity {
                 edt_reason_request_create.setText(requestDetailData.getReason());
             }
 
-            if (requestDetailData.getDirectManager() != null
-                    && requestDetailData.getDirectManager().getName() != null) {
+            if (requestDetailData.getDirectManager() != null && requestDetailData.getDirectManager().getName() != null) {
                 edt_manager_direct_request_create.setText(requestDetailData.getDirectManager().getName());
             } else {
                 edt_manager_direct_request_create.setText("Chưa có quản lý trực tiếp");
             }
 
-            // Xử lý danh sách Consignee
             List<Consignee> consigneeList = requestDetailData.getConsignee();
             if (consigneeList != null && !consigneeList.isEmpty()) {
                 StringBuilder consigneeNames = new StringBuilder();
@@ -588,10 +487,9 @@ public class CreateRequestResignActivity extends BaseActivity {
                 }
                 edt_fixed_reviewer_request_create.setText(consigneeNames.toString().trim());
             } else {
-                edt_fixed_reviewer_request_create.setText("Không có người duyệt cố định");
+                edt_fixed_reviewer_request_create.setText("Không có người duyệt chọn");
             }
 
-            // Xử lý danh sách Follower
             List<Follower> followerList = requestDetailData.getFollower();
             if (followerList != null && !followerList.isEmpty()) {
                 StringBuilder followerNames = new StringBuilder();
@@ -604,13 +502,14 @@ public class CreateRequestResignActivity extends BaseActivity {
             } else {
                 edt_follower_request_create.setText("Không có người theo dõi");
             }
+
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
-            if (requestDetailData.getApprovalLogs() != null && requestDetailData.getApprovalLogs().size() > 0) {
+            if (requestDetailData.getApprovalLogs() != null && !requestDetailData.getApprovalLogs().isEmpty()) {
                 layout_action_history_request.setVisibility(View.VISIBLE);
             }
-            // Xử lý danh sách ListStatus
+
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
             actionButtonContainer.removeAllViews();
@@ -620,45 +519,42 @@ public class CreateRequestResignActivity extends BaseActivity {
                         AppCompatButton button = new AppCompatButton(this);
                         button.setText(status.getName());
                         button.setTextColor(Color.WHITE);
-                        button.setPadding(24, 12, 24, 12);
-
+                        button.setPadding(24, 10, 24, 10);
                         String color = (status.getColor() != null) ? status.getColor() : "#007BFF";
                         button.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(color)));
                         button.setBackground(ContextCompat.getDrawable(this, R.drawable.button_custom));
                         button.setStateListAnimator(null);
-
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-                        params.setMargins(4, 8, 4, 8);
+                        params.setMargins(10, 8, 10, 8);
                         button.setLayoutParams(params);
-
-                        button.setOnClickListener(v ->
-                                {
-//                                    if(requestId == -1) {
-                                    handleCreateRequest(requestDetailData, status);
-//                                    }
-                                }
-                        );
+                        button.setOnClickListener(v -> {
+                            RequestDetailData.Status statusObj = new RequestDetailData.Status(
+                                    status.getId(),
+                                    status.getCode(),
+                                    status.getName(),
+                                    status.getStatus(),
+                                    status.getColor(),
+                                    status.getIndex()
+                            );
+                            requestDetailData.setStatus(statusObj);
+                            handleCreateRequest(requestDetailData, status);
+                        });
                         actionButtonContainer.addView(button);
                     }
                 }
-            } else {
-                Log.e("ButtonList", "listStatus is null or empty");
             }
-
         } catch (Exception e) {
-            Log.e("UserDetailActivity", "Error updating UI: " + e.getMessage(), e);
+            Log.e("CreateRequestResignActivity", "Error updating UI: " + e.getMessage(), e);
         }
     }
 
-    // Hiển thị loading
     private void showLoading() {
         if (loadingDialog == null) {
             loadingDialog = new Dialog(this);
             loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             loadingDialog.setContentView(R.layout.dialog_loading);
             loadingDialog.setCancelable(false);
-
             if (loadingDialog.getWindow() != null) {
                 loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -667,38 +563,36 @@ public class CreateRequestResignActivity extends BaseActivity {
         loadingDialog.show();
     }
 
-    // Ẩn loading
     private void hideLoading() {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
     }
 
-    // tạo request
     public void handleCreateRequest(RequestDetailData requestDetailData, ListStatus listStatus1) {
-        // Hiển thị loading
         showLoading();
-        // Lấy dữ liệu từ giao diện nhập vào requestDetailData
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+
         requestDetailData.setRequestName(edt_name_request_create.getText().toString().trim());
         requestDetailData.setEndDate(etNgayKetThuc.getText().toString().trim());
         requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
         requestDetailData.setStartTime(etGioBatDau.getText().toString().trim());
         requestDetailData.setEndTime(etGioKetThuc.getText().toString().trim());
-        String durationText = edt_number_of_day_notices.getText().toString().trim();
-
-        if (!durationText.isEmpty()) {  // Kiểm tra nếu chuỗi không rỗng
-            try {
-                requestDetailData.setDuration(Integer.parseInt(durationText));
-            } catch (NumberFormatException e) {
-                CustomToast.showCustomToast(this, "Số ngày báo trước không hợp lệ");
-            }
-        } else {
-            requestDetailData.setDuration(0); // Hoặc giá trị mặc định phù hợp
-        }
-
         requestDetailData.setReason(edt_reason_request_create.getText().toString().trim());
 
-        // validate
+        String durationText = edt_number_of_day_notices.getText().toString().trim();
+        if (!durationText.isEmpty()) {
+            try {
+                requestDetailData.setDuration(Double.parseDouble(durationText));
+            } catch (NumberFormatException e) {
+                CustomToast.showCustomToast(this, "Số ngày báo trước không hợp lệ");
+                hideLoading();
+                return;
+            }
+        } else {
+            requestDetailData.setDuration(0.0);
+        }
+
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
             hideLoading();
@@ -709,78 +603,38 @@ public class CreateRequestResignActivity extends BaseActivity {
             hideLoading();
             return;
         }
-
+        if (requestDetailData.getStartDate().isEmpty()) {
+            CustomToast.showCustomToast(this, "Vui lòng chọn ngày làm việc cuối cùng!");
+            hideLoading();
+            return;
+        }
+        if (requestDetailData.getEndDate().isEmpty()) {
+            CustomToast.showCustomToast(this, "Vui lòng chọn ngày chấm dứt hợp đồng!");
+            hideLoading();
+            return;
+        }
 
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
 
-        // Tạo object để gửi request
-        GroupRequestCreateRequest groupRequestCreateRequest = new GroupRequestCreateRequest();
-        groupRequestCreateRequest.setContact(requestDetailData.getContact());
-        groupRequestCreateRequest.setDateType(requestDetailData.getDateType());
-        groupRequestCreateRequest.setDuration(requestDetailData.getDuration());
-        groupRequestCreateRequest.setEndDate(requestDetailData.getEndDate());
-        groupRequestCreateRequest.setEndTime(requestDetailData.getEndTime());
-        groupRequestCreateRequest.setReason(requestDetailData.getReason());
-        groupRequestCreateRequest.setRejectReason("");
-
-        // Gán requestGroup
-        GroupRequestCreateRequest.RequestGroup requestGroup = new GroupRequestCreateRequest.RequestGroup(
-                requestDetailData.getRequestGroup().getCode(),
-                requestDetailData.getRequestGroup().getId(),
-                requestDetailData.getRequestGroup().getName(),
-                requestDetailData.getRequestGroup().getStatus()
-        );
-        groupRequestCreateRequest.setRequestGroup(requestGroup);
-
-        // Gán requestMethod
-        if (requestDetailData.getRequestMethod() != null) {
-            GroupRequestCreateRequest.RequestMethod requestMethod = new GroupRequestCreateRequest.RequestMethod(
-                    requestDetailData.getRequestMethod().getCode(),
-                    requestDetailData.getRequestMethod().getId(),
-                    requestDetailData.getRequestMethod().getName(),
-                    requestDetailData.getRequestMethod().getStatus()
-            );
-            groupRequestCreateRequest.setRequestMethod(requestMethod);
-        }
-
-
-        // Gán status
-        GroupRequestCreateRequest.Status status = new GroupRequestCreateRequest.Status(
-                listStatus1.getCode(),
-                listStatus1.getId(),
-                listStatus1.getName(),
-                listStatus1.getStatus()
-        );
-        groupRequestCreateRequest.setStatus(status);
-
-        groupRequestCreateRequest.setRequestId(requestDetailData.getRequestId());
-        groupRequestCreateRequest.setRequestName(requestDetailData.getRequestName());
-        groupRequestCreateRequest.setIsUrgent(requestDetailData.getIsUrgent());
-        groupRequestCreateRequest.setStartDate(requestDetailData.getStartDate());
-        groupRequestCreateRequest.setStartTime(requestDetailData.getStartTime());
-        groupRequestCreateRequest.setType(requestDetailData.getType());
-        // Tạo JSON log để kiểm tra dữ liệu
+        String jsonResponse = gson.toJson(requestDetailData);
+        Log.d("CreateRequestResignActivity", "Data gửi lên: " + jsonResponse);
 
         if (requestId == -1) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-            String datagroupRequestCreateRequest = gson.toJson(groupRequestCreateRequest);
-            Log.d("CreateRequestResignActivity", "data thêm đề xuất: " + datagroupRequestCreateRequest);
-            Call<ApiResponse<String>> call = apiInterface.resignCreateRequest(token, groupRequestCreateRequest);
+            Call<ApiResponse<String>> call = apiInterface.resignCreateRequestNew(token, requestDetailData);
             call.enqueue(new Callback<ApiResponse<String>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
-                    hideLoading(); // Ẩn loading khi hoàn thành
+                    hideLoading();
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
                             CustomToast.showCustomToast(CreateRequestResignActivity.this, apiResponse.getMessage());
-//                            startActivity(new Intent(CreateRequestResignActivity.this, RequestActivity.class));
                             Intent intent = new Intent(CreateRequestResignActivity.this, HomeActivity.class);
                             intent.putExtra("navigate_to", "newsletter");
                             startActivity(intent);
-                            finish(); // Kết thúc activity hiện tại
+                            finish();
                         } else {
                             CustomToast.showCustomToast(CreateRequestResignActivity.this, apiResponse.getMessage());
                         }
@@ -791,21 +645,20 @@ public class CreateRequestResignActivity extends BaseActivity {
 
                 @Override
                 public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                    hideLoading(); // Ẩn loading khi hoàn thành
+                    hideLoading();
                     CustomToast.showCustomToast(CreateRequestResignActivity.this, "Lỗi: " + t.getMessage());
                 }
             });
         } else {
-            if (groupRequestCreateRequest.getStatus().getId() == 2) {
-                showRejectReasonDialog(apiInterface, token, requestDetailData, groupRequestCreateRequest);
+            if (listStatus1.getId() == 2) {
+                showRejectReasonDialog(apiInterface, token, requestDetailData);
             } else {
-                sendModifyRequest(apiInterface, token, groupRequestCreateRequest);
+                sendModifyRequest(apiInterface, token, requestDetailData);
             }
         }
-
     }
 
-    private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData, GroupRequestCreateRequest groupRequestCreateRequest) {
+    private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_reject_reason, null);
@@ -820,16 +673,13 @@ public class CreateRequestResignActivity extends BaseActivity {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
 
-        // Thiết lập ban đầu: vô hiệu hóa nút xác nhận
         btn_confirm.setEnabled(false);
         btn_confirm.setTextColor(ContextCompat.getColor(this, R.color.secondarycolor));
         btn_confirm.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e8f7f2")));
 
-        // Lắng nghe thay đổi nội dung nhập
         etReason.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -840,24 +690,20 @@ public class CreateRequestResignActivity extends BaseActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
-        // Xử lý khi nhấn nút xác nhận
         btn_confirm.setOnClickListener(view -> {
             String reason = etReason.getText().toString().trim();
             if (!reason.isEmpty()) {
                 requestDetailData.setRejectReason(reason);
-                groupRequestCreateRequest.setRejectReason(reason);
-                sendModifyRequest(apiInterface, token, groupRequestCreateRequest);
+                sendModifyRequest(apiInterface, token, requestDetailData);
                 dialog.dismiss();
             } else {
                 CustomToast.showCustomToast(CreateRequestResignActivity.this, "Vui lòng nhập lý do");
             }
         });
 
-        // Ẩn bàn phím khi chạm ngoài EditText
         dialogView.setOnTouchListener((v, event) -> {
             hideKeyboard(v);
             return false;
@@ -869,31 +715,32 @@ public class CreateRequestResignActivity extends BaseActivity {
         });
 
         btn_cancel.setOnClickListener(view -> {
-            hideLoading(); // Ẩn loading khi nhấn Cancel
+            hideLoading();
             dialog.dismiss();
         });
-        // Xử lý khi đóng dialog (bấm nút Back hoặc bên ngoài)
-        dialog.setOnDismissListener(dialogInterface -> hideLoading());
 
+        dialog.setOnDismissListener(dialogInterface -> hideLoading());
         dialog.show();
     }
 
-    private void sendModifyRequest(ApiInterface apiInterface, String token, GroupRequestCreateRequest groupRequestCreateRequest) {
-        // Hiển thị loading
+    private void sendModifyRequest(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         showLoading();
-        Call<ApiResponse<String>> call = apiInterface.modifyRequest(token, groupRequestCreateRequest);
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        Log.d("CreateRequestResignActivity", "Data chỉnh sửa: " + gson.toJson(requestDetailData));
+
+        Call<ApiResponse<String>> call = apiInterface.modifyRequestBase(token, requestDetailData);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                hideLoading();
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     CustomToast.showCustomToast(CreateRequestResignActivity.this, apiResponse.getMessage());
                     if (apiResponse.getStatus() == 200) {
-//                        startActivity(new Intent(CreateRequestResignActivity.this, RequestActivity.class));
                         Intent intent = new Intent(CreateRequestResignActivity.this, HomeActivity.class);
                         intent.putExtra("navigate_to", "newsletter");
                         startActivity(intent);
-                        finish(); // Kết thúc activity hiện tại
+                        finish();
                     }
                 } else {
                     CustomToast.showCustomToast(CreateRequestResignActivity.this, "Lỗi kết nối, vui lòng thử lại.");
@@ -902,7 +749,7 @@ public class CreateRequestResignActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
-                hideLoading(); // Ẩn loading khi hoàn thành
+                hideLoading();
                 CustomToast.showCustomToast(CreateRequestResignActivity.this, "Lỗi: " + t.getMessage());
             }
         });
@@ -916,7 +763,7 @@ public class CreateRequestResignActivity extends BaseActivity {
     }
 
     public void onBackPressed() {
-        super.onBackPressed(); // Quay lại trang trước đó
+        super.onBackPressed();
     }
 
     @Override
@@ -924,5 +771,4 @@ public class CreateRequestResignActivity extends BaseActivity {
         KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
         return super.dispatchTouchEvent(event);
     }
-
 }
