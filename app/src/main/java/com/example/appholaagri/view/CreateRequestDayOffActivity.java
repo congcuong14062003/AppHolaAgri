@@ -51,6 +51,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -78,6 +79,7 @@ public class CreateRequestDayOffActivity extends BaseActivity {
     private ConstraintLayout overlayFilterStatus;
     private LinearLayout layout_action_history_request;
     private SwitchCompat switchUrgent;
+    private static final int REQUEST_CODE_FOLLOWER = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,7 +211,68 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                 return Pattern.matches("^\\d*\\.?\\d{0,2}$", input);
             }
         });
+
+
+        // Trong hàm onCreate, sự kiện click cho edt_follower_request_create
+        edt_follower_request_create.setOnClickListener(view -> {
+            Intent intent1 = new Intent(CreateRequestDayOffActivity.this, SelectFollowerActivity.class);
+            // Truyền danh sách người theo dõi hiện tại
+            if (requestDetailData != null && requestDetailData.getFollower() != null) {
+                intent1.putExtra("current_followers", new ArrayList<>(requestDetailData.getFollower()));
+            } else {
+                intent1.putExtra("current_followers", new ArrayList<Follower>());
+            }
+            startActivityForResult(intent1, REQUEST_CODE_FOLLOWER);
+        });
+
     }
+
+    // Sửa onActivityResult
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_FOLLOWER && resultCode == RESULT_OK && data != null) {
+            // Lấy danh sách người theo dõi đã chọn
+            ArrayList<Follower> selectedFollowers = (ArrayList<Follower>) data.getSerializableExtra("selected_followers");
+            if (selectedFollowers != null) {
+                try {
+                    // Cập nhật requestDetailData
+                    if (requestDetailData == null) {
+                        requestDetailData = new RequestDetailData();
+                    }
+                    // Thêm @ vào name của các Follower nếu chưa có
+                    for (Follower follower : selectedFollowers) {
+                        if (follower != null && follower.getName() != null && !follower.getName().startsWith("@")) {
+                            follower.setName("@" + follower.getName());
+                        }
+                    }
+                    requestDetailData.setFollower(selectedFollowers);
+
+                    // Cập nhật giao diện EditText
+                    StringBuilder followerNames = new StringBuilder();
+                    for (Follower follower : selectedFollowers) {
+                        if (follower != null && follower.getName() != null) {
+                            followerNames.append(follower.getName()).append(", ");
+                        }
+                    }
+                    String followerText = followerNames.length() > 0 ? followerNames.substring(0, followerNames.length() - 2) : "Không có người theo dõi";
+                    edt_follower_request_create.setText(followerText);
+
+                    Log.d("CreateRequestLateEarlyActivity", "Selected followers updated: " + followerText);
+                } catch (Exception e) {
+                    Log.e("CreateRequestLateEarlyActivity", "Error processing followers: " + e.getMessage());
+                    CustomToast.showCustomToast(this, "Lỗi khi cập nhật người theo dõi.");
+                }
+            } else {
+                // Nếu không có người theo dõi được chọn
+                requestDetailData.setFollower(new ArrayList<>());
+                edt_follower_request_create.setText("Không có người theo dõi");
+                Log.w("CreateRequestLateEarlyActivity", "Selected followers is null");
+            }
+        }
+    }
+
+
 
     private void showDatePicker(EditText editText) {
         final Calendar calendar = Calendar.getInstance();
@@ -422,6 +485,9 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                     etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    edt_follower_request_create.setEnabled(false);
                 }
             }
 

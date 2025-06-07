@@ -285,30 +285,36 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         updateLayoutVisibility();
 
 
-        // Sự kiện nhấn cho EditText người theo dõi
+        // Trong hàm onCreate, sự kiện click cho edt_follower_request_create
         edt_follower_request_create.setOnClickListener(view -> {
             Intent intent1 = new Intent(CreateRequestLateEarlyActivity.this, SelectFollowerActivity.class);
             // Truyền danh sách người theo dõi hiện tại
             if (requestDetailData != null && requestDetailData.getFollower() != null) {
                 intent1.putExtra("current_followers", new ArrayList<>(requestDetailData.getFollower()));
+            } else {
+                intent1.putExtra("current_followers", new ArrayList<Follower>());
             }
             startActivityForResult(intent1, REQUEST_CODE_FOLLOWER);
         });
     }
+    // Sửa onActivityResult
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_FOLLOWER && resultCode == RESULT_OK && data != null) {
             // Lấy danh sách người theo dõi đã chọn
-            String selectedFollowersJson = data.getStringExtra("selected_followers");
-            if (selectedFollowersJson != null && !selectedFollowersJson.isEmpty()) {
+            ArrayList<Follower> selectedFollowers = (ArrayList<Follower>) data.getSerializableExtra("selected_followers");
+            if (selectedFollowers != null) {
                 try {
-                    Gson gson = new Gson();
-                    List<Follower> selectedFollowers = gson.fromJson(selectedFollowersJson, new TypeToken<List<Follower>>(){}.getType());
-
                     // Cập nhật requestDetailData
                     if (requestDetailData == null) {
                         requestDetailData = new RequestDetailData();
+                    }
+                    // Thêm @ vào name của các Follower nếu chưa có
+                    for (Follower follower : selectedFollowers) {
+                        if (follower != null && follower.getName() != null && !follower.getName().startsWith("@")) {
+                            follower.setName("@" + follower.getName());
+                        }
                     }
                     requestDetailData.setFollower(selectedFollowers);
 
@@ -319,21 +325,26 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                             followerNames.append(follower.getName()).append(", ");
                         }
                     }
-                    // Xóa dấu phẩy cuối nếu có
                     String followerText = followerNames.length() > 0 ? followerNames.substring(0, followerNames.length() - 2) : "Không có người theo dõi";
                     edt_follower_request_create.setText(followerText);
 
                     Log.d("CreateRequestLateEarlyActivity", "Selected followers updated: " + followerText);
                 } catch (Exception e) {
-                    Log.e("CreateRequestLateEarlyActivity", "Error parsing followers JSON: " + e.getMessage());
+                    Log.e("CreateRequestLateEarlyActivity", "Error processing followers: " + e.getMessage());
                     CustomToast.showCustomToast(this, "Lỗi khi cập nhật người theo dõi.");
                 }
             } else {
-                Log.w("CreateRequestLateEarlyActivity", "Selected followers JSON is null or empty");
+                // Nếu không có người theo dõi được chọn
+                requestDetailData.setFollower(new ArrayList<>());
                 edt_follower_request_create.setText("Không có người theo dõi");
+                Log.w("CreateRequestLateEarlyActivity", "Selected followers is null");
             }
         }
     }
+
+
+
+
     private void updateLayoutVisibility() {
         LinearLayout formTimeLayout = findViewById(R.id.form_time_layout);
         LinearLayout tvThoiGianBatDauLayout = findViewById(R.id.tvThoiGianBatDau_layout);
@@ -634,6 +645,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
+                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    edt_follower_request_create.setEnabled(false);
                 }
             }
 

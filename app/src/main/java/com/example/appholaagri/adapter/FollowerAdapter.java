@@ -1,13 +1,17 @@
 package com.example.appholaagri.adapter;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +31,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.ViewHo
     }
 
     public void updateList(List<Follower> newList) {
-        followerList = new ArrayList<>(newList);
+        this.followerList = new ArrayList<>(newList);
         notifyDataSetChanged();
     }
 
@@ -41,10 +45,13 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Follower follower = followerList.get(position);
-        holder.tvEmployeeName.setText(follower.getName());
-        holder.tvEmployeeCode.setText(follower.getCode()); // Giả sử Follower có trường code
-        // Hiển thị imgCheckedIcon nếu follower đã được chọn
-        holder.imgCheckedIcon.setVisibility(selectedFollowers.contains(follower) ? View.VISIBLE : View.GONE);
+        holder.tvEmployeeName.setText(follower.getName() != null ? follower.getName() : "");
+        holder.tvEmployeeCode.setText(follower.getCode() != null ? follower.getCode() : "");
+        holder.tvEmployeeTeam.setText(follower.getTeam() != null ? follower.getTeam() : "");
+
+        // Hiển thị biểu tượng checked nếu follower có trong selectedFollowers
+        boolean isSelected = selectedFollowers.stream().anyMatch(selected -> selected.getId() == follower.getId());
+        holder.imgCheckedIcon.setVisibility(isSelected ? View.VISIBLE : View.GONE);
 
         // Sự kiện nhấn vào item
         holder.itemView.setOnClickListener(v -> listener.onFollowerClick(follower));
@@ -57,7 +64,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgAvatarConfirm, imgCheckedIcon;
-        TextView tvEmployeeName, tvEmployeeCode;
+        TextView tvEmployeeName, tvEmployeeCode, tvEmployeeTeam;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -65,6 +72,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.ViewHo
             imgCheckedIcon = itemView.findViewById(R.id.imgCheckedIcon);
             tvEmployeeName = itemView.findViewById(R.id.tvEmployeeName);
             tvEmployeeCode = itemView.findViewById(R.id.tvEmployeeCode);
+            tvEmployeeTeam = itemView.findViewById(R.id.tvEmployeeTeam);
         }
     }
 }

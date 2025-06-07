@@ -74,16 +74,27 @@
         android:background="@android:color/transparent"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <TextView
-            android:id="@+id/tvSelectedCount"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_margin="10dp"
-            android:text="Số người đang chọn: 0"
-            android:textColor="@color/textcolor"
-            style="@style/TextStyle_16_400" />
-
+            android:gravity="center"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Số người đang chọn: "
+                android:textColor="@color/textcolor"
+                style="@style/TextStyle_16_500" />
+            <TextView
+                android:id="@+id/tvSelectedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="@color/bottom_bar_border"
+                style="@style/TextStyle_18_600" />
+        </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
@@ -91,12 +102,13 @@
             android:layout_weight="1"
             android:background="@android:color/transparent" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnConfirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Xác nhận"
+            android:background="@drawable/button_custom"
             android:backgroundTint="@color/secondarycolor"
             android:textColor="@android:color/white" />
     </LinearLayout>

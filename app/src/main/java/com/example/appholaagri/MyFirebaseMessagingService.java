@@ -125,7 +125,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Tạo và hiển thị thông báo
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.logoapp)
                 .setContentTitle(title)
                 .setContentText(messageBody)
                 .setAutoCancel(true)

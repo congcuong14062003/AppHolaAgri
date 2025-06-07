@@ -24,8 +24,6 @@ import com.example.appholaagri.model.RequestDetailModel.Follower;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,8 +62,7 @@ public class SelectFollowerActivity extends AppCompatActivity {
         // Nhận danh sách người theo dõi hiện tại
         Intent intent = getIntent();
         if (intent.hasExtra("current_followers")) {
-            String currentFollowersJson = intent.getStringExtra("current_followers");
-            selectedFollowers = new Gson().fromJson(currentFollowersJson, new TypeToken<List<Follower>>(){}.getType());
+            selectedFollowers = (ArrayList<Follower>) intent.getSerializableExtra("current_followers");
             if (selectedFollowers == null) {
                 selectedFollowers = new ArrayList<>();
             }
@@ -83,7 +80,7 @@ public class SelectFollowerActivity extends AppCompatActivity {
         // Sự kiện nút xác nhận
         btnConfirm.setOnClickListener(v -> {
             Intent resultIntent = new Intent();
-            resultIntent.putExtra("selected_followers", new Gson().toJson(selectedFollowers));
+            resultIntent.putExtra("selected_followers", new ArrayList<>(selectedFollowers));
             setResult(RESULT_OK, resultIntent);
             finish();
         });
@@ -122,17 +119,17 @@ public class SelectFollowerActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<Follower>> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
-
                         allFollowers = apiResponse.getData();
                         if (allFollowers == null) {
                             allFollowers = new ArrayList<>();
                         }
+
                         // Khởi tạo hoặc cập nhật adapter
                         if (adapter == null) {
                             adapter = new FollowerAdapter(allFollowers, selectedFollowers, follower -> {
                                 // Xử lý chọn/bỏ chọn
-                                if (selectedFollowers.contains(follower)) {
-                                    selectedFollowers.remove(follower);
+                                if (selectedFollowers.stream().anyMatch(selected -> selected.getId() == follower.getId())) {
+                                    selectedFollowers.removeIf(selected -> selected.getId() == follower.getId());
                                 } else {
                                     selectedFollowers.add(follower);
                                 }
@@ -160,6 +157,6 @@ public class SelectFollowerActivity extends AppCompatActivity {
     }
 
     private void updateSelectedCount() {
-        tvSelectedCount.setText("Số người đang chọn: " + selectedFollowers.size());
+        tvSelectedCount.setText(String.valueOf(selectedFollowers.size()));
     }
 }

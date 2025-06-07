@@ -350,7 +350,6 @@
                         android:text="Người theo dõi" />
 
                     <EditText
-                        android:enabled="false"
                         android:id="@+id/edt_follower_request_create"
                         style="@style/TextStyle_14_500"
                         android:layout_width="match_parent"
@@ -358,9 +357,11 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="15dp"
                         android:background="@drawable/input_infor"
-                        android:backgroundTint="#dee0df"
                         android:gravity="center_vertical"
                         android:padding="35px"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:cursorVisible="false"
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
                 <LinearLayout
