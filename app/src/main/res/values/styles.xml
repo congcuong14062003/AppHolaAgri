@@ -49,7 +49,11 @@
 
 
 
-
+    <!-- Style cho animation của dialog -->
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/dialog_enter</item>
+        <item name="android:windowExitAnimation">@anim/dialog_exit</item>
+    </style>
 
     <!-- Style cho kích thước chữ 18sp, font weight 400 -->
     <style name="TextStyle_18_400">

@@ -6,6 +6,7 @@ import com.example.appholaagri.model.CheckInInitFormData.CheckInInitFormData;
 import com.example.appholaagri.model.CheckInQrCodeModel.CheckInQrCodeRequest;
 import com.example.appholaagri.model.CheckPhoneModel.CheckPhoneRequest;
 import com.example.appholaagri.model.ColAndRowNumberModel.ColAndRowNumberResponse;
+import com.example.appholaagri.model.DepartmentModel.Department;
 import com.example.appholaagri.model.DirectMeasurement.DirectMeasurementRequest;
 import com.example.appholaagri.model.FluctuationSoilModel.FluctuationSoilRequest;
 import com.example.appholaagri.model.FluctuationSoilModel.FluctuationSoilResponse;
@@ -364,4 +365,9 @@ public interface ApiInterface {
     @POST("user/list-user")
     Call<ApiResponse<List<Follower>>> listUser(@Header("Authorization") String token, @Body ListUserRequest listUserRequest);
 
+
+
+    // list user
+    @GET("user/list-department")
+    Call<ApiResponse<List<Department>>> listDepartment(@Header("Authorization") String token);
 }
