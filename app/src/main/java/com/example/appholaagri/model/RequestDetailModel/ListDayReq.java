@@ -1,8 +1,9 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ListDayReq {
+public class ListDayReq implements Serializable {
         private List<BreakTime> breakTimes;
         private String day;
         private String endTime;

@@ -1,7 +1,6 @@
 package com.example.appholaagri.view;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -27,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -34,6 +35,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
@@ -49,6 +51,7 @@ import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.KeyboardUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,11 +61,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestDayOffActivity extends BaseActivity {
+public class CreateRequestDayOffActivity extends AppCompatActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, edt_duration, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
     private TextView title_request, txt_type_request_create, select_method_request;
@@ -84,7 +88,9 @@ public class CreateRequestDayOffActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_day_off);
+
 
         create_request_container = findViewById(R.id.create_request_container);
         backBtnReview = findViewById(R.id.backBtnReview_create);
@@ -234,6 +240,8 @@ public class CreateRequestDayOffActivity extends BaseActivity {
         if (requestCode == REQUEST_CODE_FOLLOWER && resultCode == RESULT_OK && data != null) {
             // Lấy danh sách người theo dõi đã chọn
             ArrayList<Follower> selectedFollowers = (ArrayList<Follower>) data.getSerializableExtra("selected_followers");
+            boolean callModifyApi = data.getBooleanExtra("call_modify_api", false);
+
             if (selectedFollowers != null) {
                 try {
                     // Cập nhật requestDetailData
@@ -259,6 +267,23 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                     edt_follower_request_create.setText(followerText);
 
                     Log.d("CreateRequestLateEarlyActivity", "Selected followers updated: " + followerText);
+
+                    // Nếu có cờ call_modify_api, gọi API chỉnh sửa với status.id = -1
+                    if (callModifyApi && requestId != -1) {
+                        // Cập nhật status.id = -1
+                        RequestDetailData.Status status = new RequestDetailData.Status(-1, null, null, 0, null, null);
+                        requestDetailData.setStatus(status);
+
+                        // Gọi API chỉnh sửa
+                        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                        String token = sharedPreferences.getString("auth_token", null);
+                        if (token != null) {
+                            ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+                            sendModifyRequestFollower(apiInterface, token, requestDetailData);
+                        } else {
+                            CustomToast.showCustomToast(this, "Không tìm thấy token. Vui lòng đăng nhập lại.");
+                        }
+                    }
                 } catch (Exception e) {
                     Log.e("CreateRequestLateEarlyActivity", "Error processing followers: " + e.getMessage());
                     CustomToast.showCustomToast(this, "Lỗi khi cập nhật người theo dõi.");
@@ -486,8 +511,8 @@ public class CreateRequestDayOffActivity extends BaseActivity {
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
-                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    edt_follower_request_create.setEnabled(false);
+//                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+//                    edt_follower_request_create.setEnabled(false);
                 }
             }
 
@@ -831,7 +856,32 @@ public class CreateRequestDayOffActivity extends BaseActivity {
             }
         });
     }
+    private void sendModifyRequestFollower(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
+        showLoading();
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String jsonResponse = gson.toJson(requestDetailData);
+        Log.d("CreateRequestLateActivity", "Data chỉnh sửa: " + jsonResponse);
 
+        Call<ApiResponse<String>> call = apiInterface.modifyRequestBase(token, requestDetailData);
+        call.enqueue(new Callback<ApiResponse<String>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                hideLoading();
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<String> apiResponse = response.body();
+                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
+                } else {
+                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi: " + t.getMessage());
+                hideLoading();
+            }
+        });
+    }
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (view != null) {

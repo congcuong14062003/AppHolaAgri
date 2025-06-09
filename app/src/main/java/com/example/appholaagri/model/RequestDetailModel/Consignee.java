@@ -1,6 +1,8 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
-public class Consignee {
+import java.io.Serializable;
+
+public class Consignee implements Serializable {
     private int id;
     private String code;
     private String name;

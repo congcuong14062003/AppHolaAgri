@@ -1,6 +1,8 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
-public class Division {
+import java.io.Serializable;
+
+public class Division implements Serializable {
     private int id;
     private String code;
     private String name;

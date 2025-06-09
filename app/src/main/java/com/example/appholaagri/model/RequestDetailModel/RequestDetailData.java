@@ -2,9 +2,10 @@ package com.example.appholaagri.model.RequestDetailModel;
 
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class RequestDetailData {
+public class RequestDetailData implements Serializable {
     private RequestGroup requestGroup;
     private int requestId;
     private String requestName;
@@ -48,7 +49,6 @@ public class RequestDetailData {
     private GroupRequestCreateRequest.CustomerContractReq customerContractReq;
 
 
-    // Getter và Setter cho customerContractReq
     // Getter và Setter cho customerContractReq
     public GroupRequestCreateRequest.CustomerContractReq getCustomerContractReq() {
         return customerContractReq;
@@ -356,7 +356,7 @@ public class RequestDetailData {
         this.recruitmentReq = recruitmentReq;
     }
 
-    public static class BusinessTripFormReq {
+    public static class BusinessTripFormReq implements Serializable{
         private int totalCost;
         private String totalCostText;
         private String destination;

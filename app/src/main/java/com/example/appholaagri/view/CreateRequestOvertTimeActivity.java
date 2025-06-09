@@ -204,6 +204,8 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         if (requestCode == REQUEST_CODE_FOLLOWER && resultCode == RESULT_OK && data != null) {
             // Lấy danh sách người theo dõi đã chọn
             ArrayList<Follower> selectedFollowers = (ArrayList<Follower>) data.getSerializableExtra("selected_followers");
+            boolean callModifyApi = data.getBooleanExtra("call_modify_api", false);
+
             if (selectedFollowers != null) {
                 try {
                     // Cập nhật requestDetailData
@@ -229,6 +231,23 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                     edt_follower_request_create.setText(followerText);
 
                     Log.d("CreateRequestLateEarlyActivity", "Selected followers updated: " + followerText);
+
+                    // Nếu có cờ call_modify_api, gọi API chỉnh sửa với status.id = -1
+                    if (callModifyApi && requestId != -1) {
+                        // Cập nhật status.id = -1
+                        RequestDetailData.Status status = new RequestDetailData.Status(-1, null, null, 0, null, null);
+                        requestDetailData.setStatus(status);
+
+                        // Gọi API chỉnh sửa
+                        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                        String token = sharedPreferences.getString("auth_token", null);
+                        if (token != null) {
+                            ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+                            sendModifyRequestFollower(apiInterface, token, requestDetailData);
+                        } else {
+                            CustomToast.showCustomToast(this, "Không tìm thấy token. Vui lòng đăng nhập lại.");
+                        }
+                    }
                 } catch (Exception e) {
                     Log.e("CreateRequestLateEarlyActivity", "Error processing followers: " + e.getMessage());
                     CustomToast.showCustomToast(this, "Lỗi khi cập nhật người theo dõi.");
@@ -342,8 +361,8 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                     addDayBtn.setVisibility(View.GONE);
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    edt_follower_request_create.setEnabled(false);
+//                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+//                    edt_follower_request_create.setEnabled(false);
                 }
             }
 
@@ -666,7 +685,32 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             }
         });
     }
+    private void sendModifyRequestFollower(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
+        showLoading();
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String jsonResponse = gson.toJson(requestDetailData);
+        Log.d("CreateRequestLateActivity", "Data chỉnh sửa: " + jsonResponse);
 
+        Call<ApiResponse<String>> call = apiInterface.modifyRequestBase(token, requestDetailData);
+        call.enqueue(new Callback<ApiResponse<String>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                hideLoading();
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<String> apiResponse = response.body();
+                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
+                } else {
+                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi: " + t.getMessage());
+                hideLoading();
+            }
+        });
+    }
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (view != null) {

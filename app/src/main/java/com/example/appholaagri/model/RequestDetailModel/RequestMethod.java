@@ -1,6 +1,8 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
-public class RequestMethod {
+import java.io.Serializable;
+
+public class RequestMethod implements Serializable {
     private int id;
     private String code;
     private String name;

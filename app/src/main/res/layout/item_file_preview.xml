@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/file_name"
-        android:layout_width="100dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Tên file"
+        android:textSize="16sp"
         android:ellipsize="end"
-        android:maxLines="1"
-        android:padding="8dp"
-        android:text="File.pdf"
-        android:textColor="@color/textcolor"
-        android:background="@drawable/bg_rounded" />
+        android:maxLines="1" />
+
+    <ImageView
+        android:id="@+id/btn_open"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/lich_icon"
+        android:padding="4dp" />
 
     <ImageView
         android:id="@+id/btn_delete"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_gravity="end"
         android:src="@drawable/x_mark"
-        android:contentDescription="Delete file" />
+        android:padding="4dp" />
 </LinearLayout>

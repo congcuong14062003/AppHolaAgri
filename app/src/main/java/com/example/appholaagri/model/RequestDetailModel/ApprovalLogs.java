@@ -1,7 +1,9 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
 
-public class ApprovalLogs {
+import java.io.Serializable;
+
+public class ApprovalLogs implements Serializable {
     private int id;
     private String code;
     private String name;

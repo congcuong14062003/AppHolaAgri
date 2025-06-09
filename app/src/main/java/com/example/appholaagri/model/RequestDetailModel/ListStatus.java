@@ -1,6 +1,8 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
-public class ListStatus {
+import java.io.Serializable;
+
+public class ListStatus implements Serializable {
     private int id;
     private String code;
     private String name;

@@ -8,6 +8,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,6 +29,7 @@ import com.example.appholaagri.model.RequestDetailModel.Follower;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.KeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,13 +90,26 @@ public class SelectFollowerActivity extends AppCompatActivity {
         filterIcon.setOnClickListener(v -> showDepartmentPopup());
 
         // Sự kiện nút xác nhận
+        // Trong onCreate, sửa phần sự kiện btnConfirm
         btnConfirm.setOnClickListener(v -> {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("selected_followers", new ArrayList<>(selectedFollowers));
+            resultIntent.putExtra("call_modify_api", true); // Thêm cờ để yêu cầu gọi API chỉnh sửa
             setResult(RESULT_OK, resultIntent);
             finish();
         });
-
+        // Xử lý sự kiện nhấn vào biểu tượng "X" để xóa văn bản
+        edtSearch.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                // Kiểm tra xem người dùng có nhấn vào drawableRight không
+                if (event.getRawX() >= (edtSearch.getRight() - edtSearch.getCompoundDrawables()[2].getBounds().width())) {
+                    // Xóa nội dung của EditText
+                    edtSearch.setText("");
+                    return true;
+                }
+            }
+            return false;
+        });
         // Sự kiện tìm kiếm
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -290,5 +305,11 @@ public class SelectFollowerActivity extends AppCompatActivity {
 
     interface ResultCallback<T> {
         void onResult(T result);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        KeyboardUtils.hideKeyboardOnTouchOutside(this, event);
+        return super.dispatchTouchEvent(event);
     }
 }

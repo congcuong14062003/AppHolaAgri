@@ -1,6 +1,8 @@
 package com.example.appholaagri.model.RequestDetailModel;
 
-public class ListApproveTime {
+import java.io.Serializable;
+
+public class ListApproveTime implements Serializable {
     private String time;
     private String approverName;
     private String status;
