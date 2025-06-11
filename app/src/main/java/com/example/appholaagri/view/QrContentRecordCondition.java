@@ -361,21 +361,21 @@ public class QrContentRecordCondition extends AppCompatActivity {
             File photoFile = null;
             try {
                 String fileName = "IMG_" + System.currentTimeMillis();
-                File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES); // Đảm bảo lưu tệp vào thư mục thích hợp
+                File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 if (storageDir != null && !storageDir.exists()) {
                     storageDir.mkdirs(); // Đảm bảo thư mục tồn tại
                 }
-                photoFile = File.createTempFile(fileName, ".jpg", storageDir); // Tạo tệp ảnh tạm trong thư mục này
+                photoFile = File.createTempFile(fileName, ".jpg", storageDir);
 
                 // Cấp quyền cho FileProvider
                 if (photoFile != null) {
-                    photoUri = FileProvider.getUriForFile(this, getPackageName() + ".provider", photoFile);
+                    photoUri = FileProvider.getUriForFile(this, "com.imedia.holaagri.fileprovider", photoFile);
                     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                     startActivityForResult(cameraIntent, TAKE_PHOTO);
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
-                Log.e("CameraError", "Error creating file for camera capture", ex);
+                Log.e("CameraError", "Error creating file for camera capture: " + ex.getMessage());
             }
         } else {
             Log.e("CameraError", "No camera application found");

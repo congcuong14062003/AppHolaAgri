@@ -40,6 +40,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.FileWebViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.CreateRequestDayOffActivity"
             android:exported="false" />
         <activity
@@ -103,7 +106,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.imedia.holaagri.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

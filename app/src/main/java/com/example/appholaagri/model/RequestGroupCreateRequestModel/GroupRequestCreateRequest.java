@@ -32,17 +32,7 @@ public class GroupRequestCreateRequest {
     // Thêm thuộc tính customerContractReq
     private CustomerContractReq customerContractReq;
 
-    // Phương thức gán customerContractReq từ RequestDetailData
-    public void assignCustomerContractReq(RequestDetailData requestDetailData) {
-        if (requestDetailData.getCustomerContractReq() != null) {
-            CustomerContractReq customerContractReq = new CustomerContractReq(
-                    requestDetailData.getCustomerContractReq().getCustomerContract(),
-                    requestDetailData.getCustomerContractReq().getCustomerName(),
-                    requestDetailData.getCustomerContractReq().getNote()
-            );
-            this.setCustomerContractReq(customerContractReq);
-        }
-    }
+
     // Getter và Setter cho customerContractReq
     public CustomerContractReq getCustomerContractReq() {
         return customerContractReq;

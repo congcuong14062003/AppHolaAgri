@@ -444,11 +444,11 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="15dp"
                         android:background="@drawable/input_infor"
-                        android:gravity="center_vertical"
-                        android:padding="35px"
+                        android:cursorVisible="false"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:cursorVisible="false"
+                        android:gravity="center_vertical"
+                        android:padding="35px"
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
                 <!--Phần file ở đây-->
@@ -458,21 +458,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <TextView
-                        android:layout_marginBottom="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:textColor="@color/secon_textcolor"
-                        android:text="Tải file lên (tối đa 10 file)" />
+                        android:layout_marginBottom="10dp"
+                        android:text="Tải file lên (tối đa 10 file)"
+                        android:textColor="@color/secon_textcolor" />
+
                     <com.google.android.flexbox.FlexboxLayout
                         android:id="@+id/file_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:alignItems="flex_start"
                         app:flexDirection="row"
                         app:flexWrap="wrap"
-                        app:justifyContent="flex_start"
-                        app:alignItems="flex_start" />
+                        app:justifyContent="flex_start" />
                 </LinearLayout>
                 <!-- Hành động-->
                 <LinearLayout
@@ -501,6 +503,34 @@
                         android:padding="8dp"
                         android:scrollbars="vertical" />
                 </LinearLayout>
+
+                <!--Thảo luận -->
+                <LinearLayout
+                    android:id="@+id/discussion_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="THẢO LUẬN"
+                        android:textColor="@color/secon_textcolor"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewDiscussion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:padding="8dp"
+                        android:scrollbars="vertical" />
+                </LinearLayout>
+
+
                 <!--                    danh sách nút action-->
                 <LinearLayout
                     android:id="@+id/action_button_container"

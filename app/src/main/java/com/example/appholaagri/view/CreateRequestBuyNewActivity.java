@@ -1,22 +1,29 @@
 package com.example.appholaagri.view;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.Editable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,14 +36,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -45,6 +56,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.DiscussionAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
@@ -69,6 +81,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -104,6 +117,11 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     private final int MAX_FILES = 10;
     private static final int PICK_FILES = 200;
     private static final int REQUEST_CODE_FOLLOWER = 100;
+    private static final int REQUEST_CODE_CAMERA = 300;
+    private File currentPhotoFile;
+
+    RecyclerView recyclerViewDiscussion;
+    DiscussionAdapter discussionAdapter = new DiscussionAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +178,11 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         // file
         fileContainer = findViewById(R.id.file_container);
 
+
+        recyclerViewDiscussion = findViewById(R.id.recyclerViewDiscussion);
+        recyclerViewDiscussion.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewDiscussion.setAdapter(discussionAdapter);
+
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
         Intent intent = getIntent();
@@ -173,6 +196,9 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             GroupRequestType = intent.getIntExtra("GroupRequestType", -1); // Nhận requestId
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
+            Log.d("CreateRequestBuyNewActivity", "Vào: " + requestId);
+
+
         }
 
 
@@ -190,7 +216,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             getDetailRequest(requestId, token);
         } else {
             if (GroupRequestId != null && token != null) {
-                Log.d("CreateRequestBuyNewActivity", "Vào");
                 getInitFormCreateRequest(token, GroupRequestId);
             }
         }
@@ -493,6 +518,15 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             if (requestDetailData.getApprovalLogs() != null && requestDetailData.getApprovalLogs().size() > 0) {
                 layout_action_history_request.setVisibility(View.VISIBLE);
             }
+
+
+            // comment
+            if (requestDetailData != null && requestDetailData.getComments() != null) {
+                discussionAdapter.setComments(requestDetailData.getComments());
+                discussionAdapter.notifyDataSetChanged();
+            }
+
+
             List<ListStatus> listStatus = requestDetailData.getListStatus();
             LinearLayout actionButtonContainer = findViewById(R.id.action_button_container);
             actionButtonContainer.removeAllViews();
@@ -760,14 +794,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         }
     }
 
-
-
-
-
-
-
-
-
     private void syncUploadedFilesWithRequestDetailData() {
         if (requestDetailData != null) {
             List<RequestDetailData.FileAttachment> updatedAttachments = new ArrayList<>();
@@ -805,7 +831,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
 
     private void uploadFilesSequentially(int index, List<Uri> newFiles, Runnable onComplete) {
-        Log.d("uploadFilesSequentially", "Processing file at index: " + index + ", Total new files: " + newFiles.size());
         if (index >= newFiles.size()) {
             hideLoading();
             syncUploadedFilesWithRequestDetailData();
@@ -817,31 +842,27 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         }
 
         Uri fileUri = newFiles.get(index);
-        Log.d("UploadFileDebug", "File Uri: " + fileUri.toString());
         File file = getFileFromUri(this, fileUri);
         if (file == null) {
-            Log.e("Upload Failed", "File is null for Uri: " + fileUri);
             uploadFilesSequentially(index + 1, newFiles, onComplete);
             return;
         }
-        Log.d("UploadFileDebug", "File Path: " + file.getAbsolutePath());
 
+        String fileName = getFileNameFromUri(fileUri);
+        Log.d("Upload", "Uploading file: " + fileName);
         String mimeType = getContentResolver().getType(fileUri);
-        Log.d("UploadFileDebug", "File MIME Type: " + (mimeType != null ? mimeType : "null"));
-        if (mimeType == null || !mimeType.startsWith("image/")) {
-            CustomToast.showCustomToast(this, "Vui lòng chọn file ảnh!");
-            uploadFilesSequentially(index + 1, newFiles, onComplete);
-            return;
-        }
+        // Lấy extension từ tên file thay vì gán mặc định
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        String mediaType = "*/*"; // Mặc định nếu không xác định
+        if ("pdf".equals(fileExtension)) mediaType = "application/pdf";
+        else if ("doc".equals(fileExtension) || "docx".equals(fileExtension)) mediaType = "application/msword";
+        else if ("xls".equals(fileExtension) || "xlsx".equals(fileExtension)) mediaType = "application/vnd.ms-excel";
 
-        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
-        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
-        Log.d("UploadFileDebug", "MultipartBody.Part - File Name: " + file.getName());
-        Log.d("UploadFileDebug", "MultipartBody.Part - Media Type: " + "image/*");
+        RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType != null ? mimeType : mediaType), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", fileName, requestFile);
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
-        Log.d("CreateRequestBuyNewActivity", "Auth Token: " + token);
         if (token == null) {
             hideLoading();
             CustomToast.showCustomToast(this, "Token không tồn tại, vui lòng đăng nhập lại!");
@@ -854,19 +875,14 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         call.enqueue(new Callback<ApiResponse<UploadFileResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<UploadFileResponse>> call, Response<ApiResponse<UploadFileResponse>> response) {
-                Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-                String responseData = gson.toJson(response.body());
-                Log.d("CreateRequestBuyNewActivity", "Full Response Data: " + responseData);
-
                 if (response.isSuccessful() && response.body() != null && response.body().getStatus() == 200) {
                     UploadFileResponse uploadResponse = response.body().getData();
                     if (uploadResponse.getFinalStatus() == 200) {
                         String fileUrl = "https://haloship.imediatech.com.vn/" + uploadResponse.getFileUrl();
                         RequestDetailData.FileAttachment attachment = new RequestDetailData.FileAttachment();
-                        attachment.setName(getFileNameFromUri(fileUri));
+                        attachment.setName(fileName); // Giữ nguyên tên file với extension gốc
                         attachment.setPath(fileUrl);
 
-                        // Thay thế fileUri cũ trong selectedFiles và uploadedFiles
                         int selectedIndex = selectedFiles.indexOf(fileUri);
                         if (selectedIndex != -1) {
                             selectedFiles.set(selectedIndex, Uri.parse(fileUrl));
@@ -876,12 +892,10 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
                         uploadFilesSequentially(index + 1, newFiles, onComplete);
                     } else {
-                        Log.e("Upload Failed", "Server returned error: " + uploadResponse.getMessage());
                         hideLoading();
                         CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi tải file: " + uploadResponse.getMessage());
                     }
                 } else {
-                    Log.e("Upload Failed", "Response not successful: " + response.code() + " - " + response.message());
                     hideLoading();
                     CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi server: " + response.message());
                 }
@@ -890,7 +904,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             @Override
             public void onFailure(Call<ApiResponse<UploadFileResponse>> call, Throwable t) {
                 hideLoading();
-                Log.e("Upload Failed", "Failure: " + t.getMessage(), t);
                 CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi: " + t.getMessage());
             }
         });
@@ -898,50 +911,102 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
     private void renderFiles() {
         fileContainer.removeAllViews();
-        Log.d("RenderFiles", "selectedFiles size: " + selectedFiles.size() + ", uploadedFiles size: " + uploadedFiles.size());
         for (int i = 0; i < selectedFiles.size(); i++) {
             Uri fileUri = selectedFiles.get(i);
-            View itemView = getLayoutInflater().inflate(R.layout.item_image_preview, fileContainer, false);
-            ImageView imageView = itemView.findViewById(R.id.image);
+            View itemView = getLayoutInflater().inflate(R.layout.item_file_preview, fileContainer, false);
+            TextView fileNameText = itemView.findViewById(R.id.file_name);
             ImageView btnDelete = itemView.findViewById(R.id.btn_delete);
+            ImageView btnDownload = itemView.findViewById(R.id.btn_download);
 
-            if (fileUri.toString().startsWith("http")) {
-                Picasso.get()
-                        .load(fileUri.toString())
-                        .placeholder(R.drawable.avatar)
-                        .error(R.drawable.avatar)
-                        .into(imageView);
+            String fileName = uploadedFiles.size() > i ? uploadedFiles.get(i).getName() : getFileNameFromUri(fileUri);
+            SpannableString spannableFileName = new SpannableString(fileName);
+            spannableFileName.setSpan(new UnderlineSpan(), 0, fileName.length(), 0);
+            fileNameText.setText(spannableFileName);
+
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
             } else {
-                imageView.setImageURI(fileUri);
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
             }
 
-            final int finalI = i;
-            String fileName = uploadedFiles.size() > finalI ? uploadedFiles.get(finalI).getName() : getFileNameFromUri(fileUri);
-            imageView.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
-            if (requestDetailData.getStatus() != null) {
-                StatusRequest = requestDetailData.getStatus().getId();
-            }
-            if (StatusRequest != null && StatusRequest > 1) {
+            // Handle download button click
+            btnDownload.setOnClickListener(v -> {
+                String fileUrl = fileUri.toString();
+                downloadFile(fileUrl, fileName);
+            });
+
+            if (requestDetailData.getStatus() != null && requestDetailData.getStatus().getId() > 1) {
                 btnDelete.setVisibility(View.GONE);
             } else {
                 btnDelete.setVisibility(View.VISIBLE);
+                int finalI = i;
                 btnDelete.setOnClickListener(v -> {
-                    String filePath = fileUri.toString();
                     selectedFiles.remove(finalI);
-                    uploadedFiles.removeIf(attachment -> attachment.getPath().equals(filePath));
+                    uploadedFiles.removeIf(attachment -> attachment.getPath().equals(fileUri.toString()));
                     syncUploadedFilesWithRequestDetailData();
-                    Log.d("RenderFiles", "After delete - selectedFiles size: " + selectedFiles.size() + ", uploadedFiles size: " + uploadedFiles.size());
                     renderFiles();
                 });
             }
             fileContainer.addView(itemView);
         }
 
-        if (StatusRequest == null || StatusRequest <= 2 && selectedFiles.size() < MAX_FILES) {
+        if ((StatusRequest == null || StatusRequest <= 1) && selectedFiles.size() < MAX_FILES) {
             View addView = getLayoutInflater().inflate(R.layout.item_add_image, fileContainer, false);
             addView.setOnClickListener(v -> openGallery());
             fileContainer.addView(addView);
         }
+    }
+
+    // Thêm phương thức mới để hiển thị dialog tùy chọn mở file Excel giống Zalo
+    private void showExcelFileOptions(Uri fileUri, String fileName) {
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        if ("xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(fileUri);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            // Tạo Intent cho việc chọn ứng dụng
+            Intent chooserIntent = Intent.createChooser(intent, "Mở file Excel");
+            try {
+                startActivity(chooserIntent);
+            } catch (Exception e) {
+                Toast.makeText(this, "Không tìm thấy ứng dụng hỗ trợ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                // Nếu không mở được, chuyển sang tải về
+                downloadFile(fileUri.toString(), fileName);
+            }
+        } else {
+            // Nếu không phải file Excel, chuyển sang FileWebViewActivity như trước
+            Intent intent = new Intent(this, FileWebViewActivity.class);
+            intent.putExtra("fileUrl", fileUri.toString());
+            intent.putExtra("fileName", fileName);
+            startActivity(intent);
+        }
+    }
+
+    // Thêm phương thức downloadFile
+    private void downloadFile(String fileUrl, String fileName) {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl))
+                .setTitle(fileName)
+                .setDescription("Đang tải file...")
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(true);
+
+        DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        try {
+            dm.enqueue(request);
+            Toast.makeText(this, "Đang tải file...", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Lỗi khi tải file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Cập nhật showFileWebView để sử dụng showExcelFileOptions
+    private void showFileWebView(Uri fileUri, String fileName) {
+        showExcelFileOptions(fileUri, fileName);
     }
 
     private void showImageDetailDialog(Uri fileUri, String fileName) {
@@ -980,113 +1045,212 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        startActivityForResult(Intent.createChooser(intent, "Chọn ảnh"), PICK_FILES);
+        final CharSequence[] options = {"Ảnh", "Camera", "Tệp", "Drive"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chọn tệp");
+        builder.setItems(options, (dialog, which) -> {
+            Intent intent = new Intent();
+            switch (which) {
+                case 0: // Ảnh (bộ nhớ nội bộ)
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    break;
+                case 1: // Camera
+                    requestCameraPermission(); // Yêu cầu quyền trước
+                    return; // Thoát để xử lý quyền trước khi mở camera
+                case 2: // Tệp
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    break;
+                case 3: // Drive
+                    intent.setPackage("com.google.android.apps.docs");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    // Chỉ định các MIME type cụ thể cho file Word
+                    intent.setType("application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    break;
+            }
+            startActivityForResult(Intent.createChooser(intent, "Chọn tệp"), PICK_FILES);
+        });
+        builder.show();
+    }
+    // Tách logic mở camera thành một phương thức riêng
+    private void startCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            currentPhotoFile = createImageFile(); // Lưu file tạm
+        } catch (IOException ex) {
+            Log.e("Camera", "Error creating file: " + ex.getMessage());
+            CustomToast.showCustomToast(this, "Lỗi khi tạo file tạm.");
+            return;
+        }
+        if (currentPhotoFile != null) {
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "com.imedia.holaagri.fileprovider",
+                    currentPhotoFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(intent, REQUEST_CODE_CAMERA);
+        }
+    }
+
+    // Cập nhật requestCameraPermission để mở camera sau khi được cấp quyền
+    private void requestCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                // Hiển thị lý do tại sao cần quyền
+                CustomToast.showCustomToast(this, "Ứng dụng cần quyền camera để chụp ảnh.");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
+            } else {
+                // Yêu cầu quyền nếu chưa được hỏi
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
+            }
+        } else {
+            startCamera();
+        }
+    }
+    // Phương thức tạo file tạm
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
     private String getFileNameFromUri(Uri uri) {
         String fileName = null;
-        if (uri.getScheme() != null && uri.getScheme().equals("content")) {
-            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                if (nameIndex != -1) {
-                    fileName = cursor.getString(nameIndex);
+        if (uri.getScheme() != null) {
+            if (uri.getScheme().equals("content")) {
+                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex != -1) {
+                        fileName = cursor.getString(nameIndex); // Lấy tên từ DISPLAY_NAME
+                    }
+                    cursor.close();
                 }
-                cursor.close();
+                // Nếu không lấy được từ DISPLAY_NAME, thử lấy từ đường dẫn
+                if (fileName == null) {
+                    fileName = uri.getLastPathSegment();
+                }
+            } else if (uri.getScheme().equals("file")) {
+                fileName = uri.getLastPathSegment();
+            } else if (uri.toString().startsWith("http")) {
+                String path = uri.getPath();
+                if (path != null) {
+                    fileName = path.substring(path.lastIndexOf('/') + 1);
+                }
             }
         }
-        if (fileName == null && uri.toString().startsWith("http")) {
-            String path = uri.getPath();
-            if (path != null) {
-                fileName = path.substring(path.lastIndexOf('/') + 1);
+        // Nếu vẫn không lấy được tên, sử dụng MIME type để xác định phần mở rộng chính xác
+        if (fileName == null || !fileName.contains(".")) {
+            String mimeType = getContentResolver().getType(uri);
+            if (mimeType != null) {
+                if (mimeType.contains("msword")) {
+                    fileName = "document_" + System.currentTimeMillis() + ".doc";
+                } else if (mimeType.contains("vnd.openxmlformats-officedocument.wordprocessingml")) {
+                    fileName = "document_" + System.currentTimeMillis() + ".docx";
+                } else if (mimeType.contains("pdf")) {
+                    fileName = "document_" + System.currentTimeMillis() + ".pdf";
+                } else {
+                    fileName = "unknown_file_" + System.currentTimeMillis();
+                }
+            } else {
+                fileName = "unknown_file_" + System.currentTimeMillis();
             }
         }
-        return fileName != null ? fileName : "unknown_file";
+        // Đảm bảo tên file có phần mở rộng hợp lệ
+        if (fileName != null && !fileName.contains(".")) {
+            fileName += ".bin"; // Phần mở rộng mặc định nếu không xác định được
+        }
+        return fileName;
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            } else {
+                CustomToast.showCustomToast(this, "Quyền camera bị từ chối.");
+            }
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_FILES && resultCode == RESULT_OK && data != null) {
             List<Uri> newFiles = new ArrayList<>();
-            Log.d("FileSelection", "Received data with ClipData: " + (data.getClipData() != null));
             if (data.getClipData() != null) {
                 int count = data.getClipData().getItemCount();
-                Log.d("FileSelection", "Number of files selected: " + count);
                 for (int i = 0; i < count && selectedFiles.size() + newFiles.size() < MAX_FILES; i++) {
                     Uri fileUri = data.getClipData().getItemAt(i).getUri();
-                    Log.d("FileSelection", "Adding file Uri: " + fileUri);
+                    String mimeType = getContentResolver().getType(fileUri);
+                    String fileName = getFileNameFromUri(fileUri);
+                    Log.d("FileSelect", "URI: " + fileUri + ", MIME: " + mimeType + ", Tên file: " + fileName);
                     newFiles.add(fileUri);
                     selectedFiles.add(fileUri);
                 }
             } else if (data.getData() != null) {
-                Log.d("FileSelection", "Adding single file Uri: " + data.getData());
                 if (selectedFiles.size() < MAX_FILES) {
-                    newFiles.add(data.getData());
-                    selectedFiles.add(data.getData());
+                    Uri fileUri = data.getData();
+                    String mimeType = getContentResolver().getType(fileUri);
+                    String fileName = getFileNameFromUri(fileUri);
+                    Log.d("FileSelect", "URI: " + fileUri + ", MIME: " + mimeType + ", Tên file: " + fileName);
+                    newFiles.add(fileUri);
+                    selectedFiles.add(fileUri);
                 }
             }
             uploadFilesSequentially(0, newFiles, null);
-        }
-
-        if (requestCode == REQUEST_CODE_FOLLOWER && resultCode == RESULT_OK && data != null) {
-            // Lấy danh sách người theo dõi đã chọn
+        } else if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK) {
+            // Xử lý ảnh chụp từ camera
+            if (currentPhotoFile != null) {
+                Uri imageUri = Uri.fromFile(currentPhotoFile); // Hoặc sử dụng FileProvider Uri nếu cần
+                String fileName = currentPhotoFile.getName(); // Lấy tên file từ currentPhotoFile
+                if (selectedFiles.size() < MAX_FILES) {
+                    selectedFiles.add(imageUri);
+                    // Gọi upload với danh sách chứa imageUri
+                    uploadFilesSequentially(0, Collections.singletonList(imageUri), null);
+                }
+                // (Tùy chọn) Log để kiểm tra
+                Log.d("Camera", "Captured file name: " + fileName);
+            }
+        } else if (requestCode == REQUEST_CODE_FOLLOWER && resultCode == RESULT_OK && data != null) {
+            // Giữ nguyên logic cho follower
             ArrayList<Follower> selectedFollowers = (ArrayList<Follower>) data.getSerializableExtra("selected_followers");
             boolean callModifyApi = data.getBooleanExtra("call_modify_api", false);
-
             if (selectedFollowers != null) {
-                try {
-                    // Cập nhật requestDetailData
-                    if (requestDetailData == null) {
-                        requestDetailData = new RequestDetailData();
+                for (Follower follower : selectedFollowers) {
+                    if (follower != null && follower.getName() != null && !follower.getName().startsWith("@")) {
+                        follower.setName("@" + follower.getName());
                     }
-                    // Thêm @ vào name của các Follower nếu chưa có
-                    for (Follower follower : selectedFollowers) {
-                        if (follower != null && follower.getName() != null && !follower.getName().startsWith("@")) {
-                            follower.setName("@" + follower.getName());
-                        }
+                }
+                requestDetailData.setFollower(selectedFollowers);
+                StringBuilder followerNames = new StringBuilder();
+                for (Follower follower : selectedFollowers) {
+                    followerNames.append(follower.getName()).append(", ");
+                }
+                String followerText = followerNames.length() > 0 ? followerNames.substring(0, followerNames.length() - 2) : "Không có người theo dõi";
+                edt_follower_request_create.setText(followerText);
+                if (callModifyApi && requestId != -1) {
+                    RequestDetailData.Status status = new RequestDetailData.Status(-1, null, null, 0, null, null);
+                    requestDetailData.setStatus(status);
+                    SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+                    String token = sharedPreferences.getString("auth_token", null);
+                    if (token != null) {
+                        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+                        sendModifyRequestFollower(apiInterface, token, requestDetailData);
+                    } else {
+                        CustomToast.showCustomToast(this, "Không tìm thấy token. Vui lòng đăng nhập lại.");
                     }
-                    requestDetailData.setFollower(selectedFollowers);
-
-                    // Cập nhật giao diện EditText
-                    StringBuilder followerNames = new StringBuilder();
-                    for (Follower follower : selectedFollowers) {
-                        if (follower != null && follower.getName() != null) {
-                            followerNames.append(follower.getName()).append(", ");
-                        }
-                    }
-                    String followerText = followerNames.length() > 0 ? followerNames.substring(0, followerNames.length() - 2) : "Không có người theo dõi";
-                    edt_follower_request_create.setText(followerText);
-
-                    Log.d("CreateRequestLateEarlyActivity", "Selected followers updated: " + followerText);
-
-                    // Nếu có cờ call_modify_api, gọi API chỉnh sửa với status.id = -1
-                    if (callModifyApi && requestId != -1) {
-                        // Cập nhật status.id = -1
-                        RequestDetailData.Status status = new RequestDetailData.Status(-1, null, null, 0, null, null);
-                        requestDetailData.setStatus(status);
-
-                        // Gọi API chỉnh sửa
-                        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
-                        String token = sharedPreferences.getString("auth_token", null);
-                        if (token != null) {
-                            ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
-                            sendModifyRequestFollower(apiInterface, token, requestDetailData);
-                        } else {
-                            CustomToast.showCustomToast(this, "Không tìm thấy token. Vui lòng đăng nhập lại.");
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e("CreateRequestLateEarlyActivity", "Error processing followers: " + e.getMessage());
-                    CustomToast.showCustomToast(this, "Lỗi khi cập nhật người theo dõi.");
                 }
             } else {
-                // Nếu không có người theo dõi được chọn
                 requestDetailData.setFollower(new ArrayList<>());
                 edt_follower_request_create.setText("Không có người theo dõi");
-                Log.w("CreateRequestLateEarlyActivity", "Selected followers is null");
             }
         }
     }

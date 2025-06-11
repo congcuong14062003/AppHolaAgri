@@ -209,14 +209,11 @@ public class MainActivity extends BaseActivity {
     private void login(String phone, String password, String fcmToken) {
         showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
-        // Cập nhật các giá trị cho LoginRequest
-        int isMobile = 1;  // Giả sử là điện thoại
-        int rememberMe = 1;  // Không nhớ mật khẩu
-        String requestId = "requestId123";  // Thay bằng giá trị thực tế hoặc tạo UUID
-        int serialVersionUID = 1;  // Giả sử giá trị mặc định
-        Log.d("LoginActivity", "FCM Token: " + fcmToken);
+        int isMobile = 1;
+        int rememberMe = 1;
+        String requestId = "requestId123";
+        int serialVersionUID = 1;
 
-        // Tạo đối tượng LoginRequest với fcmToken
         LoginRequest loginRequest = new LoginRequest(fcmToken, isMobile, password, rememberMe, requestId, serialVersionUID, phone);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -226,35 +223,27 @@ public class MainActivity extends BaseActivity {
         call.enqueue(new Callback<ApiResponse<LoginData>>() {
             @Override
             public void onResponse(Call<ApiResponse<LoginData>> call, Response<ApiResponse<LoginData>> response) {
-                hideLoading(); // Ẩn loading khi hoàn thành
+                hideLoading();
                 Log.d("LoginActivity", "Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<LoginData> apiResponse = response.body();
-                    Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-                    String fluctuationValue = gson.toJson(response.body());
-                    Log.d("LoginActivity", "dataa: " + fluctuationValue);
                     if (apiResponse.getStatus() == 200) {
-                        // Lấy dữ liệu đăng nhập
                         LoginData loginData = apiResponse.getData();
                         String token = loginData.getToken();
-                        // Lưu token vào SharedPreferences
                         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("old_password", password);
                         editor.putString("auth_token", token);
                         editor.apply();
-                        // Lưu LoginData tạm thời
                         setLoginData(loginData);
-                        // Kiểm tra xem popup thông báo đã được hiển thị chưa
+
+                        // Kiểm tra và yêu cầu quyền thông báo lần đầu
                         boolean hasShownNotificationDialog = sharedPreferences.getBoolean("has_shown_notification_dialog", false);
                         if (!hasShownNotificationDialog) {
-                            // Hiển thị popup hỏi về thông báo lần đầu
-                            showNotificationPermissionDialog(token, loginData);
-                            // Đánh dấu đã hiển thị popup
+                            requestNotificationPermission(token, loginData);
                             editor.putBoolean("has_shown_notification_dialog", true);
                             editor.apply();
                         } else {
-                            // Nếu đã hiển thị trước đó, tiếp tục xử lý
                             proceedAfterNotificationDialog(token, loginData);
                         }
                     } else {
@@ -267,57 +256,26 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<LoginData>> call, Throwable t) {
-                hideLoading(); // Ẩn loading khi hoàn thành
+                hideLoading();
                 CustomToast.showCustomToast(MainActivity.this, "Error: " + t.getMessage());
             }
         });
     }
-
-    private void showNotificationPermissionDialog(String token, LoginData loginData) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Cho phép thông báo");
-        builder.setMessage("Bạn có muốn nhận thông báo từ ứng dụng?");
-        builder.setPositiveButton("Có", (dialog, which) -> {
-            // Kiểm tra và yêu cầu quyền POST_NOTIFICATIONS
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
-                    // Yêu cầu quyền
-                    requestPermissionLauncher.launch("android.permission.POST_NOTIFICATIONS");
-                } else {
-                    // Quyền đã được cấp, lưu trạng thái
-                    SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean("notifications_enabled", true);
-                    editor.apply();
-                    proceedAfterNotificationDialog(token, loginData);
-                }
+    private void requestNotificationPermission(String token, LoginData loginData) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch("android.permission.POST_NOTIFICATIONS");
             } else {
-                // Dưới Android 13, không cần quyền rõ ràng
-                SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("notifications_enabled", true);
-                editor.apply();
                 proceedAfterNotificationDialog(token, loginData);
             }
-        });
-        builder.setNegativeButton("Không", (dialog, which) -> {
-            // Lưu trạng thái từ chối thông báo
-            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("notifications_enabled", false);
-            editor.apply();
-            // Tiếp tục xử lý sau khi người dùng từ chối
+        } else {
+            // Dưới Android 13, không cần yêu cầu quyền
             proceedAfterNotificationDialog(token, loginData);
-        });
-        builder.setCancelable(false); // Không cho phép đóng dialog bằng nút back
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        }
     }
 
     private void proceedAfterNotificationDialog(String token, LoginData loginData) {
-        // Kiểm tra trạng thái đăng nhập lần đầu
         if (loginData != null && loginData.isFirstLogin()) {
-            // Hiển thị popup đổi mật khẩu, gán mật khẩu cũ
             ChangePassRequest changePassRequest = new ChangePassRequest();
             changePassRequest.setOldPassword(getSharedPreferences("AppPreferences", MODE_PRIVATE).getString("old_password", ""));
             showChangePasswordDialog(token);
@@ -327,7 +285,6 @@ public class MainActivity extends BaseActivity {
             finish();
         }
     }
-
     private void showChangePasswordDialog(String token) {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String oldPassword = sharedPreferences.getString("old_password", "");

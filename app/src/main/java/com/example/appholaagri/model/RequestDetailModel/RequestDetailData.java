@@ -36,6 +36,7 @@ public class RequestDetailData implements Serializable {
     private DirectManager directManager;
     private List<Consignee> consignee;
     private List<Follower> follower;
+    private List<Comments> comments;
     private List<ListStatus> listStatus;
     private List<ApprovalLogs> approvalLogs;
     private List<ListApproveTime> listApproval;
@@ -46,15 +47,15 @@ public class RequestDetailData implements Serializable {
     private RecruitmentReq recruitmentReq;
 
     // Thêm thuộc tính customerContractReq
-    private GroupRequestCreateRequest.CustomerContractReq customerContractReq;
+    private CustomerContractReq customerContractReq;
 
 
     // Getter và Setter cho customerContractReq
-    public GroupRequestCreateRequest.CustomerContractReq getCustomerContractReq() {
+    public CustomerContractReq getCustomerContractReq() {
         return customerContractReq;
     }
 
-    public void setCustomerContractReq(GroupRequestCreateRequest.CustomerContractReq customerContractReq) {
+    public void setCustomerContractReq(CustomerContractReq customerContractReq) {
         this.customerContractReq = customerContractReq;
     }
 
@@ -298,6 +299,14 @@ public class RequestDetailData implements Serializable {
 
     public void setFollower(List<Follower> follower) {
         this.follower = follower;
+    }
+
+    public List<Comments> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comments> comments) {
+        this.comments = comments;
     }
 
     public List<ListStatus> getListStatus() {

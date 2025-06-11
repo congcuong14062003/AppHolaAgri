@@ -537,15 +537,21 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
     // nếu có id lấy data chi tiết của nháp và từ chối
     private void getDetailRequest(int requestId, String token) {
+        Log.d("CreateRequestLateEarlyActivity", "requestIddd: " + requestId);
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
+                        Log.d("CreateRequestLateEarlyActivity", "vào 1");
+                        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+                        String data = gson.toJson(apiResponse);
+                        Log.d("CreateRequestLateEarlyActivity", "data: " + data);
                         if (apiResponse.getStatus() == 200) {
                             create_request_container.setVisibility(View.VISIBLE);
                             requestDetailData = apiResponse.getData();
@@ -571,6 +577,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                Log.d("CreateRequestLateEarlyActivity", "vào 2");
+
                 String errorMessage = t.getMessage();
                 Log.e("ApiHelper", errorMessage);
             }

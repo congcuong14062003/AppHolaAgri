@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center"
     android:padding="8dp">
 
     <TextView
@@ -10,22 +11,25 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Tên file"
+        android:maxWidth="200dp"
+        android:ellipsize="middle"
+        android:singleLine="true"
         android:textSize="16sp"
-        android:ellipsize="end"
-        android:maxLines="1" />
-
+        android:textColor="@color/translucent_blue"
+        android:padding="8dp"
+        android:textStyle="bold" />
     <ImageView
-        android:id="@+id/btn_open"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/lich_icon"
-        android:padding="4dp" />
-
+        android:id="@+id/btn_download"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/download"
+        android:layout_marginStart="8dp"
+        android:visibility="visible" />
     <ImageView
         android:id="@+id/btn_delete"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/x_mark"
-        android:padding="4dp" />
+        android:layout_marginStart="8dp" />
+
 </LinearLayout>
