@@ -57,13 +57,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
 import com.example.appholaagri.adapter.DiscussionAdapter;
+import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
+import com.example.appholaagri.model.RequestDetailModel.Comments;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
 import com.example.appholaagri.model.RequestDetailModel.ListStatus;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
 import com.example.appholaagri.model.UploadFileModel.UploadFileResponse;
+import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
@@ -118,6 +121,16 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     private static final int PICK_FILES = 200;
     private static final int REQUEST_CODE_FOLLOWER = 100;
     private static final int REQUEST_CODE_CAMERA = 300;
+
+
+    // Thêm các biến mới cho phần thảo luận
+    private ImageView ivUserAvatar, ivAddText, ivAddFile, ivSend;
+    private EditText edtDiscussionInput;
+    private FlexboxLayout commentFileContainer;
+    private List<Uri> selectedCommentFiles = new ArrayList<>(); // Lưu file đính kèm cho comment
+    private List<Comments.FileAttachment> uploadedCommentFiles = new ArrayList<>(); // Lưu file đã upload với kiểu đúng
+    private static final int PICK_FILES_FOR_COMMENT = 202; // Mã request cho file comment
+
     private File currentPhotoFile;
 
     RecyclerView recyclerViewDiscussion;
@@ -178,13 +191,67 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         // file
         fileContainer = findViewById(R.id.file_container);
 
+        // Ánh xạ phần thảo luận
+        ivUserAvatar = findViewById(R.id.ivUserAvatar);
+        edtDiscussionInput = findViewById(R.id.edtDiscussionInput);
+        ivAddFile = findViewById(R.id.ivAddFile);
+        ivSend = findViewById(R.id.ivSend);
+        commentFileContainer = findViewById(R.id.comment_file_container);
 
         recyclerViewDiscussion = findViewById(R.id.recyclerViewDiscussion);
         recyclerViewDiscussion.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewDiscussion.setAdapter(discussionAdapter);
 
+        // Lấy thông tin user và avatar (giữ nguyên logic cũ)
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
+        if (token != null) {
+            UserDetailApiHelper.getUserData(this, token, new UserDetailApiHelper.UserDataCallback() {
+                @Override
+                public void onSuccess(UserData userData) {
+                    String userAvatarUrl = userData.getUserAvatar();
+                    if (userAvatarUrl != null && !userAvatarUrl.isEmpty()) {
+                        Picasso.get().load(userAvatarUrl).placeholder(R.drawable.avatar).into(ivUserAvatar);
+                    } else {
+                        ivUserAvatar.setImageResource(R.drawable.avatar);
+                    }
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+                    ivUserAvatar.setImageResource(R.drawable.avatar);
+                    Log.e("CreateRequest", "Failed to load user avatar: " + errorMessage);
+                }
+            });
+        }
+        // Cấu hình sự kiện
+        edtDiscussionInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ivSend.setEnabled(s.length() > 0 || !selectedCommentFiles.isEmpty());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        ivSend.setOnClickListener(v -> {
+            String content = edtDiscussionInput.getText().toString().trim();
+            if (!content.isEmpty() || !selectedCommentFiles.isEmpty()) {
+                sendComment(content, uploadedCommentFiles);
+                edtDiscussionInput.setText("");
+                ivSend.setEnabled(false);
+                selectedCommentFiles.clear();
+                uploadedCommentFiles.clear();
+                renderCommentFiles(); // Cập nhật UI sau khi gửi
+            }
+        });
+
+        ivAddFile.setOnClickListener(v -> openGalleryForComment());
+
         Intent intent = getIntent();
         // Khởi tạo giá trị mặc định
         GroupRequestId = -1;
@@ -278,12 +345,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         });
     }
 
-
-
-
-
-
-
     private void setDefaultDateTime() {
         // Lấy ngày giờ hiện tại
         Calendar calendar = Calendar.getInstance();
@@ -312,9 +373,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         etGioKetThuc.setEnabled(false);
         etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
     }
-
-
-
 
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
@@ -794,6 +852,9 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         }
     }
 
+
+
+    // file
     private void syncUploadedFilesWithRequestDetailData() {
         if (requestDetailData != null) {
             List<RequestDetailData.FileAttachment> updatedAttachments = new ArrayList<>();
@@ -828,8 +889,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             Log.e("SyncFiles", "requestDetailData is null");
         }
     }
-
-
     private void uploadFilesSequentially(int index, List<Uri> newFiles, Runnable onComplete) {
         if (index >= newFiles.size()) {
             hideLoading();
@@ -908,7 +967,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             }
         });
     }
-
     private void renderFiles() {
         fileContainer.removeAllViews();
         for (int i = 0; i < selectedFiles.size(); i++) {
@@ -958,7 +1016,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             fileContainer.addView(addView);
         }
     }
-
     // Thêm phương thức mới để hiển thị dialog tùy chọn mở file Excel giống Zalo
     private void showExcelFileOptions(Uri fileUri, String fileName) {
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
@@ -984,7 +1041,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             startActivity(intent);
         }
     }
-
     // Thêm phương thức downloadFile
     private void downloadFile(String fileUrl, String fileName) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(fileUrl))
@@ -1003,12 +1059,10 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             Toast.makeText(this, "Lỗi khi tải file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
     // Cập nhật showFileWebView để sử dụng showExcelFileOptions
     private void showFileWebView(Uri fileUri, String fileName) {
         showExcelFileOptions(fileUri, fileName);
     }
-
     private void showImageDetailDialog(Uri fileUri, String fileName) {
         Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.dialog_image_detail);
@@ -1043,7 +1097,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
         dialog.show();
     }
-
     private void openGallery() {
         final CharSequence[] options = {"Ảnh", "Camera", "Tệp", "Drive"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1094,7 +1147,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             startActivityForResult(intent, REQUEST_CODE_CAMERA);
         }
     }
-
     // Cập nhật requestCameraPermission để mở camera sau khi được cấp quyền
     private void requestCameraPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -1117,7 +1169,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
-
     private String getFileNameFromUri(Uri uri) {
         String fileName = null;
         if (uri.getScheme() != null) {
@@ -1166,8 +1217,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         }
         return fileName;
     }
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1179,7 +1228,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             }
         }
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1252,12 +1300,23 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 requestDetailData.setFollower(new ArrayList<>());
                 edt_follower_request_create.setText("Không có người theo dõi");
             }
+        } else if (requestCode == PICK_FILES_FOR_COMMENT && resultCode == RESULT_OK && data != null) {
+            List<Uri> newFiles = new ArrayList<>();
+            if (data.getClipData() != null) {
+                int count = data.getClipData().getItemCount();
+                for (int i = 0; i < count; i++) {
+                    Uri fileUri = data.getClipData().getItemAt(i).getUri();
+                    newFiles.add(fileUri);
+                    selectedCommentFiles.add(fileUri); // Thêm URI vào selectedCommentFiles ngay từ đầu
+                }
+            } else if (data.getData() != null) {
+                Uri fileUri = data.getData();
+                newFiles.add(fileUri);
+                selectedCommentFiles.add(fileUri); // Thêm URI vào selectedCommentFiles ngay từ đầu
+            }
+            uploadCommentFilesSequentially(0, newFiles, () -> renderCommentFiles());
         }
     }
-
-
-
-
     public static File getFileFromUri(Context context, Uri uri) {
         File file = null;
         try {
@@ -1279,6 +1338,170 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             e.printStackTrace();
         }
         return file;
+    }
+
+
+    // comment
+    private void sendComment(String content, List<Comments.FileAttachment> files) {
+        showLoading();
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+        if (token == null || requestId == -1) {
+            hideLoading();
+            CustomToast.showCustomToast(this, "Token hoặc requestId không hợp lệ.");
+            return;
+        }
+
+
+        Comments comment = new Comments(content, new ArrayList<>(files), 0, requestId);
+//        comment.setComment(content);
+//
+//        if (!files.isEmpty()) {
+//            comment.setFileAttachments(new ArrayList<>(files));
+//        }
+//        comment.setId(0);
+//        comment.setRequestId(requestId);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String requestData = gson.toJson(comment);
+        Log.d("CreateRequestBuyNewActivity", "Datacomment: " + requestData);
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+        Call<ApiResponse<String>> call = apiInterface.createComment(token, comment);
+        call.enqueue(new Callback<ApiResponse<String>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                hideLoading();
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<String> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
+                        getDetailRequest(requestId, token); // Cập nhật lại danh sách comment
+                    } else {
+                        CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, apiResponse.getMessage());
+                    }
+                } else {
+                    CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                hideLoading();
+                CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi: " + t.getMessage());
+            }
+        });
+    }
+
+    private void openGalleryForComment() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(intent, PICK_FILES_FOR_COMMENT);
+    }
+    private void renderCommentFiles() {
+        commentFileContainer.removeAllViews();
+        for (int i = 0; i < selectedCommentFiles.size(); i++) {
+            Uri fileUri = selectedCommentFiles.get(i);
+            View itemView = getLayoutInflater().inflate(R.layout.item_file_preview, commentFileContainer, false);
+            TextView fileNameText = itemView.findViewById(R.id.file_name);
+            ImageView btnDelete = itemView.findViewById(R.id.btn_delete);
+
+            String fileName = getFileNameFromUri(fileUri);
+            SpannableString spannableFileName = new SpannableString(fileName);
+            spannableFileName.setSpan(new UnderlineSpan(), 0, fileName.length(), 0);
+            fileNameText.setText(spannableFileName);
+
+            btnDelete.setVisibility(View.VISIBLE);
+            int finalI = i;
+            btnDelete.setOnClickListener(v -> {
+                selectedCommentFiles.remove(finalI);
+                uploadedCommentFiles.removeIf(attachment -> attachment.getPath().equals(fileUri.toString()));
+                renderCommentFiles();
+            });
+
+            commentFileContainer.addView(itemView);
+        }
+    }
+
+
+    private void uploadCommentFilesSequentially(int index, List<Uri> newFiles, Runnable onComplete) {
+        if (index >= newFiles.size()) {
+            hideLoading();
+            if (onComplete != null) {
+                onComplete.run();
+            }
+            return;
+        }
+
+        Uri fileUri = newFiles.get(index);
+        File file = getFileFromUri(this, fileUri);
+        if (file == null) {
+            uploadCommentFilesSequentially(index + 1, newFiles, onComplete);
+            return;
+        }
+
+        String fileName = getFileNameFromUri(fileUri);
+        Log.d("UploadComment", "Uploading file: " + fileName);
+        String mimeType = getContentResolver().getType(fileUri);
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        String mediaType = "*/*";
+        if ("pdf".equals(fileExtension)) mediaType = "application/pdf";
+        else if ("doc".equals(fileExtension) || "docx".equals(fileExtension))
+            mediaType = "application/msword";
+        else if ("xls".equals(fileExtension) || "xlsx".equals(fileExtension))
+            mediaType = "application/vnd.ms-excel";
+
+        RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType != null ? mimeType : mediaType), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", fileName, requestFile);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+        if (token == null) {
+            hideLoading();
+            CustomToast.showCustomToast(this, "Token không tồn tại, vui lòng đăng nhập lại!");
+            return;
+        }
+
+        showLoading();
+        ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
+        Call<ApiResponse<UploadFileResponse>> call = apiInterface.uploadFile(token, body);
+        call.enqueue(new Callback<ApiResponse<UploadFileResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<UploadFileResponse>> call, Response<ApiResponse<UploadFileResponse>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getStatus() == 200) {
+                    UploadFileResponse uploadResponse = response.body().getData();
+                    if (uploadResponse.getFinalStatus() == 200) {
+                        String fileUrl = "https://haloship.imediatech.com.vn/" + uploadResponse.getFileUrl();
+                        Comments.FileAttachment attachment = new Comments.FileAttachment();
+                        attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
+                        attachment.setName(fileName);
+                        attachment.setPath(fileUrl);
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
+                        uploadedCommentFiles.add(attachment);
+
+                        // Cập nhật selectedCommentFiles với fileUrl tại vị trí index
+                        if (index < selectedCommentFiles.size()) {
+                            selectedCommentFiles.set(index, Uri.parse(fileUrl));
+                        }
+
+                        uploadCommentFilesSequentially(index + 1, newFiles, onComplete);
+                    } else {
+                        hideLoading();
+                        CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi tải file: " + uploadResponse.getMessage());
+                    }
+                } else {
+                    hideLoading();
+                    CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi server: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<UploadFileResponse>> call, Throwable t) {
+                hideLoading();
+                CustomToast.showCustomToast(CreateRequestBuyNewActivity.this, "Lỗi: " + t.getMessage());
+            }
+        });
+
     }
 
     public void onBackPressed() {

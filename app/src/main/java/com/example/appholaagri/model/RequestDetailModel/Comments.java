@@ -8,10 +8,16 @@ public class Comments {
     private String comment;
     private String createdDate;
     private List<FileAttachment> fileAttachments;
+    private int requestId;
 
     // Constructors
     public Comments() {}
-
+    public Comments(String comment, List<FileAttachment> fileAttachments, int id,  int requestId) {
+        this.comment = comment;
+        this.fileAttachments = fileAttachments;
+        this.id = id;
+        this.requestId = requestId;
+    }
     public Comments(int id, User user, String comment, String createdDate, List<FileAttachment> fileAttachments) {
         this.id = id;
         this.user = user;
@@ -59,6 +65,14 @@ public class Comments {
 
     public void setFileAttachments(List<FileAttachment> fileAttachments) {
         this.fileAttachments = fileAttachments;
+    }
+
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(int requestId) {
+        this.requestId = requestId;
     }
 
     // Inner Classes

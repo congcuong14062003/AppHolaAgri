@@ -36,6 +36,7 @@ import com.example.appholaagri.model.RecordConditionModel.InforRecordConditionBy
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionRequest;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionResponse;
 import com.example.appholaagri.model.RecordConditionModel.RecordConditionTabList;
+import com.example.appholaagri.model.RequestDetailModel.Comments;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestGroupCreateRequestModel.GroupRequestCreateRequest;
@@ -365,9 +366,12 @@ public interface ApiInterface {
     @POST("user/list-user")
     Call<ApiResponse<List<Follower>>> listUser(@Header("Authorization") String token, @Body ListUserRequest listUserRequest);
 
-
-
-    // list user
+    // list department
     @GET("user/list-department")
     Call<ApiResponse<List<Department>>> listDepartment(@Header("Authorization") String token);
+
+    // create comments
+    @POST("request-comment/create-comment")
+    Call<ApiResponse<String>> createComment(@Header("Authorization") String token, @Body Comments comments);
+
 }
