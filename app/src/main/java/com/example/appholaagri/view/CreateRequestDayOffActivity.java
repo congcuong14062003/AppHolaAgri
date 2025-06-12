@@ -20,10 +20,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -38,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.CustomSpinnerAdapterCompany;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
@@ -84,6 +87,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     private LinearLayout layout_action_history_request;
     private SwitchCompat switchUrgent;
     private static final int REQUEST_CODE_FOLLOWER = 100;
+    private Spinner spinner_company_request_create;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +105,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         switchUrgent = findViewById(R.id.switch_urgent);
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         edt_part_request_create = findViewById(R.id.edt_part_request_create);
+        // công ty
+        spinner_company_request_create = findViewById(R.id.spinner_company_request_create); // Ánh xạ Spinner
         select_method_request = findViewById(R.id.select_method_request);
         edt_duration = findViewById(R.id.edt_duration);
         etNgayBatDau = findViewById(R.id.etNgayBatDau);
@@ -129,7 +135,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             Log.d("CreateRequestDayOffActivity", "StatusRequest: " + StatusRequest);
         }
 
-
+        // Khởi tạo Spinner cho công ty
+        setupCompanySpinner();
 
         layout_action_history_request.setVisibility(View.GONE);
         txt_status_request_detail.setVisibility(View.GONE);
@@ -232,6 +239,57 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         });
 
     }
+
+    private void setupCompanySpinner() {
+        if (requestDetailData == null) {
+            requestDetailData = new RequestDetailData();
+        }
+
+        List<RequestDetailData.CompanyList> companyList = requestDetailData.getCompanyList();
+        if (companyList == null) {
+            companyList = new ArrayList<>();
+            requestDetailData.setCompanyList(companyList);
+        }
+
+        // Tạo adapter tùy chỉnh
+        CustomSpinnerAdapterCompany adapter = new CustomSpinnerAdapterCompany(this, companyList);
+        spinner_company_request_create.setAdapter(adapter);
+
+        // Thiết lập công ty mặc định
+        RequestDetailData.Company defaultCompany = requestDetailData.getCompany();
+        int defaultPosition = -1;
+        if (defaultCompany != null && defaultCompany.getId() != 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                if (companyList.get(i) != null && companyList.get(i).getId() == defaultCompany.getId()) {
+                    defaultPosition = i;
+                    spinner_company_request_create.setSelection(i);
+                    adapter.setSelectedPosition(i);
+                    break;
+                }
+            }
+        }
+
+        // Xử lý sự kiện chọn công ty
+        List<RequestDetailData.CompanyList> finalCompanyList = companyList;
+        spinner_company_request_create.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                RequestDetailData.CompanyList selectedCompany = finalCompanyList.get(position);
+                RequestDetailData.Company company = new RequestDetailData.Company();
+                company.setId(selectedCompany.getId());
+                company.setName(selectedCompany.getName());
+                requestDetailData.setCompany(company);
+                adapter.setSelectedPosition(position); // Cập nhật vị trí được chọn
+                Log.d("CreateRequestLateEarlyActivity", "Selected company: " + selectedCompany.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Không làm gì nếu không chọn
+            }
+        });
+    }
+
 
     // Sửa onActivityResult
     @Override
@@ -510,7 +568,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                     etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
+                    spinner_company_request_create.setEnabled(false);
+                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setEnabled(false);
                 }
@@ -533,6 +592,10 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             }
             if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
+            }
+            // Cập nhật danh sách công ty và công ty mặc định
+            if (requestDetailData.getCompanyList() != null && !requestDetailData.getCompanyList().isEmpty()) {
+                setupCompanySpinner(); // Gọi lại để cập nhật Spinner với dữ liệu mới
             }
             if (requestDetailData.getDuration() != null) {
                 // Format to two decimal places
@@ -586,6 +649,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 edt_follower_request_create.setText("Không có người theo dõi");
             }
 
+
             List<RequestMethod> listMethods = requestDetailData.getListMethod();
             if (listMethods != null && !listMethods.isEmpty()) {
                 RecyclerView recyclerView = findViewById(R.id.recycler_filter_status_create);
@@ -612,6 +676,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             } else {
                 Log.e("CreateRequestActivity", "listMethods is null or empty");
             }
+
+
 
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
@@ -710,6 +776,12 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
+            hideLoading();
+            return;
+        }
+        // Kiểm tra nếu chưa chọn phương thức
+        if (requestDetailData.getRequestMethod() == null) {
+            CustomToast.showCustomToast(this, "Vui lòng chọn hình thức!");
             hideLoading();
             return;
         }

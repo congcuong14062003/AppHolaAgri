@@ -29,6 +29,7 @@ public class RequestDetailData implements Serializable {
     private Employee employee;
     private Department department;
     private Company company;
+    private List<CompanyList> companyList;
     private Division division;
     private List<ListDayReq> listDayReqs;
     private List<RequestMethod> listMethod;
@@ -261,6 +262,14 @@ public class RequestDetailData implements Serializable {
         this.company = company;
     }
 
+    public List<CompanyList> getCompanyList() {
+        return companyList;
+    }
+
+    public void setCompanyList(List<CompanyList> companyList) {
+        this.companyList = companyList;
+    }
+
     public Division getDivision() {
         return division;
     }
@@ -370,7 +379,6 @@ public class RequestDetailData implements Serializable {
         private String totalCostText;
         private String destination;
         private String content;
-
         public int getTotalCost() {
             return totalCost;
         }
@@ -407,7 +415,8 @@ public class RequestDetailData implements Serializable {
     public static class FileAttachment {
         private String name;
         private String path;
-
+        private int id;
+        private int status;
         public String getName() {
             return name;
         }
@@ -422,6 +431,22 @@ public class RequestDetailData implements Serializable {
 
         public void setPath(String path) {
             this.path = path;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
         }
     }
 
@@ -689,6 +714,121 @@ public class RequestDetailData implements Serializable {
             public void setIndex(String index) {
                 this.index = index;
             }
+        }
+    }
+    public static class Company implements Serializable {
+        private int id;
+        private String code;
+        private String name;
+        private int status;
+        private String color;
+        private Object index;
+
+        // Getters and Setters
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public Object getIndex() {
+            return index;
+        }
+
+        public void setIndex(Object index) {
+            this.index = index;
+        }
+    }
+
+    public static class CompanyList implements Serializable {
+        private int id;
+        private String code;
+        private String name;
+        private int status;
+        private String color;
+        private Object index;
+
+        // Getters and Setters
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setStatus(int status) {
+            this.status = status;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public Object getIndex() {
+            return index;
+        }
+
+        public void setIndex(Object index) {
+            this.index = index;
         }
     }
 }

@@ -2,6 +2,8 @@ package com.example.appholaagri.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class Utils {
     public static String hashPassword(String password) {
@@ -26,6 +28,23 @@ public class Utils {
             return String.format("%,d đ", value); // <-- giữ dấu phẩy
         } catch (NumberFormatException e) {
             return amount + " đ";
+        }
+    }
+    public static String formatNumberWithCommas(int number) {
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        decimalFormat.setGroupingSize(3);
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator(',');
+        decimalFormat.setDecimalFormatSymbols(symbols);
+        return decimalFormat.format(number);
+    }
+
+    // Chuyển chuỗi định dạng xxx,xxx,xxx về số nguyên
+    public static long parseNumberFromFormattedString(String formattedNumber) {
+        try {
+            return Long.parseLong(formattedNumber.replaceAll("[^0-9]", ""));
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }

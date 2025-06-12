@@ -21,10 +21,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -41,6 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.CustomSpinnerAdapterCompany;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
@@ -84,6 +87,7 @@ public class CreateRequestResignActivity extends BaseActivity {
     private Dialog loadingDialog;
     private SwitchCompat switchUrgent;
     private static final int REQUEST_CODE_FOLLOWER = 100;
+    private Spinner spinner_company_request_create;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +105,9 @@ public class CreateRequestResignActivity extends BaseActivity {
         edt_name_request_create = findViewById(R.id.edt_name_request_create);
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         edt_part_request_create = findViewById(R.id.edt_part_request_create);
+
+        // công ty
+        spinner_company_request_create = findViewById(R.id.spinner_company_request_create); // Ánh xạ Spinner
         etNgayBatDau = findViewById(R.id.etNgayBatDau);
         etGioBatDau = findViewById(R.id.etGioBatDau);
         etNgayKetThuc = findViewById(R.id.etNgayKetThuc);
@@ -128,7 +135,8 @@ public class CreateRequestResignActivity extends BaseActivity {
             Log.d("CreateRequestResignActivity", "GroupRequestType: " + GroupRequestType);
             Log.d("CreateRequestResignActivity", "StatusRequest: " + StatusRequest);
         }
-
+        // Khởi tạo Spinner cho công ty
+        setupCompanySpinner();
 
 
         layout_action_history_request.setVisibility(View.GONE);
@@ -205,6 +213,58 @@ public class CreateRequestResignActivity extends BaseActivity {
             startActivityForResult(intent1, REQUEST_CODE_FOLLOWER);
         });
     }
+
+
+    private void setupCompanySpinner() {
+        if (requestDetailData == null) {
+            requestDetailData = new RequestDetailData();
+        }
+
+        List<RequestDetailData.CompanyList> companyList = requestDetailData.getCompanyList();
+        if (companyList == null) {
+            companyList = new ArrayList<>();
+            requestDetailData.setCompanyList(companyList);
+        }
+
+        // Tạo adapter tùy chỉnh
+        CustomSpinnerAdapterCompany adapter = new CustomSpinnerAdapterCompany(this, companyList);
+        spinner_company_request_create.setAdapter(adapter);
+
+        // Thiết lập công ty mặc định
+        RequestDetailData.Company defaultCompany = requestDetailData.getCompany();
+        int defaultPosition = -1;
+        if (defaultCompany != null && defaultCompany.getId() != 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                if (companyList.get(i) != null && companyList.get(i).getId() == defaultCompany.getId()) {
+                    defaultPosition = i;
+                    spinner_company_request_create.setSelection(i);
+                    adapter.setSelectedPosition(i);
+                    break;
+                }
+            }
+        }
+
+        // Xử lý sự kiện chọn công ty
+        List<RequestDetailData.CompanyList> finalCompanyList = companyList;
+        spinner_company_request_create.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                RequestDetailData.CompanyList selectedCompany = finalCompanyList.get(position);
+                RequestDetailData.Company company = new RequestDetailData.Company();
+                company.setId(selectedCompany.getId());
+                company.setName(selectedCompany.getName());
+                requestDetailData.setCompany(company);
+                adapter.setSelectedPosition(position); // Cập nhật vị trí được chọn
+                Log.d("CreateRequestLateEarlyActivity", "Selected company: " + selectedCompany.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Không làm gì nếu không chọn
+            }
+        });
+    }
+
     // Sửa onActivityResult
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -502,6 +562,9 @@ public class CreateRequestResignActivity extends BaseActivity {
                     edt_number_of_day_notices.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+                    spinner_company_request_create.setEnabled(false);
+                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setEnabled(false);
                 }
@@ -526,7 +589,10 @@ public class CreateRequestResignActivity extends BaseActivity {
             if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
             }
-
+            // Cập nhật danh sách công ty và công ty mặc định
+            if (requestDetailData.getCompanyList() != null && !requestDetailData.getCompanyList().isEmpty()) {
+                setupCompanySpinner(); // Gọi lại để cập nhật Spinner với dữ liệu mới
+            }
             if (requestDetailData.getStartDate() != null) {
                 etNgayBatDau.setText(requestDetailData.getStartDate());
             }
@@ -759,7 +825,8 @@ public class CreateRequestResignActivity extends BaseActivity {
 
         etReason.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -770,7 +837,8 @@ public class CreateRequestResignActivity extends BaseActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         btn_confirm.setOnClickListener(view -> {
@@ -834,6 +902,7 @@ public class CreateRequestResignActivity extends BaseActivity {
             }
         });
     }
+
     private void sendModifyRequestFollower(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -860,6 +929,7 @@ public class CreateRequestResignActivity extends BaseActivity {
             }
         });
     }
+
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (view != null) {

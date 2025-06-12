@@ -47,7 +47,7 @@
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lữ Văn Quân"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -56,7 +56,7 @@
                 android:id="@+id/user_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="KS01246 - Kỹ sư nông nghiệp"
+                android:text=""
                 android:textColor="@color/textcolor"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="start"
-                android:text="Quản lý trang trại"
+                android:text=""
                 android:textColor="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -193,7 +193,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="start"
-                android:text="Quản lý công việc"
+                android:text=""
                 android:textColor="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -211,7 +211,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="start"
-                android:text="Yêu cầu - Đề xuất"
+                android:text=""
                 android:textColor="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView

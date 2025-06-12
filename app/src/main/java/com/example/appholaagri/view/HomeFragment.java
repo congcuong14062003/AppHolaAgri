@@ -188,6 +188,8 @@ public class HomeFragment extends BaseFragment {
                 return null; // Thay bằng Activity tương ứng nếu có
             case "WORK_REPORT":
                 return null; // Thay bằng Activity tương ứng nếu có
+            case "BUSINESS_TRIP_CREATE":
+                return CreateRequestWorkReportActivity.class;
             case "LATE_EARLY_CREATE":
                 return CreateRequestLateEarlyActivity.class;
             case "DAY_OFF_CREATE":

@@ -217,6 +217,11 @@ public interface ApiInterface {
 
     @POST("request/resign")
     Call<ApiResponse<String>> resignCreateRequestNew(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);
+
+
+    // Tờ trình công tác
+    @POST("request/business-trip")
+    Call<ApiResponse<String>> businessTripCreateRequestNew(@Header("Authorization") String token, @Body  RequestDetailData requestDetailData);
     // chỉnh sửa đề xuất
     @POST("request/modify")
     Call<ApiResponse<String>> modifyRequestBase(@Header("Authorization") String token, @Body RequestDetailData requestDetailData);

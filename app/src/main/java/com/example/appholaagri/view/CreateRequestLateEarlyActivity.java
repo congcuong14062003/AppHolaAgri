@@ -21,11 +21,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -43,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.CustomSpinnerAdapterCompany;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
@@ -70,7 +74,9 @@ import java.util.stream.IntStream;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 import com.google.gson.reflect.TypeToken;
+
 public class CreateRequestLateEarlyActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etNgayKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
@@ -92,6 +98,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
     private LinearLayout layout_action_history_request;
     private SwitchCompat switchUrgent;
     private static final int REQUEST_CODE_FOLLOWER = 100;
+    boolean hasMethodSelected;
+
+    private Spinner spinner_company_request_create;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +126,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         // bộ phận
         edt_part_request_create = findViewById(R.id.edt_part_request_create);
+        // công ty
+        spinner_company_request_create = findViewById(R.id.spinner_company_request_create); // Ánh xạ Spinner
         // hình thức
         select_method_request = findViewById(R.id.select_method_request);
         // mốc thời gian 1 ngày
@@ -163,6 +175,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             requestId = intent.getIntExtra("requestId", -1);
             Log.d("CreateRequestLateEarlyActivity", "GroupRequestId: " + GroupRequestId);
         }
+
+        // Khởi tạo Spinner cho công ty
+        setupCompanySpinner();
+
 
         // init
         tvThoiGianKetThuc_layout.setVisibility(View.GONE);
@@ -297,6 +313,58 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             startActivityForResult(intent1, REQUEST_CODE_FOLLOWER);
         });
     }
+
+
+    private void setupCompanySpinner() {
+        if (requestDetailData == null) {
+            requestDetailData = new RequestDetailData();
+        }
+
+        List<RequestDetailData.CompanyList> companyList = requestDetailData.getCompanyList();
+        if (companyList == null) {
+            companyList = new ArrayList<>();
+            requestDetailData.setCompanyList(companyList);
+        }
+
+        // Tạo adapter tùy chỉnh
+        CustomSpinnerAdapterCompany adapter = new CustomSpinnerAdapterCompany(this, companyList);
+        spinner_company_request_create.setAdapter(adapter);
+
+        // Thiết lập công ty mặc định
+        RequestDetailData.Company defaultCompany = requestDetailData.getCompany();
+        int defaultPosition = -1;
+        if (defaultCompany != null && defaultCompany.getId() != 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                if (companyList.get(i) != null && companyList.get(i).getId() == defaultCompany.getId()) {
+                    defaultPosition = i;
+                    spinner_company_request_create.setSelection(i);
+                    adapter.setSelectedPosition(i);
+                    break;
+                }
+            }
+        }
+
+        // Xử lý sự kiện chọn công ty
+        List<RequestDetailData.CompanyList> finalCompanyList = companyList;
+        spinner_company_request_create.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                RequestDetailData.CompanyList selectedCompany = finalCompanyList.get(position);
+                RequestDetailData.Company company = new RequestDetailData.Company();
+                company.setId(selectedCompany.getId());
+                company.setName(selectedCompany.getName());
+                requestDetailData.setCompany(company);
+                adapter.setSelectedPosition(position); // Cập nhật vị trí được chọn
+                Log.d("CreateRequestLateEarlyActivity", "Selected company: " + selectedCompany.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Không làm gì nếu không chọn
+            }
+        });
+    }
+
     // Sửa onActivityResult
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -362,7 +430,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
     }
 
 
-
     private void updateLayoutVisibility() {
         LinearLayout formTimeLayout = findViewById(R.id.form_time_layout);
         LinearLayout tvThoiGianBatDauLayout = findViewById(R.id.tvThoiGianBatDau_layout);
@@ -376,18 +443,9 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
         boolean hasMethodSelected = select_method_request.getText().toString().trim().length() > 0;
 
-        int visibility = hasMethodSelected ? View.VISIBLE : View.GONE;
-        formTimeLayout.setVisibility(visibility);
-        tvThoiGianBatDauLayout.setVisibility(visibility);
-        selectReasonLayout.setVisibility(visibility);
-        reasonRequestLayout.setVisibility(visibility);
-        managerDirectRequestLayout.setVisibility(visibility);
-        fixedReviewerRequestLayout.setVisibility(visibility);
-        followerRequestLayout.setVisibility(visibility);
-        actionButtonContainer.setVisibility(visibility);
 
         // Chỉ hiển thị tvThoiGianKetThucLayout nếu dateType là Nhiều ngày (1) và đã chọn hình thức
-        if (hasMethodSelected && requestDetailData.getDateType() == 1) {
+        if (requestDetailData.getDateType() == 1) {
             tvThoiGianKetThucLayout.setVisibility(View.VISIBLE);
         } else {
             tvThoiGianKetThucLayout.setVisibility(View.GONE);
@@ -494,8 +552,6 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
     // init data
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
-        Log.d("haha", "GroupRequestId: " + GroupRequestId);
-
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
@@ -614,7 +670,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
     private void updateUserUI(RequestDetailData requestDetailData) {
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         String requestDetailDataJson = gson.toJson(requestDetailData);
-        Log.d("CreateRequestLateEarlyActivity", "requestDetailDataJson: " + requestDetailDataJson);
+        Log.d("CreateRequestLateEarlyActivity", "data chi tiết: " + requestDetailDataJson);
 
         try {
             if (requestDetailData == null) {
@@ -670,7 +726,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                     rbWork_create.setEnabled(false);
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-//
+
+
+                    spinner_company_request_create.setEnabled(false);
+                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setEnabled(false);
                 }
@@ -696,7 +755,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
             }
-
+            // Cập nhật danh sách công ty và công ty mặc định
+            if (requestDetailData.getCompanyList() != null && !requestDetailData.getCompanyList().isEmpty()) {
+                setupCompanySpinner(); // Gọi lại để cập nhật Spinner với dữ liệu mới
+            }
             if (requestDetailData.getDateType() == 1) {
                 rbNhieuNgay_create.setImageResource(R.drawable.checked_radio);
                 rbMotNgay_create.setImageResource(R.drawable.no_check_radio_create);
@@ -829,7 +891,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                         // Gán sự kiện onClick để cập nhật status trước khi gọi handleCreateRequest
                         button.setOnClickListener(v -> {
                             // Chuyển ListStatus thành Status và gán vào requestDetailData
-                            RequestDetailData.Status statusObj = new  RequestDetailData.Status(
+                            RequestDetailData.Status statusObj = new RequestDetailData.Status(
                                     status.getId(),
                                     status.getCode(),
                                     status.getName(),
@@ -908,6 +970,12 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         // Validate
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
+            hideLoading();
+            return;
+        }
+        // Kiểm tra nếu chưa chọn phương thức
+        if (requestDetailData.getRequestMethod() == null) {
+            CustomToast.showCustomToast(this, "Vui lòng chọn hình thức!");
             hideLoading();
             return;
         }

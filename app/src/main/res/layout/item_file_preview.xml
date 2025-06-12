@@ -5,7 +5,12 @@
     android:orientation="horizontal"
     android:gravity="center"
     android:padding="8dp">
-
+    <ImageView
+        android:id="@+id/btn_check_file"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/bg_circle" />
     <TextView
         android:id="@+id/file_name"
         android:layout_width="0dp"

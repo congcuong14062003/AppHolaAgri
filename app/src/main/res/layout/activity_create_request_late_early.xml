@@ -2,11 +2,12 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/create_request_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_home"
-    android:id="@+id/create_request_container"
     tools:context=".view.CreateRequestLateEarlyActivity">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -14,6 +15,7 @@
         android:paddingStart="20dp"
         android:paddingTop="30dp"
         android:paddingEnd="20dp">
+
         <ImageView
             android:id="@+id/backBtnReview_create"
             android:layout_width="wrap_content"
@@ -25,6 +27,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.1013"
             app:srcCompat="@drawable/back_btn" />
+
         <TextView
             android:id="@+id/title_request"
             style="@style/TextStyle_16_600"
@@ -39,10 +42,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="95dp">
+
         <LinearLayout
             android:id="@+id/thong_tin_lien_he"
             android:layout_width="match_parent"
@@ -68,6 +73,7 @@
                     android:gravity="center_vertical"
                     android:text="Xin đi muộn/ về sớm"
                     android:textColor="@color/secon_textcolor" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/txt_status_request_detail"
                     android:layout_width="wrap_content"
@@ -210,6 +216,48 @@
                         android:padding="35px"
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
+
+
+                <!-- công ty" -->
+                <LinearLayout
+                    android:id="@+id/company_request_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Công ty"
+                        android:textColor="@color/secon_textcolor" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <!-- RadioGroup chọn mốc thời gian -->
+                        <Spinner
+                            android:id="@+id/spinner_company_request_create"
+                            style="@style/TextStyle_14_500"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="15dp"
+                            android:background="@drawable/input_infor"
+                            android:padding="35px"
+                            android:spinnerMode="dropdown" />
+                        <ImageView
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:src="@drawable/dropdown_icon" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/form_request_layout"
@@ -623,11 +671,11 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="15dp"
                         android:background="@drawable/input_infor"
-                        android:gravity="center_vertical"
-                        android:padding="35px"
+                        android:cursorVisible="false"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:cursorVisible="false"
+                        android:gravity="center_vertical"
+                        android:padding="35px"
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
 
@@ -673,61 +721,62 @@
         android:id="@+id/overlay_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
         android:alpha="0.5"
+        android:background="@color/black"
         android:visibility="gone" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/overlay_filter_status"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/overlay_filter_status"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/overlay_filter_status_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_gravity="center"
             android:background="@drawable/bg_rounded_26_top"
             android:backgroundTint="#F0F0F0"
-            android:layout_gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             android:elevation="999dp"
-            android:padding="16dp">
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
             <TextView
                 android:id="@+id/title_filter"
+                style="@style/TextStyle_18_600"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Vui lòng chọn"
                 android:textColor="@color/textcolor"
-                style="@style/TextStyle_18_600"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_filter_status_create"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/title_filter"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:listitem="@layout/item_request_method"
-                android:layout_marginTop="8dp" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_filter"
+                tools:listitem="@layout/item_request_method" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/button_close_overlay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:background="@drawable/button_custom"
                 android:text="Đóng"
                 android:textColor="#ffffff"
-                android:background="@drawable/button_custom"
-                app:layout_constraintTop_toBottomOf="@id/recycler_filter_status_create"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/recycler_filter_status_create" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -116,17 +116,12 @@ public class ListRequestToCreateActivity extends BaseActivity {
                                     intent.putExtra("GroupRequestId", GroupRequestId);
                                     intent.putExtra("GroupRequestType", GroupRequestType);
                                     startActivity(intent);
-
-                                } else if (GroupRequestType == 6) {
-                                    // Chuyển thiết bị
-                                } else if (GroupRequestType == 7) {
-                                    // Đề xuất đổi ca
                                 }
-                                else if (GroupRequestType == 8) {
-                                    // Đề nghị thanh toán
-                                }
-                                else if (GroupRequestType == 8) {
-                                    // Đề nghị tạm ứng
+                                else if (GroupRequestType == 11) {
+                                    Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestWorkReportActivity.class);
+                                    intent.putExtra("GroupRequestId", GroupRequestId);
+                                    intent.putExtra("GroupRequestType", GroupRequestType);
+                                    startActivity(intent);
                                 }
 //                                Intent intent = new Intent(ListRequestToCreateActivity.this, CreateRequestActivity.class);
 //                                intent.putExtra("GroupRequestId", GroupRequestId);

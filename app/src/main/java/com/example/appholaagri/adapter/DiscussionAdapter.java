@@ -20,12 +20,27 @@ import java.util.List;
 
 public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.ViewHolder> {
     private List<Comments> comments = new ArrayList<>();
+    private boolean hasApproveStatus = false; // Biến kiểm tra xem có trạng thái "Duyệt" không
+    // Callback interface để thông báo thay đổi status lên activity/fragment
+    public interface OnFileStatusChangedListener {
+        void onStatusChanged(Comments.FileAttachment file, int filePosition, int commentPosition);
+    }
+
+    private OnFileStatusChangedListener listener;
+
+    public void setOnFileStatusChangedListener(OnFileStatusChangedListener listener) {
+        this.listener = listener;
+    }
 
     public void setComments(List<Comments> comments) {
         this.comments = comments != null ? comments : new ArrayList<>();
         notifyDataSetChanged();
     }
-
+    // Phương thức để đặt thông tin có trạng thái "Duyệt" không
+    public void setHasApproveStatus(boolean hasApproveStatus) {
+        this.hasApproveStatus = hasApproveStatus;
+        notifyDataSetChanged(); // Cập nhật lại toàn bộ adapter để áp dụng thay đổi
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,7 +54,7 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
         Comments.User user = comment.getUser();
         List<Comments.FileAttachment> fileAttachments = comment.getFileAttachments();
 
-        // Debug: Kiểm tra số lượng file attachments
+        // Debug
         if (fileAttachments != null) {
             Log.d("DiscussionAdapter", "Comment at position " + position + " has " + fileAttachments.size() + " files");
         } else {
@@ -66,8 +81,15 @@ public class DiscussionAdapter extends RecyclerView.Adapter<DiscussionAdapter.Vi
             holder.recyclerViewFileDiscus.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext(), LinearLayoutManager.VERTICAL, false));
             holder.fileAdapter = new FileAttachmentAdapter();
             holder.recyclerViewFileDiscus.setAdapter(holder.fileAdapter);
+            // Cài đặt listener với vị trí comment
+            holder.fileAdapter.setOnFileStatusChangedListener((file, filePosition, commentPos) -> {
+                if (listener != null) {
+                    listener.onStatusChanged(file, filePosition, commentPos);
+                }
+            }, position);
         }
-        holder.fileAdapter.setFiles(fileAttachments); // Cập nhật danh sách file
+        holder.fileAdapter.setHasApproveStatus(hasApproveStatus);
+        holder.fileAdapter.setFiles(fileAttachments);
         Log.d("DiscussionAdapter", "Setting files for position " + position + ", size: " + (fileAttachments != null ? fileAttachments.size() : 0));
     }
 

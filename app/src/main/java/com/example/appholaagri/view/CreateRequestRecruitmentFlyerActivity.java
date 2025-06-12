@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -17,9 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -36,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.CustomSpinnerAdapterCompany;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
@@ -73,6 +77,7 @@ public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
     private Dialog loadingDialog;
     private SwitchCompat switchUrgent;
     private static final int REQUEST_CODE_FOLLOWER = 100;
+    private Spinner spinner_company_request_create;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +99,8 @@ public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
         edt_fixed_reviewer_request_create = findViewById(R.id.edt_fixed_reviewer_request_create);
         edt_follower_request_create = findViewById(R.id.edt_follower_request_create);
         layout_action_history_request = findViewById(R.id.layout_action_history_request);
-
+// công ty
+        spinner_company_request_create = findViewById(R.id.spinner_company_request_create); // Ánh xạ Spinner
         // phần riêng
 
         edt_type_request_create = findViewById(R.id.edt_type_request_create);
@@ -121,12 +127,10 @@ public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
         }
-
+        // Khởi tạo Spinner cho công ty
+        setupCompanySpinner();
         // Khởi tạo
-        if (StatusRequest != null && StatusRequest > 1) {
-            edt_name_request_create.setEnabled(false);
-            edt_name_request_create.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#dee0df")));
-        }
+
         layout_action_history_request.setVisibility(View.GONE);
         txt_status_request_detail.setVisibility(View.GONE);
 
@@ -161,6 +165,57 @@ public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
                 intent1.putExtra("current_followers", new ArrayList<Follower>());
             }
             startActivityForResult(intent1, REQUEST_CODE_FOLLOWER);
+        });
+    }
+
+
+    private void setupCompanySpinner() {
+        if (requestDetailData == null) {
+            requestDetailData = new RequestDetailData();
+        }
+
+        List<RequestDetailData.CompanyList> companyList = requestDetailData.getCompanyList();
+        if (companyList == null) {
+            companyList = new ArrayList<>();
+            requestDetailData.setCompanyList(companyList);
+        }
+
+        // Tạo adapter tùy chỉnh
+        CustomSpinnerAdapterCompany adapter = new CustomSpinnerAdapterCompany(this, companyList);
+        spinner_company_request_create.setAdapter(adapter);
+
+        // Thiết lập công ty mặc định
+        RequestDetailData.Company defaultCompany = requestDetailData.getCompany();
+        int defaultPosition = -1;
+        if (defaultCompany != null && defaultCompany.getId() != 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                if (companyList.get(i) != null && companyList.get(i).getId() == defaultCompany.getId()) {
+                    defaultPosition = i;
+                    spinner_company_request_create.setSelection(i);
+                    adapter.setSelectedPosition(i);
+                    break;
+                }
+            }
+        }
+
+        // Xử lý sự kiện chọn công ty
+        List<RequestDetailData.CompanyList> finalCompanyList = companyList;
+        spinner_company_request_create.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                RequestDetailData.CompanyList selectedCompany = finalCompanyList.get(position);
+                RequestDetailData.Company company = new RequestDetailData.Company();
+                company.setId(selectedCompany.getId());
+                company.setName(selectedCompany.getName());
+                requestDetailData.setCompany(company);
+                adapter.setSelectedPosition(position); // Cập nhật vị trí được chọn
+                Log.d("CreateRequestLateEarlyActivity", "Selected company: " + selectedCompany.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Không làm gì nếu không chọn
+            }
         });
     }
     // Sửa onActivityResult
@@ -310,6 +365,13 @@ public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
                 txt_status_request_detail.setTextColor(color);
                 int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color));
                 txt_status_request_detail.setBackgroundTintList(android.content.res.ColorStateList.valueOf(backgroundColor));
+                StatusRequest = requestDetailData.getStatus().getId();
+                if (StatusRequest > 1) {
+                    edt_name_request_create.setEnabled(false);
+                    edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                    spinner_company_request_create.setEnabled(false);
+                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                }
             }
 
             // Nhóm đề xuất
@@ -336,7 +398,10 @@ public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
             if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
             }
-
+            // Cập nhật danh sách công ty và công ty mặc định
+            if (requestDetailData.getCompanyList() != null && !requestDetailData.getCompanyList().isEmpty()) {
+                setupCompanySpinner(); // Gọi lại để cập nhật Spinner với dữ liệu mới
+            }
 
             // Loại đề xuất
             if (requestDetailData.getRequestMethod() != null) {
@@ -355,7 +420,8 @@ public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
 
             // Mức lương
             if (requestDetailData.getRecruitmentReq() != null) {
-                edt_salary_request_create.setText(Utils.formatCurrency(String.valueOf(requestDetailData.getRecruitmentReq().getSalary())));
+                long salary = requestDetailData.getRecruitmentReq().getSalary();
+                edt_salary_request_create.setText(Utils.formatNumberWithCommas((int) salary));
             }
 
             // Ngày dự định làm việc

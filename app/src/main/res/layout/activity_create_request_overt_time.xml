@@ -210,6 +210,46 @@
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
 
+                <!-- công ty" -->
+                <LinearLayout
+                    android:id="@+id/company_request_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Công ty"
+                        android:textColor="@color/secon_textcolor" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <!-- RadioGroup chọn mốc thời gian -->
+                        <Spinner
+                            android:id="@+id/spinner_company_request_create"
+                            style="@style/TextStyle_14_500"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="15dp"
+                            android:background="@drawable/input_infor"
+                            android:padding="35px"
+                            android:spinnerMode="dropdown" />
+                        <ImageView
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:src="@drawable/dropdown_icon" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
                 <!-- Đăng ký làm thêm (RecyclerView) -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -252,7 +292,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Nội dung" />
+                        android:text="Nội dung thực hiện" />
 
                     <EditText
                         android:id="@+id/edt_reason_request_create"
@@ -271,6 +311,39 @@
                         android:textColor="@color/textcolor" />
 
                 </LinearLayout>
+
+                <!-- Kết quả đạt được -->
+<!--                <LinearLayout-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:id="@+id/result_request_layout"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <TextView-->
+<!--                        android:textColor="@color/secon_textcolor"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="10dp"-->
+<!--                        android:text="Kết quả đạt được" />-->
+
+<!--                    <EditText-->
+<!--                        android:id="@+id/edt_result_request_create"-->
+<!--                        style="@style/TextStyle_14_500"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="5dp"-->
+<!--                        android:layout_marginBottom="15dp"-->
+<!--                        android:background="@drawable/bg_rounded_color_stroke"-->
+<!--                        android:gravity="top|start"-->
+<!--                        android:padding="16dp"-->
+<!--                        android:hint="Mô tả chi tiết (*)"-->
+<!--                        android:inputType="textMultiLine"-->
+<!--                        android:minLines="4"-->
+<!--                        android:scrollbars="vertical"-->
+<!--                        android:textColor="@color/textcolor" />-->
+
+<!--                </LinearLayout>-->
 
                 <!--                    quản lý trực tiếp-->
                 <LinearLayout

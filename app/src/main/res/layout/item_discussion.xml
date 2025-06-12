@@ -8,8 +8,8 @@
     android:padding="8dp">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:scaleType="centerCrop"
         app:cardCornerRadius="50dp"
         app:cardElevation="0dp">
@@ -47,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:text="Nguyễn Thu Thùy"
                     android:textColor="@color/textcolor"
-                    style="@style/TextStyle_18_600" />
+                    style="@style/TextStyle_16_600" />
 
                 <TextView
 

@@ -31,10 +31,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +58,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
+import com.example.appholaagri.adapter.CustomSpinnerAdapterCompany;
 import com.example.appholaagri.adapter.DiscussionAdapter;
 import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
@@ -111,7 +114,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
-    private LinearLayout layout_action_history_request;
+    private LinearLayout layout_action_history_request, comment_container;
     private SwitchCompat switchUrgent;
 
     private FlexboxLayout fileContainer;
@@ -135,6 +138,9 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
     RecyclerView recyclerViewDiscussion;
     DiscussionAdapter discussionAdapter = new DiscussionAdapter();
+
+
+    private Spinner spinner_company_request_create;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +168,9 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         edt_name_employye_request_create = findViewById(R.id.edt_name_employye_request_create);
         // bộ phận
         edt_part_request_create = findViewById(R.id.edt_part_request_create);
+        // công ty
+        spinner_company_request_create = findViewById(R.id.spinner_company_request_create); // Ánh xạ Spinner
+
         // ngày bắt đầu
         etNgayBatDau = findViewById(R.id.etNgayBatDau);
         // giờ bắt đầu
@@ -190,6 +199,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
         // file
         fileContainer = findViewById(R.id.file_container);
+        comment_container = findViewById(R.id.comment_container);
 
         // Ánh xạ phần thảo luận
         ivUserAvatar = findViewById(R.id.ivUserAvatar);
@@ -201,6 +211,23 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         recyclerViewDiscussion = findViewById(R.id.recyclerViewDiscussion);
         recyclerViewDiscussion.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewDiscussion.setAdapter(discussionAdapter);
+
+
+        // Đăng ký listener cho DiscussionAdapter
+        discussionAdapter.setOnFileStatusChangedListener((file, filePosition, commentPosition) -> {
+            if (requestDetailData != null && requestDetailData.getComments() != null &&
+                    commentPosition < requestDetailData.getComments().size()) {
+                Comments originalComment = requestDetailData.getComments().get(commentPosition);
+                List<Comments.FileAttachment> originalFiles = originalComment.getFileAttachments();
+                if (originalFiles != null && filePosition < originalFiles.size()) {
+                    originalFiles.get(filePosition).setStatus(file.getStatus());
+                    Log.d("CreateRequestBuyNewActivity", "Updated status in requestDetailData for file: " + file.getName() +
+                            " at comment position " + commentPosition + ", file position " + filePosition);
+                }
+            }
+        });
+
+
 
         // Lấy thông tin user và avatar (giữ nguyên logic cũ)
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE);
@@ -264,11 +291,10 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             StatusRequest = intent.getIntExtra("StatusRequest", -1);
             requestId = intent.getIntExtra("requestId", -1);
             Log.d("CreateRequestBuyNewActivity", "Vào: " + requestId);
-
-
         }
 
-
+        // Khởi tạo Spinner cho công ty
+        setupCompanySpinner();
         renderFiles(); // Hiển thị danh sách file khởi tạo
 
         // init
@@ -278,7 +304,6 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         if (requestId != -1) {
             create_request_container.setVisibility(View.GONE);
             txt_status_request_detail.setVisibility(View.VISIBLE);
-
             title_request.setText("Chi tiết đề xuất");
             getDetailRequest(requestId, token);
         } else {
@@ -344,7 +369,55 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             startActivityForResult(intent1, REQUEST_CODE_FOLLOWER);
         });
     }
+    private void setupCompanySpinner() {
+        if (requestDetailData == null) {
+            requestDetailData = new RequestDetailData();
+        }
 
+        List<RequestDetailData.CompanyList> companyList = requestDetailData.getCompanyList();
+        if (companyList == null) {
+            companyList = new ArrayList<>();
+            requestDetailData.setCompanyList(companyList);
+        }
+
+        // Tạo adapter tùy chỉnh
+        CustomSpinnerAdapterCompany adapter = new CustomSpinnerAdapterCompany(this, companyList);
+        spinner_company_request_create.setAdapter(adapter);
+
+        // Thiết lập công ty mặc định
+        RequestDetailData.Company defaultCompany = requestDetailData.getCompany();
+        int defaultPosition = -1;
+        if (defaultCompany != null && defaultCompany.getId() != 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                if (companyList.get(i) != null && companyList.get(i).getId() == defaultCompany.getId()) {
+                    defaultPosition = i;
+                    spinner_company_request_create.setSelection(i);
+                    adapter.setSelectedPosition(i);
+                    break;
+                }
+            }
+        }
+
+        // Xử lý sự kiện chọn công ty
+        List<RequestDetailData.CompanyList> finalCompanyList = companyList;
+        spinner_company_request_create.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                RequestDetailData.CompanyList selectedCompany = finalCompanyList.get(position);
+                RequestDetailData.Company company = new RequestDetailData.Company();
+                company.setId(selectedCompany.getId());
+                company.setName(selectedCompany.getName());
+                requestDetailData.setCompany(company);
+                adapter.setSelectedPosition(position); // Cập nhật vị trí được chọn
+                Log.d("CreateRequestLateEarlyActivity", "Selected company: " + selectedCompany.getName());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Không làm gì nếu không chọn
+            }
+        });
+    }
     private void setDefaultDateTime() {
         // Lấy ngày giờ hiện tại
         Calendar calendar = Calendar.getInstance();
@@ -461,11 +534,27 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                         RequestDetailData.FileAttachment newAttachment = new RequestDetailData.FileAttachment();
                         newAttachment.setName(attachment.getName());
                         newAttachment.setPath(attachment.getPath());
+                        newAttachment.setStatus(attachment.getStatus() != -1 ? attachment.getStatus() : 1); // Đồng bộ status
+                        newAttachment.setId(attachment.getId()); // Đồng bộ id nếu cần
                         uploadedFiles.add(newAttachment);
+                        Log.d("UpdateUserUI", "Added file: " + attachment.getName() + ", status: " + attachment.getStatus());
                     }
                 }
                 renderFiles();
             }
+            // Kiểm tra xem listStatus có chứa trạng thái "Duyệt" (id = 4) không
+            boolean hasApproveStatus = false;
+            if (requestDetailData.getListStatus() != null) {
+                for (ListStatus status : requestDetailData.getListStatus()) {
+                    if (status != null && status.getId() == 4) { // id = 4 là "Duyệt"
+                        hasApproveStatus = true;
+                        break;
+                    }
+                }
+            }
+
+            // Truyền thông tin vào DiscussionAdapter
+            discussionAdapter.setHasApproveStatus(hasApproveStatus);
             if (requestDetailData.getStatus() != null) {
                 txt_status_request_detail.setText(requestDetailData.getStatus().getName());
                 String colorCode = requestDetailData.getStatus().getColor();
@@ -474,7 +563,9 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 int backgroundColor = Color.argb(50, Color.red(color), Color.green(color), Color.blue(color));
                 txt_status_request_detail.setBackgroundTintList(ColorStateList.valueOf(backgroundColor));
                 StatusRequest = requestDetailData.getStatus().getId();
+
                 if (StatusRequest > 1) {
+                    comment_container.setVisibility(View.VISIBLE);
                     edt_name_request_create.setEnabled(false);
                     edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
@@ -493,6 +584,8 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                     edt_reason_request_create.setEnabled(false);
                     edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
+                    spinner_company_request_create.setEnabled(false);
+                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 //                    edt_follower_request_create.setEnabled(false);
 //            switchUrgent.setEnabled(false);
@@ -518,7 +611,10 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             if (requestDetailData.getDepartment() != null && requestDetailData.getDepartment().getName() != null) {
                 edt_part_request_create.setText(requestDetailData.getDepartment().getName());
             }
-
+            // Cập nhật danh sách công ty và công ty mặc định
+            if (requestDetailData.getCompanyList() != null && !requestDetailData.getCompanyList().isEmpty()) {
+                setupCompanySpinner(); // Gọi lại để cập nhật Spinner với dữ liệu mới
+            }
             if (requestDetailData.getStartDate() != null) {
                 etNgayBatDau.setText(requestDetailData.getStartDate());
             }
@@ -786,11 +882,11 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     private void sendModifyRequest(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         // Đồng bộ danh sách file trước khi gửi
         syncUploadedFilesWithRequestDetailData();
+        syncCommentFilesWithRequestDetailData(); // Đảm bảo trạng thái được đồng bộ
         showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         String requestData = gson.toJson(requestDetailData);
         Log.d("CreateRequestBuyNewActivity", "Data chỉnh sửa: " + requestData);
-
         Call<ApiResponse<String>> call = apiInterface.modifyRequestBase(token, requestDetailData);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
@@ -873,13 +969,15 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 }
 
                 if (existingAttachment != null) {
-                    // Giữ nguyên tên từ uploadedFiles (từ API hoặc đã upload)
+                    // Giữ nguyên các thuộc tính từ uploadedFiles
                     attachment.setName(existingAttachment.getName());
                     attachment.setPath(existingAttachment.getPath());
+                    attachment.setStatus(existingAttachment.getStatus() != -1 ? existingAttachment.getStatus() : 1);
                 } else {
-                    // File mới, lấy tên từ URI
+                    // File mới, lấy tên từ URI và đặt Status mặc định là 1
                     attachment.setName(getFileNameFromUri(fileUri));
                     attachment.setPath(filePath);
+                    attachment.setStatus(1);
                 }
                 updatedAttachments.add(attachment);
             }
@@ -889,6 +987,8 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             Log.e("SyncFiles", "requestDetailData is null");
         }
     }
+
+
     private void uploadFilesSequentially(int index, List<Uri> newFiles, Runnable onComplete) {
         if (index >= newFiles.size()) {
             hideLoading();
@@ -910,9 +1010,8 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         String fileName = getFileNameFromUri(fileUri);
         Log.d("Upload", "Uploading file: " + fileName);
         String mimeType = getContentResolver().getType(fileUri);
-        // Lấy extension từ tên file thay vì gán mặc định
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-        String mediaType = "*/*"; // Mặc định nếu không xác định
+        String mediaType = "*/*";
         if ("pdf".equals(fileExtension)) mediaType = "application/pdf";
         else if ("doc".equals(fileExtension) || "docx".equals(fileExtension)) mediaType = "application/msword";
         else if ("xls".equals(fileExtension) || "xlsx".equals(fileExtension)) mediaType = "application/vnd.ms-excel";
@@ -939,8 +1038,9 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                     if (uploadResponse.getFinalStatus() == 200) {
                         String fileUrl = "https://haloship.imediatech.com.vn/" + uploadResponse.getFileUrl();
                         RequestDetailData.FileAttachment attachment = new RequestDetailData.FileAttachment();
-                        attachment.setName(fileName); // Giữ nguyên tên file với extension gốc
+                        attachment.setName(fileName);
                         attachment.setPath(fileUrl);
+                        attachment.setStatus(1); // Mặc định Status = 1 khi upload mới
 
                         int selectedIndex = selectedFiles.indexOf(fileUri);
                         if (selectedIndex != -1) {
@@ -967,6 +1067,8 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             }
         });
     }
+
+
     private void renderFiles() {
         fileContainer.removeAllViews();
         for (int i = 0; i < selectedFiles.size(); i++) {
@@ -975,11 +1077,32 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             TextView fileNameText = itemView.findViewById(R.id.file_name);
             ImageView btnDelete = itemView.findViewById(R.id.btn_delete);
             ImageView btnDownload = itemView.findViewById(R.id.btn_download);
+            ImageView btnCheckFile = itemView.findViewById(R.id.btn_check_file);
 
             String fileName = uploadedFiles.size() > i ? uploadedFiles.get(i).getName() : getFileNameFromUri(fileUri);
             SpannableString spannableFileName = new SpannableString(fileName);
             spannableFileName.setSpan(new UnderlineSpan(), 0, fileName.length(), 0);
             fileNameText.setText(spannableFileName);
+
+            // Cập nhật icon check/uncheck dựa trên Status
+            RequestDetailData.FileAttachment attachment = uploadedFiles.size() > i ? uploadedFiles.get(i) : null;
+            if (attachment != null && attachment.getStatus() == 2) {
+                btnCheckFile.setImageResource(R.drawable.checked_radio);
+            } else {
+                btnCheckFile.setImageResource(R.drawable.bg_circle);
+            }
+
+            // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
+            int finalI = i;
+            btnCheckFile.setOnClickListener(v -> {
+                if (attachment != null) {
+                    // Chuyển đổi trạng thái
+                    attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    syncUploadedFilesWithRequestDetailData(); // Đồng bộ lại danh sách file
+                    Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
+                }
+            });
 
             String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
             if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
@@ -989,20 +1112,32 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
             }
 
-            // Handle download button click
             btnDownload.setOnClickListener(v -> {
                 String fileUrl = fileUri.toString();
                 downloadFile(fileUrl, fileName);
             });
 
+            // Kiểm tra xem listStatus có chứa trạng thái id = 4 (Duyệt) hay không
+            boolean hasApproveStatus = false;
+            if (requestDetailData != null && requestDetailData.getListStatus() != null) {
+                for (ListStatus status : requestDetailData.getListStatus()) {
+                    if (status != null && status.getId() == 4) {
+                        hasApproveStatus = true;
+                        break;
+                    }
+                }
+            }
+
+            // Điều khiển hiển thị và kích hoạt các nút
             if (requestDetailData.getStatus() != null && requestDetailData.getStatus().getId() > 1) {
-                btnDelete.setVisibility(View.GONE);
+                btnDelete.setVisibility(View.GONE); // Ẩn nút xóa nếu request đã được xử lý
+                btnCheckFile.setEnabled(hasApproveStatus); // Kích hoạt nút check chỉ khi có trạng thái Duyệt
             } else {
-                btnDelete.setVisibility(View.VISIBLE);
-                int finalI = i;
+                btnDelete.setVisibility(View.VISIBLE); // Hiển thị nút xóa nếu request chưa được xử lý
+                btnCheckFile.setEnabled(true); // Kích hoạt nút check trong trạng thái tạo mới
                 btnDelete.setOnClickListener(v -> {
                     selectedFiles.remove(finalI);
-                    uploadedFiles.removeIf(attachment -> attachment.getPath().equals(fileUri.toString()));
+                    uploadedFiles.removeIf(uploadFile -> uploadFile.getPath().equals(fileUri.toString()));
                     syncUploadedFilesWithRequestDetailData();
                     renderFiles();
                 });
@@ -1402,9 +1537,10 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         commentFileContainer.removeAllViews();
         for (int i = 0; i < selectedCommentFiles.size(); i++) {
             Uri fileUri = selectedCommentFiles.get(i);
-            View itemView = getLayoutInflater().inflate(R.layout.item_file_preview, commentFileContainer, false);
+            View itemView = getLayoutInflater().inflate(R.layout.item_file_comment_preview, commentFileContainer, false);
             TextView fileNameText = itemView.findViewById(R.id.file_name);
             ImageView btnDelete = itemView.findViewById(R.id.btn_delete);
+            ImageView btnDownload = itemView.findViewById(R.id.btn_download);
 
             String fileName = getFileNameFromUri(fileUri);
             SpannableString spannableFileName = new SpannableString(fileName);
@@ -1417,6 +1553,12 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 selectedCommentFiles.remove(finalI);
                 uploadedCommentFiles.removeIf(attachment -> attachment.getPath().equals(fileUri.toString()));
                 renderCommentFiles();
+            });
+
+            // Handle download button click
+            btnDownload.setOnClickListener(v -> {
+                String fileUrl = fileUri.toString();
+                downloadFile(fileUrl, fileName);
             });
 
             commentFileContainer.addView(itemView);
@@ -1503,6 +1645,23 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         });
 
     }
+
+    // Phương thức mới để đồng bộ trạng thái file trong comments (giữ nguyên để kiểm tra)
+    private void syncCommentFilesWithRequestDetailData() {
+        if (requestDetailData != null && requestDetailData.getComments() != null) {
+            for (int i = 0; i < requestDetailData.getComments().size(); i++) {
+                Comments comment = requestDetailData.getComments().get(i);
+                List<Comments.FileAttachment> fileAttachments = comment.getFileAttachments();
+                if (fileAttachments != null) {
+                    for (int j = 0; j < fileAttachments.size(); j++) {
+                        Log.d("SyncCommentFiles", "Synced status for file at comment " + i + ", file " + j + ": " + fileAttachments.get(j).getStatus());
+                    }
+                }
+            }
+        }
+    }
+
+
 
     public void onBackPressed() {
         super.onBackPressed();

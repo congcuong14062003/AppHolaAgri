@@ -219,6 +219,47 @@
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
 
+
+                <!-- công ty" -->
+                <LinearLayout
+                    android:id="@+id/company_request_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Công ty"
+                        android:textColor="@color/secon_textcolor" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <!-- RadioGroup chọn mốc thời gian -->
+                        <Spinner
+                            android:id="@+id/spinner_company_request_create"
+                            style="@style/TextStyle_14_500"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="15dp"
+                            android:background="@drawable/input_infor"
+                            android:padding="35px"
+                            android:spinnerMode="dropdown" />
+                        <ImageView
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:src="@drawable/dropdown_icon" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
                 <!--Loại đề xuất-->
                 <LinearLayout
                     android:id="@+id/type_request_layout"

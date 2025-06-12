@@ -35,14 +35,14 @@
             android:id="@+id/txtStaffName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lữ Văn Quân"
+            android:text=""
             style="@style/TextStyle_16_600"
             android:textColor="@color/textcolor" />
         <TextView
             android:id="@+id/txtStaffCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="KS01246 - Kỹ sư nông nghiệp"
+            android:text=""
             style="@style/TextStyle_14_400"
             android:textColor="@color/textcolor"
             android:layout_marginBottom="24dp" />
