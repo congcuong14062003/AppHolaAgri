@@ -26,18 +26,23 @@ public class BreakTimeOverTimeAdapter extends RecyclerView.Adapter<BreakTimeOver
     private List<BreakTime> breakTimes;
     private List<ListDayReq> listDayReqs;
     private CreateRequestOvertTimeActivity createRequestOvertTimeActivity;
-    private int statusRequest;
-    Context context;
+    private boolean isEdit; // Thay statusRequest bằng isEdit
+    private Context context;
 
-    public BreakTimeOverTimeAdapter(List<BreakTime> breakTimes, Context context, List<ListDayReq> listDayReqs, CreateRequestOvertTimeActivity activity, int statusRequest) {
+    // Cập nhật constructor để nhận isEdit
+    public BreakTimeOverTimeAdapter(List<BreakTime> breakTimes, Context context, List<ListDayReq> listDayReqs, CreateRequestOvertTimeActivity activity, boolean isEdit) {
         this.breakTimes = breakTimes;
         this.listDayReqs = listDayReqs;
         this.createRequestOvertTimeActivity = activity;
-        this.statusRequest = statusRequest;
+        this.isEdit = isEdit;
         this.context = context;
-
     }
 
+    // Phương thức để cập nhật isEdit và làm mới giao diện
+    public void setIsEdit(boolean isEdit) {
+        this.isEdit = isEdit;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
@@ -50,65 +55,61 @@ public class BreakTimeOverTimeAdapter extends RecyclerView.Adapter<BreakTimeOver
     public void onBindViewHolder(@NonNull BreakTimeViewHolder holder, int position) {
         BreakTime breakTime = breakTimes.get(position);
         if (breakTime.getStartTime().isEmpty() || breakTime.getEndTime().isEmpty()) {
-            holder.etBreakTimeTimeOvertime.setText("");  // Giữ nguyên hint
+            holder.etBreakTimeTimeOvertime.setText(""); // Giữ nguyên hint
         } else {
             holder.etBreakTimeTimeOvertime.setText(breakTime.getStartTime() + " - " + breakTime.getEndTime());
         }
-        // Kiểm tra statusRequest để bật/tắt các trường nhập
-        if(statusRequest > 2) {
+
+        // Kiểm tra isEdit để bật/tắt các trường nhập và nút
+        if (!isEdit) {
             holder.etBreakTimeTimeOvertime.setEnabled(false);
             holder.etBreakTimeTimeOvertime.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
             holder.deleteBreakBtn.setVisibility(View.GONE);
             holder.txt_time_overtime.setVisibility(View.VISIBLE);
+        } else {
+            holder.etBreakTimeTimeOvertime.setEnabled(true);
+            holder.etBreakTimeTimeOvertime.setBackgroundTintList(null); // Reset background tint
+            holder.deleteBreakBtn.setVisibility(View.VISIBLE);
+            holder.txt_time_overtime.setVisibility(View.GONE);
+
+            // Xử lý khi chọn thời gian nghỉ giữa giờ
+            holder.etBreakTimeTimeOvertime.setOnClickListener(v -> {
+                TimePickerDialog startTimePicker = new TimePickerDialog(context, (view, startHour, startMinute) -> {
+                    String startTime = String.format("%02d:%02d", startHour, startMinute);
+                    breakTime.setStartTime(startTime);
+
+                    TimePickerDialog endTimePicker = new TimePickerDialog(context, (view2, endHour, endMinute) -> {
+                        String endTime = String.format("%02d:%02d", endHour, endMinute);
+                        int startTotalMinutes = startHour * 60 + startMinute;
+                        int endTotalMinutes = endHour * 60 + endMinute;
+
+                        if (endTotalMinutes <= startTotalMinutes) {
+                            CustomToast.showCustomToast(context, "Giờ kết thúc phải lớn hơn giờ bắt đầu!");
+                        } else {
+                            breakTime.setEndTime(endTime);
+                            holder.etBreakTimeTimeOvertime.setText(startTime + " - " + endTime);
+                            createRequestOvertTimeActivity.updateRequestDetailData();
+                        }
+                    }, startHour + 1, startMinute, true); // Gợi ý giờ kết thúc lớn hơn giờ bắt đầu
+                    endTimePicker.show();
+                }, 8, 0, true);
+                startTimePicker.show();
+            });
+
+            // Xử lý nút xóa nghỉ giữa giờ
+            holder.deleteBreakBtn.setOnClickListener(v -> {
+                breakTimes.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, breakTimes.size());
+                createRequestOvertTimeActivity.updateRequestDetailData();
+            });
         }
-
-
-        // Xử lý khi chọn thời gian nghỉ giữa giờ
-        holder.etBreakTimeTimeOvertime.setOnClickListener(v -> {
-            TimePickerDialog startTimePicker = new TimePickerDialog(holder.itemView.getContext(), (view, startHour, startMinute) -> {
-                String startTime = String.format("%02d:%02d", startHour, startMinute);
-                breakTime.setStartTime(startTime);
-
-                TimePickerDialog endTimePicker = new TimePickerDialog(holder.itemView.getContext(), (view2, endHour, endMinute) -> {
-                    String endTime = String.format("%02d:%02d", endHour, endMinute);
-
-                    // Chuyển đổi giờ & phút thành số phút từ đầu ngày
-                    int startTotalMinutes = startHour * 60 + startMinute;
-                    int endTotalMinutes = endHour * 60 + endMinute;
-
-                    if (endTotalMinutes <= startTotalMinutes) {
-                        // Giờ kết thúc không hợp lệ, hiển thị lỗi
-                        CustomToast.showCustomToast(context, "Giờ kết thúc phải lớn hơn giờ bắt đầu!");
-
-                    } else {
-                        // Cập nhật giờ nếu hợp lệ
-                        breakTime.setEndTime(endTime);
-                        holder.etBreakTimeTimeOvertime.setText(startTime + " - " + endTime);
-                        createRequestOvertTimeActivity.updateRequestDetailData();
-                    }
-                }, startHour + 1, startMinute, true); // Gợi ý giờ kết thúc lớn hơn giờ bắt đầu
-                endTimePicker.show();
-            }, 8, 0, true);
-            startTimePicker.show();
-        });
-
-
-        // Xử lý nút xóa nghỉ giữa giờ
-        holder.deleteBreakBtn.setOnClickListener(v -> {
-            breakTimes.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, breakTimes.size());
-            notifyDataSetChanged();
-            createRequestOvertTimeActivity.updateRequestDetailData();
-        });
     }
 
     public void updateBreakTimes(List<BreakTime> newBreakTimes) {
         this.breakTimes = newBreakTimes;
         notifyDataSetChanged();
     }
-
-
 
     @Override
     public int getItemCount() {
@@ -119,6 +120,7 @@ public class BreakTimeOverTimeAdapter extends RecyclerView.Adapter<BreakTimeOver
         EditText etBreakTimeTimeOvertime;
         ImageView deleteBreakBtn;
         TextView txt_time_overtime;
+
         public BreakTimeViewHolder(@NonNull View itemView) {
             super(itemView);
             etBreakTimeTimeOvertime = itemView.findViewById(R.id.etBreakTimeTimeOvertime);

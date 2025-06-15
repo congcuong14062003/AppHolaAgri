@@ -8,6 +8,8 @@ public class ListDayReq implements Serializable {
         private String day;
         private String endTime;
         private String startTime;
+        private String purpose;
+        private String result;
         public ListDayReq() {
 
         }
@@ -17,6 +19,14 @@ public class ListDayReq implements Serializable {
             this.startTime = startTime;
             this.endTime = endTime;
         }
+    public ListDayReq(List<BreakTime> breakTimes, String day, String startTime, String endTime, String purpose, String result) {
+        this.breakTimes = breakTimes;
+        this.day = day;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.purpose = purpose;
+        this.result = result;
+    }
 
     public List<BreakTime> getBreakTimes() {
         return breakTimes;
@@ -48,5 +58,21 @@ public class ListDayReq implements Serializable {
 
     public void setStartTime(String startTime) {
         this.startTime = startTime;
+    }
+
+    public String getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

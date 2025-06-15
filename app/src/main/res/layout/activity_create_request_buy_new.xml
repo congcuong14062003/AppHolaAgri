@@ -492,7 +492,6 @@
                         android:padding="35px"
                         android:textColor="@color/textcolor" />
                 </LinearLayout>
-                <!--Phần file ở đây-->
                 <!-- File Attachment -->
                 <LinearLayout
                     android:id="@+id/file_layout"
@@ -547,6 +546,7 @@
 
                 <!-- Thảo luận -->
                 <LinearLayout
+                    android:visibility="visible"
                     android:id="@+id/discussion_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -571,7 +571,7 @@
 
                     <!-- Phần nhập thảo luận -->
                     <LinearLayout
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:id="@+id/comment_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
