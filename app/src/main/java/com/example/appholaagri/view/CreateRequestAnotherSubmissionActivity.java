@@ -31,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -147,6 +148,7 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_another_submission);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         // Ánh xạ
         create_request_container = findViewById(R.id.create_request_container);
@@ -947,7 +949,7 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
             if (attachment != null && attachment.getStatus() == 2) {
                 btnCheckFile.setImageResource(R.drawable.checked_radio);
             } else {
-                btnCheckFile.setImageResource(R.drawable.bg_circle);
+                btnCheckFile.setImageResource(R.drawable.no_check_radio_create);
             }
 
             // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
@@ -955,7 +957,7 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
             btnCheckFile.setOnClickListener(v -> {
                 if (attachment != null) {
                     attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
-                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.no_check_radio_create);
                     syncUploadedFilesWithRequestDetailData();
                     Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
                 }
@@ -1539,10 +1541,18 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
                 downloadFile(fileUrl, fileName);
             });
 
+            // Xử lý click vào tên file để mở file hoặc hiển thị tùy chọn
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
+            } else {
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
+            }
+
             commentFileContainer.addView(itemView);
         }
     }
-
 
     private void uploadCommentFilesSequentially(int index, List<Uri> newFiles, Runnable onComplete) {
         if (index >= newFiles.size()) {
@@ -1596,7 +1606,7 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
-                        attachment.setStatus(2); // Theo cấu trúc request, status = 2
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
                         uploadedCommentFiles.add(attachment);
 
                         // Cập nhật selectedCommentFiles với fileUrl tại vị trí index

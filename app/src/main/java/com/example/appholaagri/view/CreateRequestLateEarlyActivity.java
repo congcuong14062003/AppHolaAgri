@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -161,6 +162,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_late_early);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         // ánh xạ
         // container
         create_request_container = findViewById(R.id.create_request_container);
@@ -283,7 +285,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ivSend.setEnabled(s.length() > 0 || !selectedCommentFiles.isEmpty());
+                ivSend.setEnabled(s.length() > 0); // Chỉ bật khi có nội dung
             }
 
             @Override
@@ -293,14 +295,16 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
         ivSend.setOnClickListener(v -> {
             String content = edtDiscussionInput.getText().toString().trim();
-            if (!content.isEmpty() || !selectedCommentFiles.isEmpty()) {
-                sendComment(content, uploadedCommentFiles);
-                edtDiscussionInput.setText("");
-                ivSend.setEnabled(false);
-                selectedCommentFiles.clear();
-                uploadedCommentFiles.clear();
-                renderCommentFiles(); // Cập nhật UI sau khi gửi
+            if (content.isEmpty()) {
+                CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, "Vui lòng nhập nội dung thảo luận");
+                return;
             }
+            sendComment(content, uploadedCommentFiles);
+            edtDiscussionInput.setText("");
+            ivSend.setEnabled(false);
+            selectedCommentFiles.clear();
+            uploadedCommentFiles.clear();
+            renderCommentFiles(); // Cập nhật UI sau khi gửi
         });
 
         ivAddFile.setOnClickListener(v -> openGalleryForComment());
@@ -628,12 +632,14 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
     // init data
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
+        showLoading();
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -661,6 +667,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 String errorMessage = t.getMessage();
                 Log.e("ApiHelper", errorMessage);
                 CustomToast.showCustomToast(CreateRequestLateEarlyActivity.this, errorMessage);
@@ -670,14 +677,14 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
     // nếu có id lấy data chi tiết của nháp và từ chối
     private void getDetailRequest(int requestId, String token) {
-        Log.d("CreateRequestLateEarlyActivity", "requestIddd: " + requestId);
+        showLoading();
         // Gọi API
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
-
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -711,6 +718,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 Log.d("CreateRequestLateEarlyActivity", "vào 2");
 
                 String errorMessage = t.getMessage();
@@ -821,6 +829,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             // Kiểm tra trạng thái chỉnh sửa
             isEdit = hasEditStatus;
             if (!isEdit) {
+                comment_container.setVisibility(View.VISIBLE);
                 edt_name_request_create.setEnabled(false);
                 edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                 select_method_request.setEnabled(false);
@@ -850,6 +859,8 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                 spinner_company_request_create.setEnabled(false);
                 spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
+            } else {
+                comment_container.setVisibility(View.GONE);
             }
 
             if (requestDetailData.getRequestName() != null) {
@@ -1435,7 +1446,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             if (attachment != null && attachment.getStatus() == 2) {
                 btnCheckFile.setImageResource(R.drawable.checked_radio);
             } else {
-                btnCheckFile.setImageResource(R.drawable.bg_circle);
+                btnCheckFile.setImageResource(R.drawable.no_check_radio_create);
             }
 
             // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
@@ -1443,7 +1454,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
             btnCheckFile.setOnClickListener(v -> {
                 if (attachment != null) {
                     attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
-                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.no_check_radio_create);
                     syncUploadedFilesWithRequestDetailData();
                     Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
                 }
@@ -2027,10 +2038,18 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                 downloadFile(fileUrl, fileName);
             });
 
+            // Xử lý click vào tên file để mở file hoặc hiển thị tùy chọn
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
+            } else {
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
+            }
+
             commentFileContainer.addView(itemView);
         }
     }
-
 
     private void uploadCommentFilesSequentially(int index, List<Uri> newFiles, Runnable onComplete) {
         if (index >= newFiles.size()) {
@@ -2084,7 +2103,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
-                        attachment.setStatus(2); // Theo cấu trúc request, status = 2
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
                         uploadedCommentFiles.add(attachment);
 
                         // Cập nhật selectedCommentFiles với fileUrl tại vị trí index

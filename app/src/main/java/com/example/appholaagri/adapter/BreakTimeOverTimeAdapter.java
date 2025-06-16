@@ -4,6 +4,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
@@ -42,6 +44,7 @@ public class BreakTimeOverTimeAdapter extends RecyclerView.Adapter<BreakTimeOver
     public void setIsEdit(boolean isEdit) {
         this.isEdit = isEdit;
         notifyDataSetChanged();
+        Log.d("BreakTimeOverTimeAdapter", "isEdit: " + isEdit);
     }
 
     @NonNull
@@ -69,6 +72,7 @@ public class BreakTimeOverTimeAdapter extends RecyclerView.Adapter<BreakTimeOver
         } else {
             holder.etBreakTimeTimeOvertime.setEnabled(true);
             holder.etBreakTimeTimeOvertime.setBackgroundTintList(null); // Reset background tint
+            holder.etBreakTimeTimeOvertime.setBackground(ContextCompat.getDrawable(context, R.drawable.input_infor));
             holder.deleteBreakBtn.setVisibility(View.VISIBLE);
             holder.txt_time_overtime.setVisibility(View.GONE);
 

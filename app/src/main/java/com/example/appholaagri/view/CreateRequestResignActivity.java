@@ -31,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -149,6 +150,7 @@ public class CreateRequestResignActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_resign);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         // Ánh xạ
         create_request_container = findViewById(R.id.create_request_container);
@@ -241,7 +243,7 @@ public class CreateRequestResignActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ivSend.setEnabled(s.length() > 0 || !selectedCommentFiles.isEmpty());
+                ivSend.setEnabled(s.length() > 0); // Chỉ bật khi có nội dung
             }
 
             @Override
@@ -251,14 +253,16 @@ public class CreateRequestResignActivity extends BaseActivity {
 
         ivSend.setOnClickListener(v -> {
             String content = edtDiscussionInput.getText().toString().trim();
-            if (!content.isEmpty() || !selectedCommentFiles.isEmpty()) {
-                sendComment(content, uploadedCommentFiles);
-                edtDiscussionInput.setText("");
-                ivSend.setEnabled(false);
-                selectedCommentFiles.clear();
-                uploadedCommentFiles.clear();
-                renderCommentFiles(); // Cập nhật UI sau khi gửi
+            if (content.isEmpty()) {
+                CustomToast.showCustomToast(CreateRequestResignActivity.this, "Vui lòng nhập nội dung thảo luận");
+                return;
             }
+            sendComment(content, uploadedCommentFiles);
+            edtDiscussionInput.setText("");
+            ivSend.setEnabled(false);
+            selectedCommentFiles.clear();
+            uploadedCommentFiles.clear();
+            renderCommentFiles(); // Cập nhật UI sau khi gửi
         });
 
         ivAddFile.setOnClickListener(v -> openGalleryForComment());
@@ -544,11 +548,13 @@ public class CreateRequestResignActivity extends BaseActivity {
     }
 
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -571,17 +577,20 @@ public class CreateRequestResignActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 Log.e("ApiHelper", t.getMessage());
             }
         });
     }
 
     private void getDetailRequest(int requestId, String token) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -603,6 +612,7 @@ public class CreateRequestResignActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 Log.e("ApiHelper", t.getMessage());
             }
         });
@@ -666,6 +676,7 @@ public class CreateRequestResignActivity extends BaseActivity {
             // Kiểm tra trạng thái chỉnh sửa
             isEdit = hasEditStatus;
             if (!isEdit) {
+                comment_container.setVisibility(View.VISIBLE);
                 edt_name_request_create.setEnabled(false);
                 edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                 etNgayBatDau.setEnabled(false);
@@ -680,10 +691,10 @@ public class CreateRequestResignActivity extends BaseActivity {
                 edt_number_of_day_notices.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                 edt_reason_request_create.setEnabled(false);
                 edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
                 spinner_company_request_create.setEnabled(false);
                 spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
+            } else {
+                comment_container.setVisibility(View.GONE);
             }
 
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
@@ -1204,7 +1215,7 @@ public class CreateRequestResignActivity extends BaseActivity {
             if (attachment != null && attachment.getStatus() == 2) {
                 btnCheckFile.setImageResource(R.drawable.checked_radio);
             } else {
-                btnCheckFile.setImageResource(R.drawable.bg_circle);
+                btnCheckFile.setImageResource(R.drawable.no_check_radio_create);
             }
 
             // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
@@ -1212,7 +1223,7 @@ public class CreateRequestResignActivity extends BaseActivity {
             btnCheckFile.setOnClickListener(v -> {
                 if (attachment != null) {
                     attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
-                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.no_check_radio_create);
                     syncUploadedFilesWithRequestDetailData();
                     Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
                 }
@@ -1796,10 +1807,18 @@ public class CreateRequestResignActivity extends BaseActivity {
                 downloadFile(fileUrl, fileName);
             });
 
+            // Xử lý click vào tên file để mở file hoặc hiển thị tùy chọn
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
+            } else {
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
+            }
+
             commentFileContainer.addView(itemView);
         }
     }
-
 
     private void uploadCommentFilesSequentially(int index, List<Uri> newFiles, Runnable onComplete) {
         if (index >= newFiles.size()) {
@@ -1853,7 +1872,7 @@ public class CreateRequestResignActivity extends BaseActivity {
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
-                        attachment.setStatus(2); // Theo cấu trúc request, status = 2
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
                         uploadedCommentFiles.add(attachment);
 
                         // Cập nhật selectedCommentFiles với fileUrl tại vị trí index

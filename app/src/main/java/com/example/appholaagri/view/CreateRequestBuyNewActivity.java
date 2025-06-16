@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -147,6 +148,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_buy_new);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         // ánh xạ
         // container
@@ -454,11 +456,13 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     }
 
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -479,6 +483,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 String errorMessage = t.getMessage();
                 Log.e("ApiHelper", errorMessage);
             }
@@ -486,11 +491,13 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     }
 
     private void getDetailRequest(int requestId, String token) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -514,6 +521,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 String errorMessage = t.getMessage();
                 Log.e("ApiHelper", errorMessage);
             }
@@ -578,7 +586,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
             isEdit = hasEditStatus;
             if (!isEdit) {
-                discussion_layout.setVisibility(View.VISIBLE);
+                comment_container.setVisibility(View.VISIBLE);
                 edt_name_request_create.setEnabled(false);
                 edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
@@ -599,6 +607,8 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
                 spinner_company_request_create.setEnabled(false);
                 spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+            } else {
+                comment_container.setVisibility(View.GONE);
             }
 
 
@@ -1103,7 +1113,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             if (attachment != null && attachment.getStatus() == 2) {
                 btnCheckFile.setImageResource(R.drawable.checked_radio);
             } else {
-                btnCheckFile.setImageResource(R.drawable.bg_circle);
+                btnCheckFile.setImageResource(R.drawable.no_check_radio_create);
             }
 
             // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
@@ -1111,7 +1121,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
             btnCheckFile.setOnClickListener(v -> {
                 if (attachment != null) {
                     attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
-                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.no_check_radio_create);
                     syncUploadedFilesWithRequestDetailData();
                     Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
                 }
@@ -1695,6 +1705,15 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 downloadFile(fileUrl, fileName);
             });
 
+            // Xử lý click vào tên file để mở file hoặc hiển thị tùy chọn
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
+            } else {
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
+            }
+
             commentFileContainer.addView(itemView);
         }
     }
@@ -1752,7 +1771,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
-                        attachment.setStatus(2); // Theo cấu trúc request, status = 2
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
                         uploadedCommentFiles.add(attachment);
 
                         // Cập nhật selectedCommentFiles với fileUrl tại vị trí index

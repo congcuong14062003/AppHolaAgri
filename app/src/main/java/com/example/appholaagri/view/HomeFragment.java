@@ -24,6 +24,7 @@ import com.example.appholaagri.model.UserData.UserData;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.LoadingDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class HomeFragment extends BaseFragment {
     private ImageView avtUser;
     private ConstraintLayout containerHome;
     private List<MenuHomeResponse.MenuItem> menuList; // Lưu trữ dữ liệu menu từ API
-
+    private LoadingDialog loadingDialog;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -58,6 +59,8 @@ public class HomeFragment extends BaseFragment {
         tvTaskManagementTitle = view.findViewById(R.id.tv_task_management_title);
         tvRequestProposalTitle = view.findViewById(R.id.tv_request_proposal_title);
 
+
+        loadingDialog = new LoadingDialog(getContext());
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
         Log.d("HomeFragment", "token: " + token);
@@ -221,13 +224,14 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void getMenuData(String token, String screenCode) {
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
         Call<ApiResponse<List<MenuHomeResponse.MenuItem>>> call = apiInterface.menuHome(token, screenCode);
         call.enqueue(new Callback<ApiResponse<List<MenuHomeResponse.MenuItem>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<MenuHomeResponse.MenuItem>>> call, Response<ApiResponse<List<MenuHomeResponse.MenuItem>>> response) {
+                loadingDialog.hide();
                 if (!isAdded()) return;
-
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<MenuHomeResponse.MenuItem>> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
@@ -253,6 +257,7 @@ public class HomeFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<ApiResponse<List<MenuHomeResponse.MenuItem>>> call, Throwable t) {
+                loadingDialog.hide();
                 Log.e("HomeFragment", "Error: " + t.getMessage());
                 if (isAdded()) {
                     CustomToast.showCustomToast(requireContext(), "Lỗi: " + t.getMessage());

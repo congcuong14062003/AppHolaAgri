@@ -19,17 +19,16 @@
         android:src="@drawable/file_icon" />
     <TextView
         android:id="@+id/file_name"
-        style="@style/TextStyle_14_400"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ellipsize="middle"
         android:maxWidth="200dp"
-        android:padding="8dp"
+        android:ellipsize="middle"
         android:singleLine="true"
-        android:text="Tờ trình đề xuất"
-        android:textColor="@color/secon_textcolor"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="@color/translucent_blue"
+        android:padding="8dp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/btn_download"

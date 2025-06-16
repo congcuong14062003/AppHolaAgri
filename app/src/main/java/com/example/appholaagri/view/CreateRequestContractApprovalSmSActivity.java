@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -145,6 +146,7 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_contract_approval_sms_sactivity);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         // Ánh xạ
         create_request_container = findViewById(R.id.create_request_container);
@@ -225,7 +227,6 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
                 }
             });
         }
-        // Cấu hình sự kiện
         edtDiscussionInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -233,7 +234,7 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ivSend.setEnabled(s.length() > 0 || !selectedCommentFiles.isEmpty());
+                ivSend.setEnabled(s.length() > 0); // Chỉ bật khi có nội dung
             }
 
             @Override
@@ -243,14 +244,16 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
 
         ivSend.setOnClickListener(v -> {
             String content = edtDiscussionInput.getText().toString().trim();
-            if (!content.isEmpty() || !selectedCommentFiles.isEmpty()) {
-                sendComment(content, uploadedCommentFiles);
-                edtDiscussionInput.setText("");
-                ivSend.setEnabled(false);
-                selectedCommentFiles.clear();
-                uploadedCommentFiles.clear();
-                renderCommentFiles(); // Cập nhật UI sau khi gửi
+            if (content.isEmpty()) {
+                CustomToast.showCustomToast(CreateRequestContractApprovalSmSActivity.this, "Vui lòng nhập nội dung thảo luận");
+                return;
             }
+            sendComment(content, uploadedCommentFiles);
+            edtDiscussionInput.setText("");
+            ivSend.setEnabled(false);
+            selectedCommentFiles.clear();
+            uploadedCommentFiles.clear();
+            renderCommentFiles(); // Cập nhật UI sau khi gửi
         });
 
         ivAddFile.setOnClickListener(v -> openGalleryForComment());
@@ -956,7 +959,7 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
             if (attachment != null && attachment.getStatus() == 2) {
                 btnCheckFile.setImageResource(R.drawable.checked_radio);
             } else {
-                btnCheckFile.setImageResource(R.drawable.bg_circle);
+                btnCheckFile.setImageResource(R.drawable.no_check_radio_create);
             }
 
             // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
@@ -964,7 +967,7 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
             btnCheckFile.setOnClickListener(v -> {
                 if (attachment != null) {
                     attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
-                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.no_check_radio_create);
                     syncUploadedFilesWithRequestDetailData();
                     Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
                 }
@@ -1548,6 +1551,15 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
                 downloadFile(fileUrl, fileName);
             });
 
+            // Xử lý click vào tên file để mở file hoặc hiển thị tùy chọn
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
+            } else {
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
+            }
+
             commentFileContainer.addView(itemView);
         }
     }
@@ -1605,7 +1617,7 @@ public class CreateRequestContractApprovalSmSActivity extends AppCompatActivity 
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
-                        attachment.setStatus(2); // Theo cấu trúc request, status = 2
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
                         uploadedCommentFiles.add(attachment);
 
                         // Cập nhật selectedCommentFiles với fileUrl tại vị trí index

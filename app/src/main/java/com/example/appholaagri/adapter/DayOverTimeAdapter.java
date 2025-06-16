@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,19 +32,25 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
     private Context context;
     private CreateRequestOvertTimeActivity createRequestOvertTimeActivity;
     private boolean isEdit; // Thay statusRequest bằng isEdit
-
+    private RecyclerView dayRecyclerView; // Thêm biến để lưu tham chiếu đến dayRecyclerView
+    private List<BreakTimeOverTimeAdapter> breakTimeAdapters = new ArrayList<>(); // Lưu trữ các adapter
     // Cập nhật constructor để nhận isEdit
-    public DayOverTimeAdapter(List<ListDayReq> dayReqs, Context context, CreateRequestOvertTimeActivity activity, boolean isEdit) {
+    public DayOverTimeAdapter(List<ListDayReq> dayReqs, Context context, CreateRequestOvertTimeActivity activity, boolean isEdit, RecyclerView dayRecyclerView) {
         this.dayReqs = dayReqs;
         this.context = context;
         this.createRequestOvertTimeActivity = activity;
         this.isEdit = isEdit;
+        this.dayRecyclerView = dayRecyclerView;
     }
 
     // Phương thức để cập nhật isEdit và làm mới giao diện
     public void setIsEdit(boolean isEdit) {
         this.isEdit = isEdit;
-        notifyDataSetChanged(); // Làm mới adapter để cập nhật giao diện
+        notifyDataSetChanged();
+        // Cập nhật isEdit cho tất cả BreakTimeOverTimeAdapter
+        for (BreakTimeOverTimeAdapter adapter : breakTimeAdapters) {
+            adapter.setIsEdit(isEdit);
+        }
     }
 
     @NonNull
@@ -82,6 +90,25 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
             holder.addBreakTimeBtn.setVisibility(View.GONE);
             holder.delete_day.setVisibility(View.GONE);
         } else {
+            holder.etDateOvertime.setEnabled(true);
+            holder.etDateOvertime.setBackground(ContextCompat.getDrawable(context, R.drawable.rounded_background));
+            holder.etDateOvertime.setBackgroundTintList(null);
+
+            holder.etTimeOvertime.setEnabled(true);
+            holder.etTimeOvertime.setBackground(ContextCompat.getDrawable(context, R.drawable.rounded_background_right));
+            holder.etTimeOvertime.setBackgroundTintList(null);
+
+            holder.edt_content_request_create.setEnabled(true);
+            holder.edt_content_request_create.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_rounded_color_stroke));
+            holder.edt_content_request_create.setBackgroundTintList(null);
+
+            holder.edt_result_request_create.setEnabled(true);
+            holder.edt_result_request_create.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_rounded_color_stroke));
+            holder.edt_result_request_create.setBackgroundTintList(null);
+
+
+            holder.addBreakTimeBtn.setVisibility(View.VISIBLE);
+            holder.delete_day.setVisibility(View.VISIBLE);
             // Lắng nghe sự thay đổi của content
             holder.edt_content_request_create.addTextChangedListener(new android.text.TextWatcher() {
                 @Override
@@ -134,6 +161,8 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
         if (holder.breakTimeRecycler.getAdapter() == null) {
             BreakTimeOverTimeAdapter breakTimeAdapter = new BreakTimeOverTimeAdapter(dayReq.getBreakTimes(), context, dayReqs, createRequestOvertTimeActivity, isEdit);
             holder.breakTimeRecycler.setAdapter(breakTimeAdapter);
+            breakTimeAdapter.setIsEdit(isEdit);
+            breakTimeAdapters.add(breakTimeAdapter); // Thêm vào danh sách
         } else {
             ((BreakTimeOverTimeAdapter) holder.breakTimeRecycler.getAdapter()).updateBreakTimes(dayReq.getBreakTimes());
         }

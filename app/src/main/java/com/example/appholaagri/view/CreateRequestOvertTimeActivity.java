@@ -29,6 +29,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -60,6 +61,7 @@ import com.example.appholaagri.adapter.DiscussionAdapter;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
+import com.example.appholaagri.model.ApiResponse.ErrorResponse;
 import com.example.appholaagri.model.RequestDetailModel.BreakTime;
 import com.example.appholaagri.model.RequestDetailModel.Comments;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
@@ -122,7 +124,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
     private RecyclerView recyclerViewApprovalLogs;
     private ActionRequestDetailAdapter adapter;
     private CoordinatorLayout create_request_container;
-    private LinearLayout layout_action_history_request, comment_container, discussion_layout;
+    private LinearLayout layout_action_history_request, comment_container, discussion_layout, feature_layout;
     private Dialog loadingDialog;
     private SwitchCompat switchUrgent;
     private Spinner spinner_company_request_create;
@@ -139,7 +141,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
 
     // Thêm các biến mới cho phần thảo luận
-    private ImageView ivUserAvatar, ivAddText, ivAddFile, ivSend;
+    private ImageView ivUserAvatar, ivAddText, ivAddFile, ivSend, simple, complicated;
     private EditText edtDiscussionInput;
     private FlexboxLayout commentFileContainer;
     private List<Uri> selectedCommentFiles = new ArrayList<>(); // Lưu file đính kèm cho comment
@@ -150,16 +152,18 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
     RecyclerView recyclerViewDiscussion;
     DiscussionAdapter discussionAdapter = new DiscussionAdapter();
     private boolean isEdit = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_overt_time);
-
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         // Ánh xạ
         create_request_container = findViewById(R.id.create_request_container);
         backBtnReview = findViewById(R.id.backBtnReview_create);
         title_request = findViewById(R.id.title_request);
+        select_method_request = findViewById(R.id.select_method_request);
         txt_status_request_detail = findViewById(R.id.txt_status_request_detail);
         txt_type_request_create = findViewById(R.id.txt_type_request_create);
         edt_name_request_create = findViewById(R.id.edt_name_request_create);
@@ -180,6 +184,11 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
         layout_action_history_request = findViewById(R.id.layout_action_history_request);
+
+
+        feature_layout = findViewById(R.id.feature_layout);
+        simple = findViewById(R.id.simple);
+        complicated = findViewById(R.id.complicated);
 
 
         // file
@@ -244,7 +253,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ivSend.setEnabled(s.length() > 0 || !selectedCommentFiles.isEmpty());
+                ivSend.setEnabled(s.length() > 0); // Chỉ bật khi có nội dung
             }
 
             @Override
@@ -254,14 +263,16 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
         ivSend.setOnClickListener(v -> {
             String content = edtDiscussionInput.getText().toString().trim();
-            if (!content.isEmpty() || !selectedCommentFiles.isEmpty()) {
-                sendComment(content, uploadedCommentFiles);
-                edtDiscussionInput.setText("");
-                ivSend.setEnabled(false);
-                selectedCommentFiles.clear();
-                uploadedCommentFiles.clear();
-                renderCommentFiles(); // Cập nhật UI sau khi gửi
+            if (content.isEmpty()) {
+                CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Vui lòng nhập nội dung thảo luận");
+                return;
             }
+            sendComment(content, uploadedCommentFiles);
+            edtDiscussionInput.setText("");
+            ivSend.setEnabled(false);
+            selectedCommentFiles.clear();
+            uploadedCommentFiles.clear();
+            renderCommentFiles(); // Cập nhật UI sau khi gửi
         });
 
         ivAddFile.setOnClickListener(v -> openGalleryForComment());
@@ -280,11 +291,11 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         layout_action_history_request.setVisibility(View.GONE);
         txt_status_request_detail.setVisibility(View.GONE);
 
-        dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this, isEdit);
+        dayOverTimeAdapter = new DayOverTimeAdapter(listDayReqs, this, this, isEdit, dayRecyclerView);
         dayRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         dayRecyclerView.setAdapter(dayOverTimeAdapter);
 
-        addNewDay();
+//        addNewDay();
 
         if (requestId != -1) {
             create_request_container.setVisibility(View.GONE);
@@ -307,10 +318,9 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             overlayFilterStatus.setVisibility(View.GONE);
             overlay_background.setVisibility(View.GONE);
         });
-
-        switchUrgent.setChecked(false);
-        switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            requestDetailData.setIsUrgent(isChecked ? 1 : 0);
+        select_method_request.setOnClickListener(v -> {
+            overlayFilterStatus.setVisibility(View.VISIBLE);
+            overlay_background.setVisibility(View.VISIBLE);
         });
 
         overlay_background.setOnTouchListener((view, event) -> {
@@ -331,6 +341,11 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             return true;
         });
 
+
+        switchUrgent.setChecked(false);
+        switchUrgent.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            requestDetailData.setIsUrgent(isChecked ? 1 : 0);
+        });
         addDayBtn.setOnClickListener(v -> addNewDay());
 
         // Trong hàm onCreate, sự kiện click cho edt_follower_request_create
@@ -411,11 +426,13 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
     }
 
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -438,17 +455,20 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 Log.e("ApiHelper", t.getMessage());
             }
         });
     }
 
     private void getDetailRequest(int requestId, String token) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -470,6 +490,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 Log.e("ApiHelper", t.getMessage());
             }
         });
@@ -536,18 +557,40 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             // Kiểm tra trạng thái chỉnh sửa
             isEdit = hasEditStatus;
             dayOverTimeAdapter.setIsEdit(isEdit);
-            if (!isEdit) {
-                    edt_name_request_create.setEnabled(false);
-                    edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    addDayBtn.setVisibility(View.GONE);
-                    edt_reason_request_create.setEnabled(false);
-                    edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
-
-                    spinner_company_request_create.setEnabled(false);
-                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
+            // Thêm item mặc định sau khi cập nhật isEdit
+            if (listDayReqs.isEmpty()) {
+                addNewDay();
             }
+            if (!isEdit) {
+                comment_container.setVisibility(View.VISIBLE);
+                edt_name_request_create.setEnabled(false);
+                edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                addDayBtn.setVisibility(View.GONE);
+                edt_reason_request_create.setEnabled(false);
+                edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                select_method_request.setEnabled(false);
+                select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+                spinner_company_request_create.setEnabled(false);
+                spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+
+            } else {
+                comment_container.setVisibility(View.GONE);
+            }
+
+            if(requestDetailData.getType() == 1 || requestDetailData.getType() == 2) {
+                feature_layout.setVisibility(View.VISIBLE);
+                if(requestDetailData.getType() == 1) {
+                    simple.setImageResource(R.drawable.checked_radio);
+                    complicated.setImageResource(R.drawable.unchecked_radio);
+                } else {
+                    complicated.setImageResource(R.drawable.checked_radio);
+                    simple.setImageResource(R.drawable.unchecked_radio);
+                }
+            } else {
+                feature_layout.setVisibility(View.GONE);
+            }
+
 
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
                 txt_type_request_create.setText(requestDetailData.getRequestGroup().getName());
@@ -631,19 +674,40 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                         selectedMethod -> requestDetailData.setRequestMethod(selectedMethod)
                 );
                 recyclerView.setAdapter(adapter);
+
+                // Kiểm tra và chọn phương thức mặc định
+                int defaultMethodIndex = -1;
                 if (requestId != -1 && requestDetailData.getRequestMethod() != null) {
+                    // Khôi phục phương thức đã chọn trước đó nếu có
                     int selectedId = requestDetailData.getRequestMethod().getId();
-                    adapter.setSelectedMethodById(selectedId);
-                    recyclerView.scrollToPosition(
-                            IntStream.range(0, listMethods.size())
-                                    .filter(i -> listMethods.get(i).getId() == selectedId)
-                                    .findFirst()
-                                    .orElse(0)
-                    );
+                    defaultMethodIndex = IntStream.range(0, listMethods.size())
+                            .filter(i -> listMethods.get(i).getId() == selectedId)
+                            .findFirst()
+                            .orElse(-1);
+                } else {
+                    // Nếu tạo mới hoặc không có phương thức đã chọn, tìm phương thức có id = 58
+                    defaultMethodIndex = IntStream.range(0, listMethods.size())
+                            .filter(i -> listMethods.get(i).getId() == 58)
+                            .findFirst()
+                            .orElse(-1);
                 }
+
+                if (defaultMethodIndex != -1) {
+                    // Đặt phương thức mặc định vào requestDetailData
+                    RequestMethod defaultMethod = listMethods.get(defaultMethodIndex);
+                    requestDetailData.setRequestMethod(defaultMethod);
+                    adapter.setSelectedMethodById(defaultMethod.getId());
+                    recyclerView.scrollToPosition(defaultMethodIndex);
+                    // Cập nhật text của select_method_request
+                    select_method_request.setText(defaultMethod.getName());
+                }
+
+                // ... (giữ nguyên các đoạn code khác sau đoạn listMethods) ...
             } else {
                 Log.e("CreateRequestActivity", "listMethods is null or empty");
             }
+
+
 
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
@@ -733,10 +797,15 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             return;
         }
 
+        if (requestDetailData.getReason() == null || requestDetailData.getReason().isEmpty()) {
+            CustomToast.showCustomToast(this, "Vui lòng nhập lý do!");
+            hideLoading();
+            return;
+        }
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String token = sharedPreferences.getString("auth_token", null);
-
+//
         String jsonResponse = gson.toJson(requestDetailData);
         Log.d("CreateRequestOvertTimeActivity", "Data gửi lên: " + jsonResponse);
         hideLoading();
@@ -746,6 +815,10 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                     hideLoading();
+                    // Log mã trạng thái và body
+                    Log.d("CreateRequestOvertTimeActivity", "Response Code: " + response.code());
+                    Log.d("CreateRequestOvertTimeActivity", "Response Body: " + (response.body() != null ? gson.toJson(response.body()) : "No body"));
+
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
@@ -758,7 +831,26 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                             CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        if (response.errorBody() != null) {
+                            try {
+                                // Parse error body thành JSON
+                                String errorContent = response.errorBody().string();
+                                Log.d("CreateRequestOvertTimeActivity", "Error Body: " + errorContent);
+                                // Tạo một class để map với error response (nếu cần)
+                                Gson gson = new Gson();
+                                ErrorResponse errorResponse = gson.fromJson(errorContent, ErrorResponse.class);
+                                if (errorResponse != null && errorResponse.getMessage() != null) {
+                                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, errorResponse.getMessage());
+                                } else {
+                                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi không xác định từ server.");
+                                }
+                            } catch (IOException e) {
+                                Log.e("CreateRequestOvertTimeActivity", "Error parsing error body: " + e.getMessage());
+                                CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi khi xử lý phản hồi từ server.");
+                            }
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại. Mã lỗi: " + response.code());
+                        }
                     }
                 }
 
@@ -771,14 +863,56 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         } else {
             if (listStatus1.getId() == 2) {
                 showRejectReasonDialog(apiInterface, token, requestDetailData);
+            } else if (listStatus1.getId() == 4) {
+                Log.d("CreateRequestOvertTimeActivity", "Vào duyệt");
+                showNatureOfWorkDialog(apiInterface, token, requestDetailData);
             } else {
                 sendModifyRequest(apiInterface, token, requestDetailData);
             }
         }
     }
 
+    private void showNatureOfWorkDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_nature_of_work, null);
+        builder.setView(dialogView);
+
+        ImageView simple = dialogView.findViewById(R.id.simple);
+        ImageView complicated = dialogView.findViewById(R.id.complicated);
+        AppCompatButton btn_cancel = dialogView.findViewById(R.id.btn_cancel);
+        AppCompatButton btn_confirm = dialogView.findViewById(R.id.btn_confirm);
+
+        AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        requestDetailData.setType(1);
+        simple.setOnClickListener(v -> {
+            simple.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
+            complicated.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
+            requestDetailData.setType(1);
+        });
+        complicated.setOnClickListener(v -> {
+            complicated.setImageResource(R.drawable.checked_radio); // Đặt trạng thái "đã chọn"
+            simple.setImageResource(R.drawable.no_check_radio_create); // Đặt trạng thái "không được chọn"
+            requestDetailData.setType(2);
+        });
+        btn_confirm.setOnClickListener(view -> {
+                sendModifyRequest(apiInterface, token, requestDetailData);
+                dialog.dismiss();
+        });
+        btn_cancel.setOnClickListener(view -> {
+            hideLoading();
+            dialog.dismiss();
+        });
+
+        dialog.setOnDismissListener(dialogInterface -> hideLoading());
+        dialog.show();
+    }
+
     private void showRejectReasonDialog(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_reject_reason, null);
         builder.setView(dialogView);
@@ -787,7 +921,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         AppCompatButton btn_cancel = dialogView.findViewById(R.id.btn_cancel);
         AppCompatButton btn_confirm = dialogView.findViewById(R.id.btn_confirm);
 
-        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        AlertDialog dialog = builder.create();
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
@@ -798,7 +932,8 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
 
         etReason.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -809,7 +944,8 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         btn_confirm.setOnClickListener(view -> {
@@ -875,6 +1011,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             }
         });
     }
+
     private void sendModifyRequestFollower(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -901,6 +1038,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             }
         });
     }
+
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (view != null) {
@@ -1049,7 +1187,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             if (attachment != null && attachment.getStatus() == 2) {
                 btnCheckFile.setImageResource(R.drawable.checked_radio);
             } else {
-                btnCheckFile.setImageResource(R.drawable.bg_circle);
+                btnCheckFile.setImageResource(R.drawable.no_check_radio_create);
             }
 
             // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
@@ -1057,7 +1195,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             btnCheckFile.setOnClickListener(v -> {
                 if (attachment != null) {
                     attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
-                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.no_check_radio_create);
                     syncUploadedFilesWithRequestDetailData();
                     Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
                 }
@@ -1111,7 +1249,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         // Hiển thị nút thêm file nếu có trạng thái id = 3 hoặc requestId == -1
         boolean hasEditStatus = false;
 
-        if (!Objects.equals(requestDetailData, null)  && !Objects.equals(requestDetailData.getListStatus(), null)) {
+        if (!Objects.equals(requestDetailData, null) && !Objects.equals(requestDetailData.getListStatus(), null)) {
             for (ListStatus status : requestDetailData.getListStatus()) {
                 if (status != null && status.getId() == 3) {
                     hasEditStatus = true;
@@ -1641,6 +1779,15 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                 downloadFile(fileUrl, fileName);
             });
 
+            // Xử lý click vào tên file để mở file hoặc hiển thị tùy chọn
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
+            } else {
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
+            }
+
             commentFileContainer.addView(itemView);
         }
     }
@@ -1698,7 +1845,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
-                        attachment.setStatus(2); // Theo cấu trúc request, status = 2
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
                         uploadedCommentFiles.add(attachment);
 
                         // Cập nhật selectedCommentFiles với fileUrl tại vị trí index
@@ -1740,7 +1887,6 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
             }
         }
     }
-
 
 
     public void onBackPressed() {

@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -120,8 +121,6 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     private Spinner spinner_company_request_create;
 
 
-
-
     // file va comment
     private FlexboxLayout fileContainer;
     private List<Uri> selectedFiles = new ArrayList<>();
@@ -144,11 +143,13 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     RecyclerView recyclerViewDiscussion;
     DiscussionAdapter discussionAdapter = new DiscussionAdapter();
     private boolean isEdit = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_request_day_off);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
         create_request_container = findViewById(R.id.create_request_container);
@@ -234,7 +235,6 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 }
             });
         }
-        // Cấu hình sự kiện
         edtDiscussionInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -242,7 +242,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ivSend.setEnabled(s.length() > 0 || !selectedCommentFiles.isEmpty());
+                ivSend.setEnabled(s.length() > 0); // Chỉ bật khi có nội dung
             }
 
             @Override
@@ -252,14 +252,16 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
         ivSend.setOnClickListener(v -> {
             String content = edtDiscussionInput.getText().toString().trim();
-            if (!content.isEmpty() || !selectedCommentFiles.isEmpty()) {
-                sendComment(content, uploadedCommentFiles);
-                edtDiscussionInput.setText("");
-                ivSend.setEnabled(false);
-                selectedCommentFiles.clear();
-                uploadedCommentFiles.clear();
-                renderCommentFiles(); // Cập nhật UI sau khi gửi
+            if (content.isEmpty()) {
+                CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Vui lòng nhập nội dung thảo luận");
+                return;
             }
+            sendComment(content, uploadedCommentFiles);
+            edtDiscussionInput.setText("");
+            ivSend.setEnabled(false);
+            selectedCommentFiles.clear();
+            uploadedCommentFiles.clear();
+            renderCommentFiles(); // Cập nhật UI sau khi gửi
         });
 
         ivAddFile.setOnClickListener(v -> openGalleryForComment());
@@ -337,10 +339,12 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             private String current = "";
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -542,11 +546,13 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     }
 
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.initCreateRequest(token, GroupRequestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -568,6 +574,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 String errorMessage = t.getMessage();
                 Log.e("ApiHelper", errorMessage);
             }
@@ -575,11 +582,13 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     }
 
     private void getDetailRequest(int requestId, String token) {
+        showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         Call<ApiResponse<RequestDetailData>> call = apiInterface.requestDetailData(token, requestId);
         call.enqueue(new Callback<ApiResponse<RequestDetailData>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestDetailData>> call, Response<ApiResponse<RequestDetailData>> response) {
+                hideLoading();
                 try {
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<RequestDetailData> apiResponse = response.body();
@@ -601,6 +610,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestDetailData>> call, Throwable t) {
+                hideLoading();
                 String errorMessage = t.getMessage();
                 Log.e("ApiHelper", errorMessage);
             }
@@ -617,7 +627,6 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 Log.e("CreateRequestDayOffActivity", "requestDetailData is null");
                 return;
             }
-
             // Làm sạch danh sách trước khi thêm từ API
             selectedFiles.clear();
             uploadedFiles.clear();
@@ -669,24 +678,27 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             // Kiểm tra trạng thái chỉnh sửa
             isEdit = hasEditStatus;
             if (!isEdit) {
-                    edt_name_request_create.setEnabled(false);
-                    edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    select_method_request.setEnabled(false);
-                    select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    edt_duration.setEnabled(false);
-                    edt_duration.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    etNgayBatDau.setEnabled(false);
-                    etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    etGioBatDau.setEnabled(false);
-                    etGioBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    etNgayKetThuc.setEnabled(false);
-                    etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    etGioKetThuc.setEnabled(false);
-                    etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    edt_reason_request_create.setEnabled(false);
-                    edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    spinner_company_request_create.setEnabled(false);
-                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                comment_container.setVisibility(View.VISIBLE);
+                edt_name_request_create.setEnabled(false);
+                edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                select_method_request.setEnabled(false);
+                select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                edt_duration.setEnabled(false);
+                edt_duration.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                etNgayBatDau.setEnabled(false);
+                etNgayBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                etGioBatDau.setEnabled(false);
+                etGioBatDau.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                etNgayKetThuc.setEnabled(false);
+                etNgayKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                etGioKetThuc.setEnabled(false);
+                etGioKetThuc.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                edt_reason_request_create.setEnabled(false);
+                edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                spinner_company_request_create.setEnabled(false);
+                spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+            } else {
+                comment_container.setVisibility(View.GONE);
             }
             // Comment
             if (requestDetailData != null && requestDetailData.getComments() != null) {
@@ -796,7 +808,6 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             }
 
 
-
             adapter = new ActionRequestDetailAdapter(requestDetailData.getApprovalLogs());
             recyclerViewApprovalLogs.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -824,7 +835,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                         button.setLayoutParams(params);
                         button.setOnClickListener(v -> {
                             // Chuyển ListStatus thành Status và gán vào requestDetailData
-                            RequestDetailData.Status statusObj = new  RequestDetailData.Status(
+                            RequestDetailData.Status statusObj = new RequestDetailData.Status(
                                     status.getId(),
                                     status.getCode(),
                                     status.getName(),
@@ -976,7 +987,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
         etReason.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -987,7 +999,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         btn_confirm.setOnClickListener(view -> {
@@ -1050,6 +1063,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             }
         });
     }
+
     private void sendModifyRequestFollower(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         syncUploadedFilesWithRequestDetailData();
         syncCommentFilesWithRequestDetailData(); // Đảm bảo trạng thái được đồng bộ
@@ -1078,15 +1092,13 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             }
         });
     }
+
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (view != null) {
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
-
-
 
 
     // file
@@ -1229,7 +1241,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             if (attachment != null && attachment.getStatus() == 2) {
                 btnCheckFile.setImageResource(R.drawable.checked_radio);
             } else {
-                btnCheckFile.setImageResource(R.drawable.bg_circle);
+                btnCheckFile.setImageResource(R.drawable.no_check_radio_create);
             }
 
             // Xử lý sự kiện click để chuyển đổi trạng thái check/uncheck
@@ -1237,7 +1249,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             btnCheckFile.setOnClickListener(v -> {
                 if (attachment != null) {
                     attachment.setStatus(attachment.getStatus() == 2 ? 1 : 2);
-                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.bg_circle);
+                    btnCheckFile.setImageResource(attachment.getStatus() == 2 ? R.drawable.checked_radio : R.drawable.no_check_radio_create);
                     syncUploadedFilesWithRequestDetailData();
                     Log.d("FileCheck", "File " + fileName + " status changed to: " + attachment.getStatus());
                 }
@@ -1291,7 +1303,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         // Hiển thị nút thêm file nếu có trạng thái id = 3 hoặc requestId == -1
         boolean hasEditStatus = false;
 
-        if (!Objects.equals(requestDetailData, null)  && !Objects.equals(requestDetailData.getListStatus(), null)) {
+        if (!Objects.equals(requestDetailData, null) && !Objects.equals(requestDetailData.getListStatus(), null)) {
             for (ListStatus status : requestDetailData.getListStatus()) {
                 if (status != null && status.getId() == 3) {
                     hasEditStatus = true;
@@ -1821,6 +1833,15 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 downloadFile(fileUrl, fileName);
             });
 
+            // Xử lý click vào tên file để mở file hoặc hiển thị tùy chọn
+            String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            if ("pdf".equals(fileExtension) || "doc".equals(fileExtension) || "docx".equals(fileExtension) ||
+                    "xls".equals(fileExtension) || "xlsx".equals(fileExtension)) {
+                fileNameText.setOnClickListener(v -> showFileWebView(fileUri, fileName));
+            } else {
+                fileNameText.setOnClickListener(v -> showImageDetailDialog(fileUri, fileName));
+            }
+
             commentFileContainer.addView(itemView);
         }
     }
@@ -1878,7 +1899,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
-                        attachment.setStatus(2); // Theo cấu trúc request, status = 2
+                        attachment.setStatus(1); // Theo cấu trúc request, status = 2
                         uploadedCommentFiles.add(attachment);
 
                         // Cập nhật selectedCommentFiles với fileUrl tại vị trí index
@@ -1920,15 +1941,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             }
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     public void onBackPressed() {
         super.onBackPressed();
     }
