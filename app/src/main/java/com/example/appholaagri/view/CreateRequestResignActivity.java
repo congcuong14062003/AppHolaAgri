@@ -61,6 +61,7 @@ import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
 import com.example.appholaagri.adapter.CustomSpinnerAdapterCompany;
 import com.example.appholaagri.adapter.DiscussionAdapter;
+import com.example.appholaagri.config.Config;
 import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
 import com.example.appholaagri.model.RequestDetailModel.Comments;
@@ -1163,7 +1164,7 @@ public class CreateRequestResignActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null && response.body().getStatus() == 200) {
                     UploadFileResponse uploadResponse = response.body().getData();
                     if (uploadResponse.getFinalStatus() == 200) {
-                        String fileUrl = "https://haloship.imediatech.com.vn/" + uploadResponse.getFileUrl();
+                        String fileUrl = Config.BASE_URL_MEDIA + uploadResponse.getFileUrl();
                         RequestDetailData.FileAttachment attachment = new RequestDetailData.FileAttachment();
                         attachment.setName(fileName);
                         attachment.setPath(fileUrl);
@@ -1867,7 +1868,7 @@ public class CreateRequestResignActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null && response.body().getStatus() == 200) {
                     UploadFileResponse uploadResponse = response.body().getData();
                     if (uploadResponse.getFinalStatus() == 200) {
-                        String fileUrl = "https://haloship.imediatech.com.vn/" + uploadResponse.getFileUrl();
+                        String fileUrl = Config.BASE_URL_MEDIA + uploadResponse.getFileUrl();
                         Comments.FileAttachment attachment = new Comments.FileAttachment();
                         attachment.setId(uploadedCommentFiles.size() + 1); // Tạm thời gán ID
                         attachment.setName(fileName);
