@@ -60,7 +60,6 @@ public class ActionRequestDetailAdapter extends RecyclerView.Adapter<ActionReque
         } else if (approvalLog.getStatusName().equals("Từ chối đề xuất")) {
             holder.ivStatus.setImageResource(R.drawable.no_duyet);
         }
-
         // Kiểm tra nếu là item cuối cùng
         if (position == getItemCount() - 1) {
             holder.lineDownImageView.setVisibility(View.GONE); // Ẩn line_down
@@ -68,7 +67,7 @@ public class ActionRequestDetailAdapter extends RecyclerView.Adapter<ActionReque
             holder.lineDownImageView.setVisibility(View.VISIBLE); // Hiển thị line_down
         }
         if(approvalLog.getReason() != null) {
-            holder.tvReason.setText("Lí do: " + approvalLog.getReason());
+            holder.tvReason.setText(approvalLog.getReason());
         } else {
             holder.tvReason.setVisibility(View.GONE);
         }

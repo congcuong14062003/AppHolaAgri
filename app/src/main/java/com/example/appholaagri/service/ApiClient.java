@@ -9,9 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     private static Retrofit retrofit;
-
-    private static final String BASE_URL = "https://agriapp.imediatech.com.vn/agri-app/api/";
-//    private static final String BASE_URL = "https://sb-agri.imediatech.com.vn/agri-app/api/";
+//    private static final String BASE_URL = "https://agriapp.imediatech.com.vn/agri-app/api/";
+    private static final String BASE_URL = "https://sb-agri.imediatech.com.vn/agri-app/api/";
     public static Retrofit getClient(Context context) {
         if (retrofit == null) {
             OkHttpClient client = new OkHttpClient.Builder()

@@ -44,12 +44,12 @@ public class RequestDetailData implements Serializable {
     private String createdDate;
     private List<String> listApproveTime;
     private String dateTypeName;
-
     private RecruitmentReq recruitmentReq;
+    private List<DayOffFormReq> dayOffFormReqs;
+
 
     // Thêm thuộc tính customerContractReq
     private CustomerContractReq customerContractReq;
-
 
     // Getter và Setter cho customerContractReq
     public CustomerContractReq getCustomerContractReq() {
@@ -58,6 +58,14 @@ public class RequestDetailData implements Serializable {
 
     public void setCustomerContractReq(CustomerContractReq customerContractReq) {
         this.customerContractReq = customerContractReq;
+    }
+
+    public List<DayOffFormReq> getDayOffFormReqs() {
+        return dayOffFormReqs;
+    }
+
+    public void setDayOffFormReqs(List<DayOffFormReq> dayOffFormReqs) {
+        this.dayOffFormReqs = dayOffFormReqs;
     }
 
     // Getters and Setters
@@ -829,6 +837,63 @@ public class RequestDetailData implements Serializable {
 
         public void setIndex(Object index) {
             this.index = index;
+        }
+    }
+
+    public static class DayOffFormReq {
+        private List<RequestMethod> requestMethods;
+        private String startDate;
+        private String startTime;
+        private String endDate;
+        private String endTime;
+        private Double duration;
+
+        public List<RequestMethod> getRequestMethods() {
+            return requestMethods;
+        }
+
+        public void setRequestMethods(List<RequestMethod> requestMethods) {
+            this.requestMethods = requestMethods;
+        }
+
+        public String getStartDate() {
+            return startDate;
+        }
+
+        public void setStartDate(String startDate) {
+            this.startDate = startDate;
+        }
+
+        public String getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(String startTime) {
+            this.startTime = startTime;
+        }
+
+        public String getEndDate() {
+            return endDate;
+        }
+
+        public void setEndDate(String endDate) {
+            this.endDate = endDate;
+        }
+
+        public String getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(String endTime) {
+            this.endTime = endTime;
+        }
+
+        public Double getDuration() {
+            return duration;
+        }
+
+        public void setDuration(Double duration) {
+            this.duration = duration;
         }
     }
 }
