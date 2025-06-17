@@ -57,14 +57,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.appholaagri.R;
 import com.example.appholaagri.adapter.ActionRequestDetailAdapter;
 import com.example.appholaagri.adapter.CustomSpinnerAdapterCompany;
+import com.example.appholaagri.adapter.DayOffRequestAdapter;
+import com.example.appholaagri.adapter.DayOverTimeAdapter;
 import com.example.appholaagri.adapter.DiscussionAdapter;
 import com.example.appholaagri.adapter.RequestMethodAdapter;
 import com.example.appholaagri.config.Config;
 import com.example.appholaagri.helper.UserDetailApiHelper;
 import com.example.appholaagri.model.ApiResponse.ApiResponse;
+import com.example.appholaagri.model.ApiResponse.ErrorResponse;
 import com.example.appholaagri.model.RequestDetailModel.Comments;
 import com.example.appholaagri.model.RequestDetailModel.Consignee;
 import com.example.appholaagri.model.RequestDetailModel.Follower;
+import com.example.appholaagri.model.RequestDetailModel.ListDayReq;
 import com.example.appholaagri.model.RequestDetailModel.ListStatus;
 import com.example.appholaagri.model.RequestDetailModel.RequestDetailData;
 import com.example.appholaagri.model.RequestDetailModel.RequestMethod;
@@ -120,7 +124,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     private LinearLayout layout_action_history_request, comment_container, discussion_layout;
     private SwitchCompat switchUrgent;
     private Spinner spinner_company_request_create;
-
+    private List<RequestDetailData.DayOffFormReq> dayOffList = new ArrayList<>();
 
     // file va comment
     private FlexboxLayout fileContainer;
@@ -130,7 +134,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     private static final int PICK_FILES = 200;
     private static final int REQUEST_CODE_FOLLOWER = 100;
     private static final int REQUEST_CODE_CAMERA = 300;
-
+    private DayOffRequestAdapter dayOffAdapter;
+    private Button btnAddDayOff;
 
     // Thêm các biến mới cho phần thảo luận
     private ImageView ivUserAvatar, ivAddText, ivAddFile, ivSend;
@@ -144,6 +149,8 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     RecyclerView recyclerViewDiscussion;
     DiscussionAdapter discussionAdapter = new DiscussionAdapter();
     private boolean isEdit = false;
+
+    private RecyclerView rvDayOffRequests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +187,22 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         layout_action_history_request = findViewById(R.id.layout_action_history_request);
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
+
+
+        rvDayOffRequests = findViewById(R.id.rv_day_off_requests);
+        dayOffAdapter = new DayOffRequestAdapter(dayOffList, this, this, isEdit, rvDayOffRequests);
+        rvDayOffRequests.setLayoutManager(new LinearLayoutManager(this));
+        rvDayOffRequests.setAdapter(dayOffAdapter);
+
+
+
+
+        btnAddDayOff = findViewById(R.id.btn_add_day_off);
+        btnAddDayOff.setOnClickListener(v -> addNewDayOff());
+
+
+
+
 
 
         // file
@@ -385,6 +408,20 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         });
 
     }
+    public void updateRequestDetailData() {
+        requestDetailData.setDayOffFormReqs(dayOffList);
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        String dataObjects = gson.toJson(requestDetailData);
+        Log.d("cuong", "Dữ liệu dayOffList hiện tại: " + dataObjects);
+    }
+
+    // thêm hình thức nghỉ
+    private void addNewDayOff() {
+        dayOffList.add(new RequestDetailData.DayOffFormReq(null, "", "", "", "", null));
+        dayOffAdapter.notifyItemInserted(dayOffList.size() - 1);
+        dayOffAdapter.notifyDataSetChanged();
+    }
+
 
     private void setupCompanySpinner() {
         if (requestDetailData == null) {
@@ -678,7 +715,14 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
             // Kiểm tra trạng thái chỉnh sửa
             isEdit = hasEditStatus;
+
+            dayOffAdapter.setIsEdit(isEdit);
+            // Thêm item mặc định sau khi cập nhật isEdit
+            if (dayOffList.isEmpty()) {
+                addNewDayOff();
+            }
             if (!isEdit) {
+                btnAddDayOff.setVisibility(View.GONE);
                 comment_container.setVisibility(View.VISIBLE);
                 edt_name_request_create.setEnabled(false);
                 edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
@@ -778,6 +822,18 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 edt_follower_request_create.setText(followerNames.toString().trim());
             } else {
                 edt_follower_request_create.setText("Không có người theo dõi");
+            }
+
+
+            if (requestDetailData.getDayOffFormReqs() != null) {
+                dayOffList.clear();
+                dayOffList.addAll(requestDetailData.getDayOffFormReqs());
+                dayOffAdapter.notifyDataSetChanged();
+            }
+
+            // Cập nhật requestMethods cho adapter
+            if (requestDetailData.getListMethod() != null) {
+                dayOffAdapter.setRequestMethods(requestDetailData.getListMethod());
             }
 
 
@@ -897,7 +953,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                 return;
             }
         } else {
-            requestDetailData.setDuration(0.0);
+            requestDetailData.setDuration(null);
         }
         requestDetailData.setEndDate(etNgayKetThuc.getText().toString().trim());
         requestDetailData.setStartDate(etNgayBatDau.getText().toString().trim());
@@ -908,12 +964,6 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
 
         if (requestDetailData.getRequestName().isEmpty()) {
             CustomToast.showCustomToast(this, "Vui lòng nhập tên đề xuất!");
-            hideLoading();
-            return;
-        }
-        // Kiểm tra nếu chưa chọn phương thức
-        if (requestDetailData.getRequestMethod() == null) {
-            CustomToast.showCustomToast(this, "Vui lòng chọn hình thức!");
             hideLoading();
             return;
         }
@@ -948,7 +998,26 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                             CustomToast.showCustomToast(CreateRequestDayOffActivity.this, apiResponse.getMessage());
                         }
                     } else {
-                        CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                        if (response.errorBody() != null) {
+                            try {
+                                // Parse error body thành JSON
+                                String errorContent = response.errorBody().string();
+                                Log.d("CreateRequestOvertTimeActivity", "Error Body: " + errorContent);
+                                // Tạo một class để map với error response (nếu cần)
+                                Gson gson = new Gson();
+                                ErrorResponse errorResponse = gson.fromJson(errorContent, ErrorResponse.class);
+                                if (errorResponse != null && errorResponse.getMessage() != null) {
+                                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, errorResponse.getMessage());
+                                } else {
+                                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi không xác định từ server.");
+                                }
+                            } catch (IOException e) {
+                                Log.e("CreateRequestOvertTimeActivity", "Error parsing error body: " + e.getMessage());
+                                CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi khi xử lý phản hồi từ server.");
+                            }
+                        } else {
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại. Mã lỗi: " + response.code());
+                        }
                     }
                 }
 
@@ -1053,7 +1122,26 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
                         finish();
                     }
                 } else {
-                    CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                    if (response.errorBody() != null) {
+                        try {
+                            // Parse error body thành JSON
+                            String errorContent = response.errorBody().string();
+                            Log.d("CreateRequestOvertTimeActivity", "Error Body: " + errorContent);
+                            // Tạo một class để map với error response (nếu cần)
+                            Gson gson = new Gson();
+                            ErrorResponse errorResponse = gson.fromJson(errorContent, ErrorResponse.class);
+                            if (errorResponse != null && errorResponse.getMessage() != null) {
+                                CustomToast.showCustomToast(CreateRequestDayOffActivity.this, errorResponse.getMessage());
+                            } else {
+                                CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi không xác định từ server.");
+                            }
+                        } catch (IOException e) {
+                            Log.e("CreateRequestOvertTimeActivity", "Error parsing error body: " + e.getMessage());
+                            CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi khi xử lý phản hồi từ server.");
+                        }
+                    } else {
+                        CustomToast.showCustomToast(CreateRequestDayOffActivity.this, "Lỗi kết nối, vui lòng thử lại. Mã lỗi: " + response.code());
+                    }
                 }
             }
 

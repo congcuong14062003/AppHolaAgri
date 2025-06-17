@@ -148,7 +148,7 @@
                         />
 
                     <TextView
-                        style="@style/TextStyle_18_600"
+                        style="@style/TextStyle_16_600"
                         android:layout_weight="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -318,7 +318,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Địa điểm công tác"
+                        android:text="Địa điểm công tác *"
                         android:textColor="@color/secon_textcolor" />
 
                     <EditText
@@ -349,7 +349,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Mục đích công tác/ Kết quả dự kiến"
+                        android:text="Mục đích công tác/ Kết quả dự kiến *"
                         android:textColor="@color/secon_textcolor" />
 
                     <EditText
@@ -380,7 +380,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Nội dung"
+                        android:text="Nội dung *"
                         android:textColor="@color/secon_textcolor" />
                     <EditText
                         android:id="@+id/edt_content_request_create"
@@ -426,7 +426,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Ngày bắt đầu"
+                        android:text="Ngày bắt đầu *"
                         android:textColor="@color/secon_textcolor" />
 
                     <LinearLayout
@@ -483,7 +483,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Ngày kết thúc"
+                        android:text="Ngày kết thúc *"
                         android:textColor="@color/secon_textcolor" />
 
                     <LinearLayout
@@ -536,7 +536,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Tổng chi phí dự tính (VND)"
+                        android:text="Tổng chi phí dự tính (VND) *"
                         android:textColor="@color/secon_textcolor" />
 
                     <EditText
@@ -564,7 +564,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Tổng chi phí dự tính bằng chữ"
+                        android:text="Tổng chi phí dự tính bằng chữ *"
                         android:textColor="@color/secon_textcolor" />
 
                     <EditText

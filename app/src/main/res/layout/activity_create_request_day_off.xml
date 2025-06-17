@@ -106,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Tên đề xuất"
+                        android:text="Tên đề xuất *"
                         android:textColor="@color/secon_textcolor" />
 
                     <EditText
@@ -142,7 +142,7 @@
                         android:src="@drawable/isurgent" />
 
                     <TextView
-                        style="@style/TextStyle_18_600"
+                        style="@style/TextStyle_16_600"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -260,6 +260,7 @@
 
                 <!--          hình thức nghỉ-->
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/form_request_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -302,6 +303,7 @@
 
                 <!-- số ngày báo trước-->
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/number_of_days_notice_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -334,6 +336,7 @@
 
                 <!--          thời gian bắt đầu-->
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/tvThoiGianBatDau_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -391,6 +394,7 @@
 
                 <!-- Thời gian kết thúc -->
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/tvThoiGianKetThuc_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -444,6 +448,41 @@
                             android:textColor="@color/textcolor" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- RecyclerView cho các ngày nghỉ -->
+                <LinearLayout
+                    android:layout_marginBottom="20dp"
+                    android:id="@+id/day_off_requests_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_day_off_requests"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="15dp"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_add_day_off"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/button_custom"
+                        android:backgroundTint="@color/secondarycolor"
+                        android:elevation="0dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:stateListAnimator="@null"
+                        android:text="+ Thêm hình thức nghỉ"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textStyle="normal" />
+                </LinearLayout>
+
+
+
+
                 <!--                    Lí do-->
                 <LinearLayout
                     android:id="@+id/reason_request_layout"

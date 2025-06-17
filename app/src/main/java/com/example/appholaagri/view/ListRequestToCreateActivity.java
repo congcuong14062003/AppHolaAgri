@@ -20,6 +20,7 @@ import com.example.appholaagri.model.RequestGroupModel.RequestGroupResponse;
 
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.LoadingDialog;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class ListRequestToCreateActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private GroupRequestListAdapter adapter;
     private ImageView backBtnReview;
+    private LoadingDialog loadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,7 @@ public class ListRequestToCreateActivity extends BaseActivity {
         recyclerView = findViewById(R.id.recyclerViewGroupRequest);
         backBtnReview = findViewById(R.id.backBtnReview);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        loadingDialog = new LoadingDialog(this);
 //        adapter = new GroupRequestListAdapter(new ArrayList<>()); // Adapter ban đầu với danh sách rỗng
 //        recyclerView.setAdapter(adapter);
         backBtnReview.setOnClickListener(view -> {
@@ -48,6 +51,7 @@ public class ListRequestToCreateActivity extends BaseActivity {
         fetchData();
     }
     private void fetchData() {
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
 
         // Tạo request object
@@ -67,6 +71,7 @@ public class ListRequestToCreateActivity extends BaseActivity {
         call.enqueue(new Callback<ApiResponse<RequestGroupResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<RequestGroupResponse>> call, Response<ApiResponse<RequestGroupResponse>> response) {
+                loadingDialog.hide();
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<RequestGroupResponse> apiResponse = response.body();
 
@@ -142,6 +147,7 @@ public class ListRequestToCreateActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestGroupResponse>> call, Throwable t) {
+                loadingDialog.hide();
                 Log.e("FetchData", "API call failed: " + t.getMessage());
             }
         });

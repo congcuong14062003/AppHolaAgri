@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rounded"
+    android:backgroundTint="#e8f7f2"
+    android:padding="10dp"
+    android:layout_marginBottom="20dp"
+    android:orientation="vertical">
+
+    <!--          hình thức nghỉ-->
+    <LinearLayout
+        android:id="@+id/form_request_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle_14_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Hình thức nghỉ *"
+                android:textColor="@color/secon_textcolor" />
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/remove" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- RadioGroup chọn mốc thời gian -->
+            <Spinner
+                android:id="@+id/select_method_request"
+                style="@style/TextStyle_14_500"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/input_infor"
+                android:gravity="center_vertical"
+                android:padding="35px"
+                android:textColor="@color/textcolor" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/dropdown_icon" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <!-- số ngày báo trước-->
+    <LinearLayout
+        android:id="@+id/number_of_days_notice_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/TextStyle_14_500"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Số ngày nghỉ *"
+            android:textColor="@color/secon_textcolor" />
+
+        <EditText
+            android:id="@+id/edt_duration"
+            style="@style/TextStyle_14_500"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/input_infor"
+            android:gravity="center_vertical"
+            android:imeOptions="actionNext"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:padding="35px"
+            android:textColor="@color/textcolor" />
+    </LinearLayout>
+
+    <!--          thời gian bắt đầu-->
+    <LinearLayout
+        android:id="@+id/tvThoiGianBatDau_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvThoiGianBatDau"
+            style="@style/TextStyle_14_500"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="8dp"
+            android:text="Ngày bắt đầu nghỉ *"
+            android:textColor="@color/secon_textcolor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Chọn ngày -->
+            <EditText
+                android:id="@+id/etNgayBatDau"
+                style="@style/TextStyle_14_500"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_background"
+                android:clickable="true"
+                android:drawableEnd="@drawable/lich_icon2"
+                android:focusable="false"
+                android:hint="Chọn ngày"
+                android:padding="10dp"
+                android:textColor="@color/textcolor" />
+
+            <!-- Chọn giờ -->
+            <EditText
+                android:id="@+id/etGioBatDau"
+                style="@style/TextStyle_14_500"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_background_right"
+                android:clickable="true"
+                android:drawableEnd="@drawable/icon_lock"
+                android:focusable="false"
+                android:hint="Chọn giờ"
+                android:padding="10dp"
+                android:textColor="@color/textcolor" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Thời gian kết thúc -->
+    <LinearLayout
+        android:id="@+id/tvThoiGianKetThuc_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvThoiGianKetThuc"
+            style="@style/TextStyle_14_500"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="8dp"
+            android:text="Ngày kết thúc *"
+            android:textColor="@color/secon_textcolor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Chọn ngày kết thúc -->
+            <EditText
+                android:id="@+id/etNgayKetThuc"
+                style="@style/TextStyle_14_500"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_background"
+                android:clickable="true"
+                android:drawableEnd="@drawable/lich_icon2"
+                android:focusable="false"
+                android:hint="Chọn ngày"
+                android:padding="10dp"
+                android:textColor="@color/textcolor" />
+
+            <!-- Chọn giờ kết thúc -->
+            <EditText
+                android:id="@+id/etGioKetThuc"
+                style="@style/TextStyle_14_500"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_background_right"
+                android:clickable="true"
+                android:drawableEnd="@drawable/icon_lock"
+                android:focusable="false"
+                android:hint="Chọn giờ"
+                android:padding="10dp"
+                android:textColor="@color/textcolor" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

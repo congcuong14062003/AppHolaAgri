@@ -1101,8 +1101,7 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
 
         // Gán các giá trị từ EditText vào BusinessTripFormReq
         businessTripFormReq.setDestination(edt_work_location.getText().toString().trim()); // Địa điểm công tác
-        businessTripFormReq.setContent(edt_purpose_request_create.getText().toString().trim()); // Mục đích
-        businessTripFormReq.setContent(edt_content_request_create.getText().toString().trim()); // Nội dung (có thể cần kiểm tra trùng lặp với purpose)
+        businessTripFormReq.setContent(edt_content_request_create.getText().toString().trim()); // Mục đích
         try {
             String formattedCost = edt_totalCost_request_create.getText().toString().trim();
             int totalCost = (int) Utils.parseNumberFromFormattedString(formattedCost);
@@ -1134,6 +1133,23 @@ public class CreateRequestWorkReportActivity extends AppCompatActivity {
             hideLoading();
             return;
         }
+
+        if (requestDetailData.getBusinessTripFormReq().getDestination() == null || requestDetailData.getBusinessTripFormReq().getDestination().isEmpty()) {
+            CustomToast.showCustomToast(this, "Địa điểm công tác không được bỏ trống");
+            hideLoading();
+            return;
+        }
+        if (requestDetailData.getReason() == null || requestDetailData.getReason().isEmpty()) {
+            CustomToast.showCustomToast(this, "Mục đích công tác/ Kết quả dự kiến không được bỏ trống");
+            hideLoading();
+            return;
+        }
+        if (requestDetailData.getBusinessTripFormReq().getContent() == null || requestDetailData.getBusinessTripFormReq().getContent().isEmpty()) {
+            CustomToast.showCustomToast(this, "Nội dung không được để trống");
+            hideLoading();
+            return;
+        }
+
         // Log JSON để kiểm tra
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         Log.d("CreateRequestWorkReportActivity", "Data: " + gson.toJson(requestDetailData));

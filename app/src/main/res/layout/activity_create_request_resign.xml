@@ -142,7 +142,7 @@
                         />
 
                     <TextView
-                        style="@style/TextStyle_18_600"
+                        style="@style/TextStyle_16_600"
                         android:layout_weight="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -276,7 +276,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Ngày làm việc cuối cùng"
+                        android:text="Ngày làm việc cuối cùng *"
                         android:textColor="@color/secon_textcolor" />
 
                     <LinearLayout
@@ -333,7 +333,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Ngày mong muốn được chấm dứt hợp đồng"
+                        android:text="Ngày mong muốn được chấm dứt hợp đồng *"
                         android:textColor="@color/secon_textcolor" />
 
                     <LinearLayout

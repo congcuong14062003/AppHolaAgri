@@ -45,7 +45,7 @@ public class RequestDetailData implements Serializable {
     private List<String> listApproveTime;
     private String dateTypeName;
     private RecruitmentReq recruitmentReq;
-    private List<DayOffFormReq> dayOffFormReqs;
+    private List<DayOffFormReq> dayOffFormReq;
 
 
     // Thêm thuộc tính customerContractReq
@@ -61,11 +61,11 @@ public class RequestDetailData implements Serializable {
     }
 
     public List<DayOffFormReq> getDayOffFormReqs() {
-        return dayOffFormReqs;
+        return dayOffFormReq;
     }
 
-    public void setDayOffFormReqs(List<DayOffFormReq> dayOffFormReqs) {
-        this.dayOffFormReqs = dayOffFormReqs;
+    public void setDayOffFormReqs(List<DayOffFormReq> dayOffFormReq) {
+        this.dayOffFormReq = dayOffFormReq;
     }
 
     // Getters and Setters
@@ -841,19 +841,28 @@ public class RequestDetailData implements Serializable {
     }
 
     public static class DayOffFormReq {
-        private List<RequestMethod> requestMethods;
+        private RequestMethod requestMethod;
         private String startDate;
         private String startTime;
         private String endDate;
         private String endTime;
         private Double duration;
 
-        public List<RequestMethod> getRequestMethods() {
-            return requestMethods;
+        public DayOffFormReq(RequestMethod requestMethod, String startDate, String startTime, String endDate, String endTime, Double duration) {
+            this.requestMethod = requestMethod;
+            this.startDate = startDate;
+            this.startTime = startTime;
+            this.endDate = endDate;
+            this.endTime = endTime;
+            this.duration = duration;
         }
 
-        public void setRequestMethods(List<RequestMethod> requestMethods) {
-            this.requestMethods = requestMethods;
+        public RequestMethod getRequestMethod() {
+            return requestMethod;
+        }
+
+        public void setRequestMethod(RequestMethod requestMethod) {
+            this.requestMethod = requestMethod;
         }
 
         public String getStartDate() {

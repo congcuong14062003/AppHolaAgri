@@ -106,7 +106,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Tên đề xuất"
+                        android:text="Tên đề xuất *"
                         android:textColor="@color/secon_textcolor" />
 
                     <EditText
@@ -142,7 +142,7 @@
                         android:src="@drawable/isurgent" />
 
                     <TextView
-                        style="@style/TextStyle_18_600"
+                        style="@style/TextStyle_16_600"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

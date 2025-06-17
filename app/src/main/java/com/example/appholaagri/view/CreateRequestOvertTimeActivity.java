@@ -816,10 +816,6 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                 @Override
                 public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                     hideLoading();
-                    // Log mã trạng thái và body
-                    Log.d("CreateRequestOvertTimeActivity", "Response Code: " + response.code());
-                    Log.d("CreateRequestOvertTimeActivity", "Response Body: " + (response.body() != null ? gson.toJson(response.body()) : "No body"));
-
                     if (response.isSuccessful() && response.body() != null) {
                         ApiResponse<String> apiResponse = response.body();
                         if (apiResponse.getStatus() == 200) {
@@ -1001,7 +997,26 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                         finish();
                     }
                 } else {
-                    CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại.");
+                    if (response.errorBody() != null) {
+                        try {
+                            // Parse error body thành JSON
+                            String errorContent = response.errorBody().string();
+                            Log.d("CreateRequestOvertTimeActivity", "Error Body: " + errorContent);
+                            // Tạo một class để map với error response (nếu cần)
+                            Gson gson = new Gson();
+                            ErrorResponse errorResponse = gson.fromJson(errorContent, ErrorResponse.class);
+                            if (errorResponse != null && errorResponse.getMessage() != null) {
+                                CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, errorResponse.getMessage());
+                            } else {
+                                CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi không xác định từ server.");
+                            }
+                        } catch (IOException e) {
+                            Log.e("CreateRequestOvertTimeActivity", "Error parsing error body: " + e.getMessage());
+                            CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi khi xử lý phản hồi từ server.");
+                        }
+                    } else {
+                        CustomToast.showCustomToast(CreateRequestOvertTimeActivity.this, "Lỗi kết nối, vui lòng thử lại. Mã lỗi: " + response.code());
+                    }
                 }
             }
 

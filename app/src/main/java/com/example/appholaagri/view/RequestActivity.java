@@ -43,6 +43,7 @@ import com.example.appholaagri.model.RequestTabListData.RequestTabListRequest;
 import com.example.appholaagri.service.ApiClient;
 import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.LoadingDialog;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -67,6 +68,7 @@ public class RequestActivity extends AppCompatActivity {
     private ConstraintLayout overlay, overlay_filter_status_container;
     private LinearLayout create_request_btn;
     private int tabId = 1; // Giá trị mặc định là 0
+    private LoadingDialog loadingDialog = new LoadingDialog(this);
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -231,12 +233,14 @@ public class RequestActivity extends AppCompatActivity {
 
     }
     private void getInitFormData(String token) {
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         RequestTabListRequest requestTabListRequest = new RequestTabListRequest(1, 20);
         Call<ApiResponse<RequestTabListDataResponse>> call = apiInterface.requestTabListData(requestTabListRequest);
         call.enqueue(new Callback<ApiResponse<RequestTabListDataResponse>>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<RequestTabListDataResponse>> call, Response<ApiResponse<RequestTabListDataResponse>> response) {
+                loadingDialog.hide();
                 Log.d("RequestActivity", "respose: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<RequestTabListDataResponse> apiResponse = response.body();
@@ -254,6 +258,7 @@ public class RequestActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<RequestTabListDataResponse>> call, Throwable t) {
+                loadingDialog.hide();
                 Log.e("RequestActivity", "Error: " + t.getMessage());
             }
         });

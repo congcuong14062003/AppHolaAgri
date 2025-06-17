@@ -31,10 +31,10 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
     private List<ListDayReq> dayReqs;
     private Context context;
     private CreateRequestOvertTimeActivity createRequestOvertTimeActivity;
-    private boolean isEdit; // Thay statusRequest bằng isEdit
-    private RecyclerView dayRecyclerView; // Thêm biến để lưu tham chiếu đến dayRecyclerView
-    private List<BreakTimeOverTimeAdapter> breakTimeAdapters = new ArrayList<>(); // Lưu trữ các adapter
-    // Cập nhật constructor để nhận isEdit
+    private boolean isEdit;
+    private RecyclerView dayRecyclerView;
+    private List<BreakTimeOverTimeAdapter> breakTimeAdapters = new ArrayList<>();
+
     public DayOverTimeAdapter(List<ListDayReq> dayReqs, Context context, CreateRequestOvertTimeActivity activity, boolean isEdit, RecyclerView dayRecyclerView) {
         this.dayReqs = dayReqs;
         this.context = context;
@@ -43,11 +43,9 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
         this.dayRecyclerView = dayRecyclerView;
     }
 
-    // Phương thức để cập nhật isEdit và làm mới giao diện
     public void setIsEdit(boolean isEdit) {
         this.isEdit = isEdit;
         notifyDataSetChanged();
-        // Cập nhật isEdit cho tất cả BreakTimeOverTimeAdapter
         for (BreakTimeOverTimeAdapter adapter : breakTimeAdapters) {
             adapter.setIsEdit(isEdit);
         }
@@ -68,16 +66,14 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
         String endTime1 = dayReq.getEndTime();
 
         if (startTime1.isEmpty() || endTime1.isEmpty()) {
-            holder.etTimeOvertime.setText(""); // Giữ nguyên hint
+            holder.etTimeOvertime.setText("");
         } else {
             holder.etTimeOvertime.setText(startTime1 + " - " + endTime1);
         }
 
-        // Hiển thị content và result
         holder.edt_content_request_create.setText(dayReq.getPurpose() != null ? dayReq.getPurpose() : "");
         holder.edt_result_request_create.setText(dayReq.getResult() != null ? dayReq.getResult() : "");
 
-        // Kiểm tra isEdit để bật/tắt các trường nhập
         if (!isEdit) {
             holder.etDateOvertime.setEnabled(false);
             holder.etDateOvertime.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
@@ -106,10 +102,10 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
             holder.edt_result_request_create.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_rounded_color_stroke));
             holder.edt_result_request_create.setBackgroundTintList(null);
 
-
             holder.addBreakTimeBtn.setVisibility(View.VISIBLE);
-            holder.delete_day.setVisibility(View.VISIBLE);
-            // Lắng nghe sự thay đổi của content
+            // Hiển thị/ẩn nút xóa dựa trên số lượng mục
+            holder.delete_day.setVisibility(dayReqs.size() > 1 ? View.VISIBLE : View.GONE);
+
             holder.edt_content_request_create.addTextChangedListener(new android.text.TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -124,7 +120,6 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
                 }
             });
 
-            // Lắng nghe sự thay đổi của result
             holder.edt_result_request_create.addTextChangedListener(new android.text.TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -138,38 +133,27 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
                     createRequestOvertTimeActivity.updateRequestDetailData();
                 }
             });
-
-            // Xử lý khi ấn nút xóa ngày
-            if (dayReqs.size() > 1) {
-                holder.delete_day.setVisibility(View.VISIBLE);
-            } else {
-                holder.delete_day.setVisibility(View.GONE);
-            }
         }
 
-        // Cập nhật danh sách breakTimes
         if (dayReq.getBreakTimes() == null) {
-            dayReq.setBreakTimes(new ArrayList<>()); // Tránh null pointer
+            dayReq.setBreakTimes(new ArrayList<>());
         }
 
-        // Đảm bảo RecyclerView có LayoutManager
         if (holder.breakTimeRecycler.getLayoutManager() == null) {
             holder.breakTimeRecycler.setLayoutManager(new LinearLayoutManager(context));
         }
 
-        // Kiểm tra nếu adapter đã tồn tại thì cập nhật dữ liệu, nếu chưa thì khởi tạo mới
         if (holder.breakTimeRecycler.getAdapter() == null) {
             BreakTimeOverTimeAdapter breakTimeAdapter = new BreakTimeOverTimeAdapter(dayReq.getBreakTimes(), context, dayReqs, createRequestOvertTimeActivity, isEdit);
             holder.breakTimeRecycler.setAdapter(breakTimeAdapter);
             breakTimeAdapter.setIsEdit(isEdit);
-            breakTimeAdapters.add(breakTimeAdapter); // Thêm vào danh sách
+            breakTimeAdapters.add(breakTimeAdapter);
         } else {
             ((BreakTimeOverTimeAdapter) holder.breakTimeRecycler.getAdapter()).updateBreakTimes(dayReq.getBreakTimes());
         }
 
-        // Xử lý khi ấn nút thêm break time
         holder.addBreakTimeBtn.setOnClickListener(v -> {
-            if (isEdit) { // Chỉ cho phép thêm nếu isEdit là true
+            if (isEdit) {
                 BreakTime newBreakTime = new BreakTime("", "");
                 dayReq.getBreakTimes().add(newBreakTime);
                 holder.breakTimeRecycler.getAdapter().notifyItemInserted(dayReq.getBreakTimes().size() - 1);
@@ -177,19 +161,16 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
             }
         });
 
-        // Xử lý khi xóa ngày
         holder.delete_day.setOnClickListener(v -> {
-            if (isEdit) { // Chỉ cho phép xóa nếu isEdit là true
+            if (isEdit) {
                 dayReqs.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, dayReqs.size()); // Cập nhật lại vị trí các phần tử
+                notifyDataSetChanged(); // Cập nhật toàn bộ danh sách
                 createRequestOvertTimeActivity.updateRequestDetailData();
             }
         });
 
-        // Xử lý khi chọn ngày
         holder.etDateOvertime.setOnClickListener(v -> {
-            if (isEdit) { // Chỉ cho phép chọn ngày nếu isEdit là true
+            if (isEdit) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(context);
                 datePickerDialog.setOnDateSetListener((view, year, month, dayOfMonth) -> {
                     String selectedDate = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year);
@@ -201,9 +182,8 @@ public class DayOverTimeAdapter extends RecyclerView.Adapter<DayOverTimeAdapter.
             }
         });
 
-        // Xử lý khi chọn thời gian
         holder.etTimeOvertime.setOnClickListener(v -> {
-            if (isEdit) { // Chỉ cho phép chọn thời gian nếu isEdit là true
+            if (isEdit) {
                 TimePickerDialog startTimePickerDialog = new TimePickerDialog(context, (view, startHour, startMinute) -> {
                     String startTime = String.format("%02d:%02d", startHour, startMinute);
                     dayReq.setStartTime(startTime);

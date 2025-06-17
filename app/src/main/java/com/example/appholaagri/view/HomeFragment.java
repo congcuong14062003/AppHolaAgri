@@ -236,11 +236,6 @@ public class HomeFragment extends BaseFragment {
                     ApiResponse<List<MenuHomeResponse.MenuItem>> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
                         menuList = apiResponse.getData();
-
-//                        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-//                        String requestDetailDataJson = gson.toJson(menuList);
-//                        Log.d("HomeFragment", "menu: " + requestDetailDataJson);
-
                         // Cập nhật các RecyclerView với dữ liệu từ API
                         setupFarmManagementRecyclerView(menuList);
                         setupTaskManagementRecyclerView(menuList);
