@@ -9,6 +9,7 @@ public class RequestDetailData implements Serializable {
     private RequestGroup requestGroup;
     private int requestId;
     private String requestName;
+    private String code;
     private Integer isUrgent;
     private RequestMethod requestMethod;
     private int dateType;
@@ -87,6 +88,14 @@ public class RequestDetailData implements Serializable {
 
     public String getRequestName() {
         return requestName;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public Integer getIsUrgent() {

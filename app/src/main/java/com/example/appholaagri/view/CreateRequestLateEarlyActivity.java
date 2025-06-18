@@ -112,7 +112,7 @@ import com.squareup.picasso.Picasso;
 public class CreateRequestLateEarlyActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etNgayKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
-            etDurationLateEarly;
+            etDurationLateEarly, edt_code_request_create;
     private TextView title_request, txt_type_request_create, select_method_request, notice_lately_layout;
     private ImageView backBtnReview, rbMotNgay_create, rbNhieuNgay_create, rbIndividual_create, rbWork_create;
     private LinearLayout tvThoiGianKetThuc_layout;
@@ -127,7 +127,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
-    private LinearLayout layout_action_history_request, comment_container, discussion_layout;
+    private LinearLayout layout_action_history_request, comment_container, discussion_layout, code_request_layout;
     private SwitchCompat switchUrgent;
     boolean hasMethodSelected;
 
@@ -222,6 +222,10 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
 
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
+
+
+        edt_code_request_create = findViewById(R.id.edt_code_request_create);
+        code_request_layout = findViewById(R.id.code_request_layout);
 
 
         // file
@@ -862,6 +866,14 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
 
             } else {
                 comment_container.setVisibility(View.GONE);
+            }
+
+
+            if(requestDetailData.getCode() != null && !requestDetailData.getCode().isEmpty()) {
+                code_request_layout.setVisibility(View.VISIBLE);
+                edt_code_request_create.setText(requestDetailData.getCode());
+            } else {
+                code_request_layout.setVisibility(View.GONE);
             }
 
             if (requestDetailData.getRequestName() != null) {

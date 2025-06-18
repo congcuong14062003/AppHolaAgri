@@ -17,6 +17,7 @@ public class RequestListData {
         private int groupRequestType;
         private String groupRequestCode;
         private int isUrgent;
+        private String requestCode;
         private Employee employee;
         private int statusIdx;
 
@@ -27,6 +28,14 @@ public class RequestListData {
 
         public void setRequestId(int requestId) {
             this.requestId = requestId;
+        }
+
+        public String getRequestCode() {
+            return requestCode;
+        }
+
+        public void setRequestCode(String requestCode) {
+            this.requestCode = requestCode;
         }
 
         public String getRequestName() {

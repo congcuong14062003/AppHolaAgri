@@ -107,7 +107,7 @@ import retrofit2.Response;
 public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
             edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
-    private TextView title_request, txt_type_request_create, edt_reason_request_create;
+    private TextView title_request, txt_type_request_create, edt_reason_request_create, edt_code_request_create;
     private ImageView backBtnReview;
     private RequestDetailData requestDetailData;
     private Integer GroupRequestType, GroupRequestId, requestId, StatusRequest;
@@ -115,7 +115,7 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
     private ActionRequestDetailAdapter adapter;
     private AppCompatButton txt_status_request_detail;
     private CoordinatorLayout create_request_container;
-    private LinearLayout layout_action_history_request, comment_container, discussion_layout;
+    private LinearLayout layout_action_history_request, comment_container, discussion_layout, code_request_layout;
     private Dialog loadingDialog;
     private SwitchCompat switchUrgent;
     private Spinner spinner_company_request_create;
@@ -172,7 +172,9 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
         // lí do
         edt_reason_request_create = findViewById(R.id.edt_reason_request_create);
 
-        // Lấy dữ liệu từ Intent
+        edt_code_request_create = findViewById(R.id.edt_code_request_create);
+        code_request_layout = findViewById(R.id.code_request_layout);
+
         // file
         fileContainer = findViewById(R.id.file_container);
         comment_container = findViewById(R.id.comment_container);
@@ -484,13 +486,23 @@ public class CreateRequestAnotherSubmissionActivity extends BaseActivity {
             // Kiểm tra trạng thái chỉnh sửa
             isEdit = hasEditStatus;
             if (!isEdit) {
+                comment_container.setVisibility(View.VISIBLE);
                 edt_name_request_create.setEnabled(false);
                 edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                 spinner_company_request_create.setEnabled(false);
                 spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
 
+            } else {
+                comment_container.setVisibility(View.GONE);
             }
 
+
+            if(requestDetailData.getCode() != null && !requestDetailData.getCode().isEmpty()) {
+                code_request_layout.setVisibility(View.VISIBLE);
+                edt_code_request_create.setText(requestDetailData.getCode());
+            } else {
+                code_request_layout.setVisibility(View.GONE);
+            }
             // Nhóm đề xuất
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
                 txt_type_request_create.setText(requestDetailData.getRequestGroup().getName());

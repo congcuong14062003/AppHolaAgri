@@ -16,7 +16,6 @@
         android:paddingStart="20dp"
         android:paddingTop="30dp"
         android:paddingEnd="20dp">
-
         <ImageView
             android:id="@+id/backBtnReview_create"
             android:layout_width="wrap_content"
@@ -28,7 +27,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.1013"
             app:srcCompat="@drawable/back_btn" />
-
         <TextView
             android:id="@+id/title_request"
             style="@style/TextStyle_16_600"
@@ -154,6 +152,38 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:checked="false" />
+                </LinearLayout>
+
+
+                <!--Mã đề xuất-->
+                <LinearLayout
+                    android:id="@+id/code_request_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="Mã đề xuất"
+                        android:textColor="@color/secon_textcolor" />
+
+                    <EditText
+                        android:id="@+id/edt_code_request_create"
+                        style="@style/TextStyle_14_500"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="15dp"
+                        android:background="@drawable/input_infor"
+                        android:backgroundTint="#dee0df"
+                        android:enabled="false"
+                        android:gravity="center_vertical"
+                        android:inputType="text"
+                        android:padding="35px"
+                        android:textColor="@color/textcolor" />
                 </LinearLayout>
 
                 <!--Người đề xuất-->

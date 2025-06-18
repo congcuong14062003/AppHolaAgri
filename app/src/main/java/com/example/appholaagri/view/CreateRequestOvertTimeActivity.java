@@ -105,7 +105,7 @@ import retrofit2.Response;
 
 public class CreateRequestOvertTimeActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
-            edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
+            edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create, edt_code_request_create;
     private TextView title_request, txt_type_request_create, select_method_request;
     private ImageView backBtnReview;
     private RequestDetailData requestDetailData;
@@ -125,7 +125,7 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
     private RecyclerView recyclerViewApprovalLogs;
     private ActionRequestDetailAdapter adapter;
     private CoordinatorLayout create_request_container;
-    private LinearLayout layout_action_history_request, comment_container, discussion_layout, feature_layout;
+    private LinearLayout layout_action_history_request, comment_container, discussion_layout, feature_layout, code_request_layout;
     private Dialog loadingDialog;
     private SwitchCompat switchUrgent;
     private Spinner spinner_company_request_create;
@@ -190,6 +190,10 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
         feature_layout = findViewById(R.id.feature_layout);
         simple = findViewById(R.id.simple);
         complicated = findViewById(R.id.complicated);
+
+
+        edt_code_request_create = findViewById(R.id.edt_code_request_create);
+        code_request_layout = findViewById(R.id.code_request_layout);
 
 
         // file
@@ -571,12 +575,17 @@ public class CreateRequestOvertTimeActivity extends BaseActivity {
                 edt_reason_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
                 select_method_request.setEnabled(false);
                 select_method_request.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
                 spinner_company_request_create.setEnabled(false);
                 spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-
             } else {
                 comment_container.setVisibility(View.GONE);
+            }
+
+            if(requestDetailData.getCode() != null && !requestDetailData.getCode().isEmpty()) {
+                code_request_layout.setVisibility(View.VISIBLE);
+                edt_code_request_create.setText(requestDetailData.getCode());
+            } else {
+                code_request_layout.setVisibility(View.GONE);
             }
 
             if(requestDetailData.getType() == 1 || requestDetailData.getType() == 2) {

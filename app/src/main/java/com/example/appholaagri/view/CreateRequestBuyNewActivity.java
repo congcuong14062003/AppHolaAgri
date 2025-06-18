@@ -102,7 +102,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CreateRequestBuyNewActivity extends BaseActivity {
-    private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc, edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
+    private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, etNgayBatDau, etGioBatDau, etNgayKetThuc,
+            etGioKetThuc, edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create,
+            edt_follower_request_create, edt_code_request_create;
     private TextView title_request, txt_type_request_create;
     private ImageView backBtnReview;
     private RequestDetailData requestDetailData; // Biến toàn cục
@@ -116,7 +118,7 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
     View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     ConstraintLayout overlayFilterStatus;
-    private LinearLayout layout_action_history_request, comment_container, discussion_layout;
+    private LinearLayout layout_action_history_request, comment_container, discussion_layout, code_request_layout;
     private SwitchCompat switchUrgent;
 
     private FlexboxLayout fileContainer;
@@ -199,6 +201,10 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
 
         recyclerViewApprovalLogs = findViewById(R.id.recyclerViewApprovalLogs);
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
+
+        edt_code_request_create = findViewById(R.id.edt_code_request_create);
+        code_request_layout = findViewById(R.id.code_request_layout);
+
 
         // file
         fileContainer = findViewById(R.id.file_container);
@@ -612,7 +618,12 @@ public class CreateRequestBuyNewActivity extends BaseActivity {
                 comment_container.setVisibility(View.GONE);
             }
 
-
+            if(requestDetailData.getCode() != null && !requestDetailData.getCode().isEmpty()) {
+                code_request_layout.setVisibility(View.VISIBLE);
+                edt_code_request_create.setText(requestDetailData.getCode());
+            } else {
+                code_request_layout.setVisibility(View.GONE);
+            }
             if (requestDetailData.getRequestGroup() != null && requestDetailData.getRequestGroup().getName() != null) {
                 txt_type_request_create.setText(requestDetailData.getRequestGroup().getName());
             }

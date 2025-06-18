@@ -98,7 +98,7 @@ import retrofit2.Response;
 public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
             edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
-            edt_content_request_create, edt_type_request_create;
+            edt_content_request_create, edt_type_request_create, edt_code_request_create;
     private TextView title_request, txt_type_request_create;
     private ImageView backBtnReview;
     private RequestDetailData requestDetailData;
@@ -107,7 +107,7 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
     private ActionRequestDetailAdapter adapter;
     private AppCompatButton txt_status_request_detail;
     private CoordinatorLayout create_request_container;
-    private LinearLayout layout_action_history_request, comment_container, discussion_layout;
+    private LinearLayout layout_action_history_request, comment_container, discussion_layout, code_request_layout;
     private Dialog loadingDialog;
     private SwitchCompat switchUrgent;
     private Spinner spinner_company_request_create;
@@ -163,6 +163,11 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
         spinner_company_request_create = findViewById(R.id.spinner_company_request_create); // Ánh xạ Spinner
 
         recyclerViewApprovalLogs.setLayoutManager(new LinearLayoutManager(this));
+
+        edt_code_request_create = findViewById(R.id.edt_code_request_create);
+        code_request_layout = findViewById(R.id.code_request_layout);
+
+
         // file
         fileContainer = findViewById(R.id.file_container);
         comment_container = findViewById(R.id.comment_container);
@@ -348,6 +353,7 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
             }
         });
     }
+
     private void getInitFormCreateRequest(String token, int GroupRequestId) {
         showLoading();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
@@ -477,10 +483,19 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
             // Kiểm tra trạng thái chỉnh sửa
             isEdit = hasEditStatus;
             if (!isEdit) {
-                    edt_name_request_create.setEnabled(false);
-                    edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
-                    spinner_company_request_create.setEnabled(false);
-                    spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                comment_container.setVisibility(View.VISIBLE);
+                edt_name_request_create.setEnabled(false);
+                edt_name_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+                spinner_company_request_create.setEnabled(false);
+                spinner_company_request_create.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#dee0df")));
+            } else {
+                comment_container.setVisibility(View.GONE);
+            }
+            if(requestDetailData.getCode() != null && !requestDetailData.getCode().isEmpty()) {
+                code_request_layout.setVisibility(View.VISIBLE);
+                edt_code_request_create.setText(requestDetailData.getCode());
+            } else {
+                code_request_layout.setVisibility(View.GONE);
             }
 
             // Nhóm đề xuất
@@ -775,6 +790,7 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
             }
         });
     }
+
     private void sendModifyRequestFollower(ApiInterface apiInterface, String token, RequestDetailData requestDetailData) {
         showLoading();
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -801,6 +817,7 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
             }
         });
     }
+
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         if (view != null) {
@@ -1010,7 +1027,7 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
         // Hiển thị nút thêm file nếu có trạng thái id = 3 hoặc requestId == -1
         boolean hasEditStatus = false;
 
-        if (!Objects.equals(requestDetailData, null)  && !Objects.equals(requestDetailData.getListStatus(), null)) {
+        if (!Objects.equals(requestDetailData, null) && !Objects.equals(requestDetailData.getListStatus(), null)) {
             for (ListStatus status : requestDetailData.getListStatus()) {
                 if (status != null && status.getId() == 3) {
                     hasEditStatus = true;
@@ -1648,8 +1665,6 @@ public class CreateRequestPolicyRegulationSubmissionActivity extends AppCompatAc
             }
         }
     }
-
-
 
 
     @Override

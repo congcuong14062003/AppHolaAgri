@@ -108,7 +108,7 @@ import retrofit2.Response;
 
 public class CreateRequestDayOffActivity extends AppCompatActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, edt_duration, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
-            edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create;
+            edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create, edt_code_request_create;
     private TextView title_request, txt_type_request_create, select_method_request;
     private ImageView backBtnReview;
     private RequestDetailData requestDetailData;
@@ -121,7 +121,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
     private View overlay_background;
     private ConstraintLayout overlay_filter_status_container;
     private ConstraintLayout overlayFilterStatus;
-    private LinearLayout layout_action_history_request, comment_container, discussion_layout;
+    private LinearLayout layout_action_history_request, comment_container, discussion_layout, code_request_layout;
     private SwitchCompat switchUrgent;
     private Spinner spinner_company_request_create;
     private List<RequestDetailData.DayOffFormReq> dayOffList = new ArrayList<>();
@@ -195,14 +195,11 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         rvDayOffRequests.setAdapter(dayOffAdapter);
 
 
-
-
         btnAddDayOff = findViewById(R.id.btn_add_day_off);
         btnAddDayOff.setOnClickListener(v -> addNewDayOff());
 
-
-
-
+        edt_code_request_create = findViewById(R.id.edt_code_request_create);
+        code_request_layout = findViewById(R.id.code_request_layout);
 
 
         // file
@@ -408,6 +405,7 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
         });
 
     }
+
     public void updateRequestDetailData() {
         requestDetailData.setDayOffFormReqs(dayOffList);
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -745,6 +743,14 @@ public class CreateRequestDayOffActivity extends AppCompatActivity {
             } else {
                 comment_container.setVisibility(View.GONE);
             }
+
+            if (requestDetailData.getCode() != null && !requestDetailData.getCode().isEmpty()) {
+                code_request_layout.setVisibility(View.VISIBLE);
+                edt_code_request_create.setText(requestDetailData.getCode());
+            } else {
+                code_request_layout.setVisibility(View.GONE);
+            }
+
             // Comment
             if (requestDetailData != null && requestDetailData.getComments() != null) {
                 discussionAdapter.setComments(requestDetailData.getComments());
