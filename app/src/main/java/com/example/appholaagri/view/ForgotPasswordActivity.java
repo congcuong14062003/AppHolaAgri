@@ -26,6 +26,7 @@ import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.KeyboardUtils;
 import com.example.appholaagri.utils.LoadingDialog;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +38,7 @@ public class ForgotPasswordActivity extends BaseActivity {
     ImageView errorIcon;
     TextView errorMessage;
     TextInputLayout phone_input_layout;
-
+    private String fcmToken; // Biến lưu FCM Token
     private LoadingDialog loadingDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,17 @@ public class ForgotPasswordActivity extends BaseActivity {
         errorIcon  = findViewById(R.id.error_icon); // ID của ImageView chứa icon lỗi
         errorMessage  = findViewById(R.id.error_message); // ID của TextView chứa thông báo lỗi
         phone_input_layout = findViewById(R.id.phone_input_layout);
-
+        // Lấy FCM Token
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        fcmToken = task.getResult();
+                        Log.d("MainActivity", "FCM Token: " + fcmToken);
+                    } else {
+                        Log.e("MainActivity", "Failed to get FCM Token: " + task.getException());
+                        fcmToken = "";
+                    }
+                });
         // khởi tạo loading
         loadingDialog = new LoadingDialog(this); // Khởi tạo loading dialog
 
@@ -80,7 +91,7 @@ public class ForgotPasswordActivity extends BaseActivity {
             } else {
                 // If phone number is valid, proceed with the next steps
                 String deviceId = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-                checkPhoneNumber(deviceId, phoneNumber);  // Call the API to check the phone number
+                checkPhoneNumber(fcmToken, phoneNumber);  // Call the API to check the phone number
             }
         });
 

@@ -576,7 +576,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
     }
 
     // Hàm hiển thị DatePickerDialog
-    private void showDatePicker(EditText targetEditText, Calendar startDate) {
+    private void showDatePicker(EditText targetEditText, Calendar currentDate) {
         Calendar calendar = Calendar.getInstance();
 
         // Nếu EditText đã có ngày, thì đặt ngày đó là ngày được chọn ban đầu
@@ -591,7 +591,7 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                 e.printStackTrace();
             }
         } else {
-            calendar = (Calendar) startDate.clone(); // Nếu chưa có ngày, dùng ngày hiện tại
+            calendar = (Calendar) currentDate.clone(); // Nếu chưa có ngày, dùng ngày hiện tại
         }
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
@@ -599,36 +599,67 @@ public class CreateRequestLateEarlyActivity extends BaseActivity {
                 (view, year, month, dayOfMonth) -> {
                     String selectedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d",
                             dayOfMonth, month + 1, year);
-                    targetEditText.setText(selectedDate);
+
+                    // Validate khi chọn ngày
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                        Date selectedDateObj = sdf.parse(selectedDate);
+
+                        if (targetEditText == etNgayBatDau) {
+                            // Nếu đã có ngày kết thúc, kiểm tra ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc
+                            if (!etNgayKetThuc.getText().toString().isEmpty()) {
+                                Date endDateObj = sdf.parse(etNgayKetThuc.getText().toString());
+                                if (selectedDateObj != null && endDateObj != null && selectedDateObj.after(endDateObj)) {
+                                    CustomToast.showCustomToast(this, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
+                                    return; // Không cập nhật ngày
+                                }
+                            }
+                        } else if (targetEditText == etNgayKetThuc) {
+                            // Nếu đã có ngày bắt đầu, kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
+                            if (!etNgayBatDau.getText().toString().isEmpty()) {
+                                Date startDateObj = sdf.parse(etNgayBatDau.getText().toString());
+                                if (selectedDateObj != null && startDateObj != null && selectedDateObj.before(startDateObj)) {
+                                    CustomToast.showCustomToast(this, "Ngày kết thúc không thể nhỏ hơn ngày bắt đầu!");
+                                    return; // Không cập nhật ngày
+                                }
+                            }
+                        }
+
+                        // Nếu hợp lệ, cập nhật ngày vào EditText
+                        targetEditText.setText(selectedDate);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        CustomToast.showCustomToast(this, "Lỗi định dạng ngày!");
+                    }
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        // Nếu chọn ngày bắt đầu
-        if (targetEditText == etNgayBatDau) {
-            Calendar minDate = (Calendar) startDate.clone();
-            minDate.add(Calendar.DAY_OF_MONTH, -3); // 3 ngày trước
-            datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
-
-            Calendar maxDate = (Calendar) startDate.clone();
-            maxDate.add(Calendar.DAY_OF_MONTH, 3); // 3 ngày sau
-            datePickerDialog.getDatePicker().setMaxDate(maxDate.getTimeInMillis());
+        // Nếu chọn ngày kết thúc, đặt giới hạn ngày tối thiểu dựa trên ngày bắt đầu (nếu có)
+        if (targetEditText == etNgayKetThuc && !etNgayBatDau.getText().toString().isEmpty()) {
+            try {
+                Date startDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        .parse(etNgayBatDau.getText().toString());
+                if (startDate != null) {
+                    datePickerDialog.getDatePicker().setMinDate(startDate.getTime());
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
-        // Nếu chọn ngày kết thúc
-        if (targetEditText == etNgayKetThuc) {
-            if (!etNgayBatDau.getText().toString().isEmpty()) {
-                try {
-                    Date startDateObj = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                            .parse(etNgayBatDau.getText().toString());
-                    if (startDateObj != null) {
-                        datePickerDialog.getDatePicker().setMinDate(startDateObj.getTime() + 86400000); // Sau ngày bắt đầu 1 ngày
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+        // Nếu chọn ngày bắt đầu, đặt giới hạn tối đa dựa trên ngày kết thúc (nếu có)
+        if (targetEditText == etNgayBatDau && !etNgayKetThuc.getText().toString().isEmpty()) {
+            try {
+                Date endDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        .parse(etNgayKetThuc.getText().toString());
+                if (endDate != null) {
+                    datePickerDialog.getDatePicker().setMaxDate(endDate.getTime());
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
         }
 

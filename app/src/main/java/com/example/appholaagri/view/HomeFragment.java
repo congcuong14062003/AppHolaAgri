@@ -41,6 +41,7 @@ public class HomeFragment extends BaseFragment {
     private ConstraintLayout containerHome;
     private List<MenuHomeResponse.MenuItem> menuList; // Lưu trữ dữ liệu menu từ API
     private LoadingDialog loadingDialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -218,7 +219,9 @@ public class HomeFragment extends BaseFragment {
             @Override
             public void onFailure(String errorMessage) {
                 Log.e("HomeFragment", "Error: " + errorMessage);
-                CustomToast.showCustomToast(requireContext(), "Lỗi: " + errorMessage);
+                if (isAdded() && getContext() != null) {
+                    CustomToast.showCustomToast(getContext(), "Lỗi: " + errorMessage);
+                }
             }
         });
     }
