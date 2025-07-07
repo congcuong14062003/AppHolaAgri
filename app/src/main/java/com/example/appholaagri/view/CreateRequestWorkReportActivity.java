@@ -107,7 +107,7 @@ import retrofit2.Response;
 import com.example.appholaagri.utils.Utils;
 import com.squareup.picasso.Picasso;
 
-public class CreateRequestWorkReportActivity extends AppCompatActivity {
+public class CreateRequestWorkReportActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
             edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
             edt_work_location, edt_purpose_request_create, edt_content_request_create, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,

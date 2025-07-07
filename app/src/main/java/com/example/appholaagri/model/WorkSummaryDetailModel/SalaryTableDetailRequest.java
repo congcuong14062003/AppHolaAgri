@@ -1,4 +1,4 @@
-package com.example.appholaagri.model.SalaryTableDetailModel;
+package com.example.appholaagri.model.WorkSummaryDetailModel;
 
 public class SalaryTableDetailRequest {
     private String keySearch;

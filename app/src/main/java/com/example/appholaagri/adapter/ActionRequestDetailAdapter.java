@@ -1,6 +1,5 @@
 package com.example.appholaagri.adapter;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
 import com.example.appholaagri.model.RequestDetailModel.ApprovalLogs;
-import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
-import com.example.appholaagri.view.SalaryTableDetailActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

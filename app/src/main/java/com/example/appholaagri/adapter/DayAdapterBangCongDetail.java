@@ -2,7 +2,7 @@ package com.example.appholaagri.adapter;
 
 import android.view.ViewGroup;
 
-import com.example.appholaagri.model.SalaryTableDetailModel.AttendanceSummaryRes;
+import com.example.appholaagri.model.WorkSummaryDetailModel.AttendanceSummaryRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;

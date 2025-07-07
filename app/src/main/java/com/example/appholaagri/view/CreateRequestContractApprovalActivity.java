@@ -99,7 +99,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestContractApprovalActivity extends AppCompatActivity {
+public class CreateRequestContractApprovalActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
             edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
             edt_partner_name_request_create, edt_contract_type_request_create, edt_content_request_create, edt_code_request_create;

@@ -96,7 +96,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestRecruitmentFlyerActivity extends AppCompatActivity {
+public class CreateRequestRecruitmentFlyerActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create,
             edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create,
             edt_type_request_create, edt_position_request_create, edt_quantity_request_create, edt_salary_request_create,

@@ -9,27 +9,26 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appholaagri.R;
-import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
-import com.example.appholaagri.model.TimekeepingStatisticsModel.TimekeepingStatisticsData;
+import com.example.appholaagri.model.SalaryTableModel.SalaryTableResponse;
 import com.example.appholaagri.view.SalaryTableDetailActivity;
 
 import java.util.List;
 
 public class SalaryTableAdapter extends RecyclerView.Adapter<SalaryTableAdapter.ViewHolder> {
 
-    private List<SalaryTableData.Item> dayDataList;
+    private List<SalaryTableResponse.Data> dayDataList;
 
-    public SalaryTableAdapter(List<SalaryTableData.Item> dayDataList) {
+    public SalaryTableAdapter(List<SalaryTableResponse.Data> dayDataList) {
         this.dayDataList = dayDataList;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bang_cong_item_recycle_view, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bang_luong_item_recycle_view, parent, false);
         return new ViewHolder(view);
     }
 
-    public void addData(List<SalaryTableData.Item> newData) {
+    public void addData(List<SalaryTableResponse.Data> newData) {
         int startPosition = dayDataList.size();
         dayDataList.addAll(newData);
         notifyItemRangeInserted(startPosition, newData.size());
@@ -38,30 +37,17 @@ public class SalaryTableAdapter extends RecyclerView.Adapter<SalaryTableAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Lấy dữ liệu ngày
-        SalaryTableData.Item dayData = dayDataList.get(position);
+        SalaryTableResponse.Data dayData = dayDataList.get(position);
 
         // Hiển thị ngày
-        holder.name_bang_cong.setText(dayData.getWorkSummaryMonthly().getName());
-        holder.time_bang_cong.setText(dayData.getTime().getCreatedDate());
+        holder.name_bang_cong.setText(dayData.getName());
+        holder.time_bang_cong.setText(dayData.getModifiedDate());
         // Khi người dùng nhấn vào item
         holder.itemView.setOnClickListener(v -> {
             // Tạo Intent để chuyển sang màn hình chi tiết
             Intent intent = new Intent(v.getContext(), SalaryTableDetailActivity.class);
+            intent.putExtra("idSalary", dayData.getId());
 
-            // Truyền dữ liệu cần thiết
-            intent.putExtra("keySearch", "");
-            intent.putExtra("page", 1);
-            intent.putExtra("size", 20);
-
-            // Truyền thông tin công việc vào Intent (dữ liệu WorkSummaryMonthly)
-
-            intent.putExtra("workSummaryMonthly_code", dayData.getWorkSummaryMonthly().getCode());
-            intent.putExtra("workSummaryMonthly_id", dayData.getWorkSummaryMonthly().getId());
-            intent.putExtra("workSummaryMonthly_name", dayData.getWorkSummaryMonthly().getName());
-            intent.putExtra("workSummaryMonthly_status", dayData.getWorkSummaryMonthly().getStatus());
-            intent.putExtra("displayDate", dayData.getDisplayDate());
-
-            // Start the activity
             v.getContext().startActivity(intent);
         });
     }

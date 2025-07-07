@@ -106,7 +106,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateRequestDayOffActivity extends AppCompatActivity {
+public class CreateRequestDayOffActivity extends BaseActivity {
     private EditText edt_name_request_create, edt_name_employye_request_create, edt_part_request_create, edt_duration, etNgayBatDau, etGioBatDau, etNgayKetThuc, etGioKetThuc,
             edt_reason_request_create, edt_manager_direct_request_create, edt_fixed_reviewer_request_create, edt_follower_request_create, edt_code_request_create;
     private TextView title_request, txt_type_request_create, select_method_request;

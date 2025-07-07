@@ -1,5 +1,6 @@
 package com.example.appholaagri.adapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.appholaagri.R;
-import com.example.appholaagri.model.SalaryTableDetailModel.ShiftSummaryRes;
+import com.example.appholaagri.model.WorkSummaryDetailModel.ShiftSummaryRes;
 
 import java.util.List;
 
@@ -30,10 +31,11 @@ public class ShiftAdapterBangCongDetail extends RecyclerView.Adapter<ShiftAdapte
         return new ShiftViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ShiftViewHolder holder, int position) {
         ShiftSummaryRes shift = shiftList.get(position);
-        holder.txtShiftName.setText(shift.getShiftName() + " " +shift.getShiftCode());
+        holder.txtShiftName.setText(shift.getShiftName());
         holder.txtShiftTime.setText(" (" + shift.getStartTime() + " - " + shift.getEndTime() + ")");
         holder.txtShiftNote.setText(shift.getNote());
 

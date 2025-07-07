@@ -1,8 +1,8 @@
-package com.example.appholaagri.model.SalaryTableDetailModel;
+package com.example.appholaagri.model.WorkSummaryDetailModel;
 
 import java.util.List;
 
-public class SalaryTableDetailData {
+public class WorkSummaryDetailData {
     private Long userWorkSummaryId;
     private Employee employee;
     private Department department;
@@ -14,7 +14,7 @@ public class SalaryTableDetailData {
     private Double extraWorkEfficient;
     private List<AttendanceSummaryRes> attendanceSummaryRes;
 
-    public SalaryTableDetailData(Long userWorkSummaryId, Employee employee, Department department, Team team,
+    public WorkSummaryDetailData(Long userWorkSummaryId, Employee employee, Department department, Team team,
                                  Double standardWorkEfficient, Double totalWorkEfficient, Double remainDayOff,
                                  Double normalWorkEfficient, Double extraWorkEfficient, List<AttendanceSummaryRes> attendanceSummaryRes) {
         this.userWorkSummaryId = userWorkSummaryId;

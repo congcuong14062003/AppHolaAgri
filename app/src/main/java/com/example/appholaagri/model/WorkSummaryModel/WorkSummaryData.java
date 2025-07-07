@@ -1,8 +1,8 @@
-package com.example.appholaagri.model.SalaryTableModel;
+package com.example.appholaagri.model.WorkSummaryModel;
 
 import java.util.List;
 
-public class SalaryTableData {
+public class WorkSummaryData {
     private List<Item> data; // Sửa kiểu từ DataSalary thành Item
     private int numOfRecords;
     private int totalRecord;

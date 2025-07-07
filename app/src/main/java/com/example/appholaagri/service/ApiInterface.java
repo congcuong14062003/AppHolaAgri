@@ -19,16 +19,13 @@ import com.example.appholaagri.model.ListPlantModel.ListPlantResponse;
 import com.example.appholaagri.model.ListSensorModel.ListSensorRequest;
 import com.example.appholaagri.model.ListSensorModel.ListSensorResponse;
 import com.example.appholaagri.model.ListUserModel.ListUserRequest;
-import com.example.appholaagri.model.ListUserModel.ListUserResponse;
 import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftRequest;
-import com.example.appholaagri.model.ListWorkShiftModel.ListWorkShiftResponse;
 import com.example.appholaagri.model.ListWorkShiftModel.WorkShiftListWrapper;
 import com.example.appholaagri.model.LoginModel.LoginData;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.MenuHomeModel.MenuHomeResponse;
 import com.example.appholaagri.model.PlanAppInitFormModel.PlanAppInitFormResponse;
 import com.example.appholaagri.model.PlantDetailModel.PlantDetailResponse;
-import com.example.appholaagri.model.PlantInforByQrCode.PlantInforResponse;
 import com.example.appholaagri.model.PlantationListModel.PlantationListRequest;
 import com.example.appholaagri.model.PlantationListModel.PlantationListResponse;
 import com.example.appholaagri.model.PlantingDateModel.PlantingDateResponse;
@@ -48,13 +45,14 @@ import com.example.appholaagri.model.RequestStatusModel.RequestStatusRequest;
 import com.example.appholaagri.model.RequestStatusModel.RequestStatusResponse;
 import com.example.appholaagri.model.RequestTabListData.RequestTabListDataResponse;
 import com.example.appholaagri.model.RequestTabListData.RequestTabListRequest;
-import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailData;
-import com.example.appholaagri.model.SalaryTableDetailModel.SalaryTableDetailRequest;
-import com.example.appholaagri.model.SalaryTableModel.SalaryTableData;
+import com.example.appholaagri.model.WorkSummaryDetailModel.WorkSummaryDetailData;
+import com.example.appholaagri.model.WorkSummaryDetailModel.SalaryTableDetailRequest;
 import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
+import com.example.appholaagri.model.SalaryTableModel.SalaryTableResponse;
+import com.example.appholaagri.model.WorkSummaryModel.WorkSummaryData;
+import com.example.appholaagri.model.WorkSummaryModel.WorkSummaryRequest;
 import com.example.appholaagri.model.SensorAppInitFormModel.SensorAppInitFormResponse;
 import com.example.appholaagri.model.ShiftDetailModel.ShiftDetailRequest;
-import com.example.appholaagri.model.ShiftDetailModel.ShiftDetailResponse;
 import com.example.appholaagri.model.ShiftModel.ShiftModel;
 import com.example.appholaagri.model.SoilDetailModel.SoilDetailRespose;
 import com.example.appholaagri.model.SoilManualInitFormModel.SoilManualInitFormResponse;
@@ -130,11 +128,16 @@ public interface ApiInterface {
 
     // danh sách tổng hợp công
     @POST("work-summary/get-list")
-    Call<ApiResponse<SalaryTableData>> salaryTableData(@Header("Authorization") String token, @Body SalaryTableRequest salaryTableRequest);
+    Call<ApiResponse<WorkSummaryData>> workSummaryData(@Header("Authorization") String token, @Body WorkSummaryRequest workSummaryRequest);
 
-    // danh sách tổng hợp côn
+    // chi tiết công
     @POST("work-summary/get-detail")
-    Call<ApiResponse<SalaryTableDetailData>> salaryTableDetailData(@Header("Authorization") String token, @Body SalaryTableDetailRequest salaryTableDetailRequest);
+    Call<ApiResponse<WorkSummaryDetailData>> salaryTableDetailData(@Header("Authorization") String token, @Body SalaryTableDetailRequest salaryTableDetailRequest);
+
+    // danh sách tổng hợp lương
+    @POST("salary-table/list")
+    Call<ApiResponse<SalaryTableResponse>> salaryTableData(@Header("Authorization") String token, @Body SalaryTableRequest salaryTableRequest);
+
 
     // danh sách tab yêu cầu đề - xuất
     @POST("request/request-type")

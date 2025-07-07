@@ -39,6 +39,7 @@ import com.example.appholaagri.service.ApiInterface;
 import com.example.appholaagri.R;
 import com.example.appholaagri.utils.CustomToast;
 import com.example.appholaagri.utils.KeyboardUtils;
+import com.example.appholaagri.utils.LoadingDialog;
 import com.example.appholaagri.utils.Utils;
 import com.example.appholaagri.model.LoginModel.LoginRequest;
 import com.example.appholaagri.model.LoginModel.LoginData;
@@ -62,8 +63,10 @@ public class MainActivity extends BaseActivity {
     Button change_pass_button;
     TextInputLayout confirm_new_pass_layout, new_pass_input_layout;
 
-    private Dialog loadingDialog;
+    //    private Dialog loadingDialog;
     private ActivityResultLauncher<String> requestPermissionLauncher;
+
+    private LoadingDialog loadingDialog;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -71,7 +74,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
+        loadingDialog = new LoadingDialog(this);
         // Khởi tạo ActivityResultLauncher để xử lý quyền thông báo
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
@@ -183,31 +186,31 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    // Hiển thị loading
-    private void showLoading() {
-        if (loadingDialog == null) {
-            loadingDialog = new Dialog(this);
-            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            loadingDialog.setContentView(R.layout.dialog_loading);
-            loadingDialog.setCancelable(false);
-
-            if (loadingDialog.getWindow() != null) {
-                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            }
-        }
-        loadingDialog.show();
-    }
-
-    // Ẩn loading
-    private void hideLoading() {
-        if (loadingDialog != null && loadingDialog.isShowing()) {
-            loadingDialog.dismiss();
-        }
-    }
+//    // Hiển thị loading
+//    private void showLoading() {
+//        if (loadingDialog == null) {
+//            loadingDialog = new Dialog(this);
+//            loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            loadingDialog.setContentView(R.layout.dialog_loading);
+//            loadingDialog.setCancelable(false);
+//
+//            if (loadingDialog.getWindow() != null) {
+//                loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                loadingDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//            }
+//        }
+//        loadingDialog.show();
+//    }
+//
+//    // Ẩn loading
+//    private void hideLoading() {
+//        if (loadingDialog != null && loadingDialog.isShowing()) {
+//            loadingDialog.dismiss();
+//        }
+//    }
 
     private void login(String phone, String password, String fcmToken) {
-        showLoading();
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         int isMobile = 1;
         int rememberMe = 1;
@@ -223,7 +226,7 @@ public class MainActivity extends BaseActivity {
         call.enqueue(new Callback<ApiResponse<LoginData>>() {
             @Override
             public void onResponse(Call<ApiResponse<LoginData>> call, Response<ApiResponse<LoginData>> response) {
-                hideLoading();
+                loadingDialog.hide();
                 Log.d("LoginActivity", "Response: " + response);
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<LoginData> apiResponse = response.body();
@@ -256,11 +259,12 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<LoginData>> call, Throwable t) {
-                hideLoading();
+                loadingDialog.hide();
                 CustomToast.showCustomToast(MainActivity.this, "Error: " + t.getMessage());
             }
         });
     }
+
     private void requestNotificationPermission(String token, LoginData loginData) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
@@ -285,6 +289,7 @@ public class MainActivity extends BaseActivity {
             finish();
         }
     }
+
     private void showChangePasswordDialog(String token) {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String oldPassword = sharedPreferences.getString("old_password", "");
@@ -343,12 +348,14 @@ public class MainActivity extends BaseActivity {
     }
 
     private void changePassword(String token, String confirmPass, String oldPass, String newPass, AlertDialog alertDialog) {
+        loadingDialog.show();
         ApiInterface apiInterface = ApiClient.getClient(this).create(ApiInterface.class);
         ChangePassRequest changePassRequest = new ChangePassRequest(confirmPass, oldPass, newPass);
         Call<ApiResponse<String>> call = apiInterface.changePassword(token, changePassRequest);
         call.enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
+                loadingDialog.hide();
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
@@ -371,6 +378,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<String>> call, Throwable t) {
+                loadingDialog.hide();
                 Log.e("ChangePassword", "Error: ", t);
                 CustomToast.showCustomToast(MainActivity.this, "Lỗi kết nối đến máy chủ");
             }

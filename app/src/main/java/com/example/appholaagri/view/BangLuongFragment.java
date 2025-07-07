@@ -1,66 +1,111 @@
 package com.example.appholaagri.view;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.appholaagri.R;
+import com.example.appholaagri.adapter.SalaryTableAdapter;
+import com.example.appholaagri.model.ApiResponse.ApiResponse;
+import com.example.appholaagri.model.SalaryTableModel.SalaryTableRequest;
+import com.example.appholaagri.model.SalaryTableModel.SalaryTableResponse;
+import com.example.appholaagri.service.ApiClient;
+import com.example.appholaagri.service.ApiInterface;
+import com.example.appholaagri.utils.CustomToast;
+import com.example.appholaagri.utils.LoadingDialog;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link BangLuongFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.Arrays;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BangLuongFragment extends BaseFragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public BangLuongFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BangLuongFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static BangLuongFragment newInstance(String param1, String param2) {
-        BangLuongFragment fragment = new BangLuongFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private RecyclerView recyclerView;
+    private SalaryTableAdapter adapter;
+    private LinearLayout emptyStateLayout;
+    private LoadingDialog loadingDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_bang_luong, container, false);
+        View view = inflater.inflate(R.layout.fragment_bang_luong, container, false);
+        loadingDialog = new LoadingDialog(getContext());
+        // Kết nối RecyclerView
+        recyclerView = view.findViewById(R.id.recyclerViewBangLuong);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        emptyStateLayout = view.findViewById(R.id.emptyStateLayout);
+        // Gọi API để lấy danh sách chấm công hôm nay
+        callSalaryTableApi();
+        return view;
     }
+
+    private void callSalaryTableApi() {
+        ApiInterface apiInterface = ApiClient.getClient(getContext()).create(ApiInterface.class);
+        loadingDialog.show();
+        // Tạo yêu cầu để gửi cho API
+        SalaryTableRequest request = new SalaryTableRequest();
+        request.setIsApp(1);
+        request.setKeySearch("");  // Giá trị tìm kiếm
+        request.setPage(1);        // Trang đầu tiên
+        request.setSize(20);      // Số lượng kết quả trả về
+        request.setStatus(Arrays.asList(-1));  // Trạng thái
+
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", requireActivity().MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null); // Lấy token từ SharedPreferences
+
+        // Gọi API
+        Call<ApiResponse<SalaryTableResponse>> call = apiInterface.salaryTableData(token, request);
+
+        call.enqueue(new Callback<ApiResponse<SalaryTableResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<SalaryTableResponse>> call, Response<ApiResponse<SalaryTableResponse>> response) {
+                loadingDialog.hide();
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<SalaryTableResponse> apiResponse = response.body();
+                    if (apiResponse.getStatus() == 200) {
+                        SalaryTableResponse data = apiResponse.getData();
+                        Log.d("BangCongFragment", "Dữ liệu: " + (data != null ? data.getData() : "null"));
+                        // Kiểm tra dữ liệu trả về từ API
+                        if (data != null && data.getData() != null && !data.getData().isEmpty()) {
+                            // Cập nhật dữ liệu vào RecyclerView
+                            adapter = new SalaryTableAdapter(data.getData());
+                            recyclerView.setAdapter(adapter);
+                        } else {
+                            // Hiển thị empty state
+                            recyclerView.setVisibility(View.GONE);
+                            emptyStateLayout.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        CustomToast.showCustomToast(getContext(), apiResponse.getMessage());
+                        recyclerView.setVisibility(View.GONE);
+                        emptyStateLayout.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    Log.e("BangCongFragment", "API call failed or response body is null");
+                    recyclerView.setVisibility(View.GONE);
+                    emptyStateLayout.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<SalaryTableResponse>> call, Throwable t) {
+                loadingDialog.hide();
+                Log.e("API Error", t.getMessage());
+                // Hiển thị empty state
+                recyclerView.setVisibility(View.GONE);
+                emptyStateLayout.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
 }

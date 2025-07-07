@@ -111,11 +111,10 @@ public class SettingSecurityActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<String> apiResponse = response.body();
                     if (apiResponse.getStatus() == 200) {
-                        CustomToast.showCustomToast(SettingSecurityActivity.this,  "Đổi mật khẩu thành công");
-//                        handleLogout();
-                        onBackPressed();
+                        CustomToast.showCustomToast(SettingSecurityActivity.this,  apiResponse.getMessage());
+                        finish();
                     } else {
-                        password_input_layout.setError(apiResponse.getMessage());
+                        CustomToast.showCustomToast(SettingSecurityActivity.this,  apiResponse.getMessage());
                     }
                 } else {
                     CustomToast.showCustomToast(SettingSecurityActivity.this,  "Lỗi không xác định: " + response.message());
@@ -128,25 +127,4 @@ public class SettingSecurityActivity extends BaseActivity {
             }
         });
     }
-    public void onBackPressed() {
-        // Tìm ra HomeActivity và chuyển hướng về SettingFragment
-        super.onBackPressed();
-        Intent intent = new Intent(SettingSecurityActivity.this, HomeActivity.class);
-        intent.putExtra("navigate_to", "setting"); // Thêm thông tin để xác định chuyển hướng đến SettingFragment
-        startActivity(intent);
-        finish();  // Kết thúc Activity này
-    }
-//    private void handleLogout() {
-//        try {
-//            SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences",MODE_PRIVATE);
-//            SharedPreferences.Editor editor = sharedPreferences.edit();
-//            editor.remove("auth_token");
-//            editor.apply(); // Save changes
-//            Intent intent = new Intent(SettingSecurityActivity.this, MainActivity.class); // Or LoginActivity
-//            startActivity(intent);
-//            finish(); // Close current activity
-//        } catch (Exception e) {
-//            Log.e("SettingFragment", "Error during logout: " + e.getMessage());
-//        }
-//    }
 }
